@@ -930,6 +930,138 @@
             } else if (level === 5) {
                 setTimeout(() => initFishMath(), 100);
             }
+            
+            // Setup troll features for this level
+            setTimeout(() => {
+                setupTrollFeatures(level);
+            }, 500);
+        }
+        
+        function setupTrollFeatures(level) {
+            if (level === 0 || level === 6) return;
+            
+            // 20% chance to show "You've already completed this level" message
+            if (Math.random() < 0.2) {
+                setTimeout(() => {
+                    const msg = showMessage('message' + level, 'Du har redan klarat denna nivå!', 'success');
+                    setTimeout(() => {
+                        showMessage('message' + level, '', '');
+                    }, 2000);
+                }, 1000);
+            }
+            
+            // Setup moving buttons (especially "Kontrollera" buttons)
+            setupMovingButtons(level);
+            
+            // Setup button swapping
+            setupButtonSwapping(level);
+            
+            // Setup fake hint button
+            setupFakeHintButton(level);
+            
+            // Setup fake level complete (only once per level)
+            if (!fakeLevelCompleteShown[level] && Math.random() < 0.3) {
+                setTimeout(() => {
+                    showFakeLevelComplete(level);
+                    fakeLevelCompleteShown[level] = true;
+                }, 3000 + Math.random() * 5000);
+            }
+        }
+        
+        function setupMovingButtons(level) {
+            const checkButtons = document.querySelectorAll(`#view${level} button[onclick*="check"]`);
+            checkButtons.forEach(btn => {
+                let moveCount = 0;
+                const moveInterval = setInterval(() => {
+                    if (moveCount > 5) {
+                        clearInterval(moveInterval);
+                        return;
+                    }
+                    moveCount++;
+                    
+                    // Move button slightly when user hovers
+                    btn.addEventListener('mouseenter', function() {
+                        if (Math.random() < 0.4) { // 40% chance
+                            const rect = btn.getBoundingClientRect();
+                            const newX = rect.left + (Math.random() - 0.5) * 100;
+                            const newY = rect.top + (Math.random() - 0.5) * 50;
+                            btn.style.position = 'relative';
+                            btn.style.left = (newX - rect.left) + 'px';
+                            btn.style.top = (newY - rect.top) + 'px';
+                            btn.style.transition = 'all 0.1s';
+                            
+                            setTimeout(() => {
+                                btn.style.left = '0';
+                                btn.style.top = '0';
+                            }, 200);
+                        }
+                    }, { once: true });
+                }, 2000);
+            });
+        }
+        
+        function setupButtonSwapping(level) {
+            const view = document.getElementById('view' + level);
+            if (!view) return;
+            
+            const buttons = Array.from(view.querySelectorAll('button'));
+            const hintBtn = buttons.find(b => b.textContent.includes('Ledtråd'));
+            const checkBtn = buttons.find(b => b.textContent.includes('Kontrollera'));
+            
+            if (hintBtn && checkBtn && Math.random() < 0.15) { // 15% chance
+                // Swap their positions
+                const hintParent = hintBtn.parentNode;
+                const checkParent = checkBtn.parentNode;
+                
+                if (hintParent === checkParent) {
+                    // Same parent, swap order
+                    const temp = hintBtn.nextSibling;
+                    hintBtn.parentNode.insertBefore(checkBtn, hintBtn);
+                    if (temp) {
+                        checkBtn.parentNode.insertBefore(hintBtn, temp);
+                    } else {
+                        checkBtn.parentNode.appendChild(hintBtn);
+                    }
+                }
+            }
+        }
+        
+        function setupFakeHintButton(level) {
+            const view = document.getElementById('view' + level);
+            if (!view) return;
+            
+            const realHintBtn = view.querySelector('button[onclick*="showHint"]');
+            if (!realHintBtn) return;
+            
+            // Create fake hint button
+            const fakeBtn = document.createElement('button');
+            fakeBtn.className = 'btn-secondary';
+            fakeBtn.textContent = 'Ledtråd';
+            fakeBtn.style.marginLeft = '10px';
+            fakeBtn.onclick = () => showFakeHint(level);
+            
+            // Insert after real hint button
+            realHintBtn.parentNode.insertBefore(fakeBtn, realHintBtn.nextSibling);
+        }
+        
+        function showFakeLevelComplete(level) {
+            if (level === 0 || level === 6) return;
+            
+            const msgDiv = document.getElementById('message' + level);
+            if (!msgDiv) return;
+            
+            msgDiv.textContent = '🎉 Nivå klar! 🎉';
+            msgDiv.className = 'message success';
+            
+            setTimeout(() => {
+                msgDiv.textContent = 'Bara skojade! Fortsätt spela! 😄';
+                msgDiv.className = 'message error';
+                
+                setTimeout(() => {
+                    msgDiv.textContent = '';
+                    msgDiv.className = 'message';
+                }, 2000);
+            }, 1000);
         }
 
         function startGame() {
@@ -1069,8 +1201,17 @@
             const answer = normalizeSwedish(CONFIG.cipherAnswer);
             
             if (normalized === answer) {
-                showMessage('message3', 'Korrekt! Du kan gå vidare.', 'success');
-                setTimeout(() => showView(4), 1500);
+                // 30% chance to show fake error message
+                if (Math.random() < 0.3) {
+                    showMessage('message3', 'Fel svar. Försök igen!', 'error');
+                    setTimeout(() => {
+                        showMessage('message3', 'Korrekt! Du kan gå vidare.', 'success');
+                        setTimeout(() => showView(4), 1500);
+                    }, 1000);
+                } else {
+                    showMessage('message3', 'Korrekt! Du kan gå vidare.', 'success');
+                    setTimeout(() => showView(4), 1500);
+                }
             } else {
                 showMessage('message3', 'Fel svar. Försök igen!', 'error');
             }
@@ -1201,8 +1342,17 @@
             }
             
             if (input === CONFIG.fishMathAnswer) {
-                showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
-                setTimeout(() => showView(6), 2000);
+                // 30% chance to show fake error message
+                if (Math.random() < 0.3) {
+                    showMessage('message5', 'Fel kod! Kontrollera dina beräkningar.', 'error');
+                    setTimeout(() => {
+                        showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
+                        setTimeout(() => showView(6), 2000);
+                    }, 1000);
+                } else {
+                    showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
+                    setTimeout(() => showView(6), 2000);
+                }
             } else {
                 showMessage('message5', 'Fel kod! Kontrollera dina beräkningar.', 'error');
             }
@@ -1389,6 +1539,7 @@
                 
                 stopAnnoyingPopups();
                 popupCount = 0;
+                fakeLevelCompleteShown = {}; // Reset fake level complete
                 showView(0);
             }
         }
@@ -1412,6 +1563,25 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         let popupCount = 0;
         let nextPopupTimeout = null;
         let isPopupOpen = false;
+        
+        // ============================================
+        // TROLL FEATURES
+        // ============================================
+        const fakeHintMessages = [
+            "Tänk på färgen blå!",
+            "Svaret är 42!",
+            "Klicka tre gånger på titeln!",
+            "Prova att vända skärmen upp och ner!",
+            "Svaret finns i frågan!",
+            "Tänk utanför boxen!",
+            "Använd kraften, Luke!",
+            "Koden är alltid 0000!",
+            "Titta i spegeln!",
+            "Svaret är i luften!"
+        ];
+        
+        let buttonSwapInterval = null;
+        let fakeLevelCompleteShown = {};
 
         const annoyingMessages = [
             "Har du kollat under sängen?",
