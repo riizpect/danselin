@@ -292,9 +292,18 @@
         /* Level 4: Logic Puzzle */
         .logic-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: 120px repeat(4, 1fr) 120px repeat(4, 1fr);
             gap: 10px;
             margin: 20px 0;
+        }
+        
+        .logic-section-header {
+            grid-column: span 4;
+            font-weight: bold;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.2);
+            text-align: center;
+            border-radius: 5px;
         }
 
         .logic-header {
