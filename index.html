@@ -492,7 +492,7 @@
             font-size: 0.9em;
         }
 
-        /* Final Reveal - Instruktionsspel */
+        /* Final Reveal - Räkna fiskar */
         .final-container {
             display: flex;
             flex-direction: column;
@@ -502,13 +502,13 @@
             padding: 40px 20px;
         }
 
-        .instruction-test-container {
-            max-width: 800px;
+        .fish-count-container {
+            max-width: 900px;
             width: 100%;
             margin: 20px auto;
         }
 
-        .instruction-question {
+        .fish-count-question {
             background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
             border: 3px solid #ffd700;
             border-radius: 20px;
@@ -518,18 +518,17 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        .instruction-text {
+        .fish-count-text {
             color: #fff;
             font-size: 1.5em;
             line-height: 1.6;
             margin: 20px 0;
             font-weight: bold;
-            min-height: 60px;
         }
 
-        .instruction-timer {
+        .fish-count-timer {
             color: #ff6b6b;
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             margin: 20px 0;
             animation: timerPulse 1s infinite;
@@ -537,107 +536,111 @@
 
         @keyframes timerPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
 
-        .instruction-buttons-container {
+        .fish-arena {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2d5a87 50%, #1e3a5f 100%);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .swimming-fish {
+            position: absolute;
+            font-size: 2.5em;
+            user-select: none;
+            pointer-events: none;
+            animation: swim 3s linear infinite;
+        }
+
+        @keyframes swim {
+            0% {
+                transform: translateX(-100px) translateY(0);
+            }
+            100% {
+                transform: translateX(calc(100vw + 100px)) translateY(0);
+            }
+        }
+
+        .fish-count-input-container {
             display: flex;
             gap: 15px;
             justify-content: center;
-            flex-wrap: wrap;
+            align-items: center;
             margin: 30px 0;
         }
 
-        .instruction-button {
-            padding: 20px 30px;
+        .fish-count-input {
+            padding: 15px 25px;
+            font-size: 1.5em;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffd700;
+            text-align: center;
+            font-weight: bold;
+            width: 150px;
+        }
+
+        .fish-count-input:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .fish-count-submit {
+            padding: 15px 30px;
             font-size: 1.3em;
             border: 3px solid #ffd700;
             border-radius: 10px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(255, 215, 0, 0.2);
             color: #ffd700;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-            min-width: 120px;
-        }
-
-        .instruction-button:hover {
-            background: rgba(255, 215, 0, 0.2);
-            transform: scale(1.05);
-        }
-
-        .instruction-button:active {
-            transform: scale(0.95);
-        }
-
-        .instruction-button.clicked {
-            background: rgba(76, 175, 80, 0.3);
-            border-color: #4caf50;
-        }
-
-        .instruction-button.wrong-click {
-            background: rgba(255, 107, 107, 0.3);
-            border-color: #ff6b6b;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .instruction-doors-container {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 30px 0;
-        }
-
-        .instruction-door {
-            width: 120px;
-            height: 180px;
-            background: linear-gradient(135deg, #8b4513, #654321);
-            border: 4px solid #ffd700;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            cursor: pointer;
             transition: all 0.3s;
-            position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
         }
 
-        .instruction-door:hover {
+        .fish-count-submit:hover {
+            background: rgba(255, 215, 0, 0.4);
             transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
         }
 
-        .instruction-door.opened {
-            transform: rotateY(90deg);
+        .fish-count-submit:disabled {
             opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .instruction-feedback {
+        .fish-count-feedback {
             text-align: center;
             margin: 20px 0;
-            min-height: 40px;
-            font-size: 1.2em;
+            min-height: 50px;
+            font-size: 1.3em;
             font-weight: bold;
         }
 
-        .instruction-feedback.correct {
+        .fish-count-feedback.correct {
             color: #4caf50;
         }
 
-        .instruction-feedback.wrong {
+        .fish-count-feedback.wrong {
             color: #ff6b6b;
         }
 
-        .instruction-feedback.timeout {
+        .fish-count-feedback.timeout {
             color: #ffaa00;
+        }
+
+        .fish-count-round {
+            color: #ffd700;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .gift-box-large-container {
@@ -1414,8 +1417,8 @@
                 <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
                 <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
-                <!-- Instruktionsspel -->
-                <div class="instruction-test-container" id="instructionTestContainer"></div>
+                <!-- Räkna fiskar -->
+                <div class="fish-count-container" id="fishCountContainer"></div>
                 
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
@@ -1629,7 +1632,7 @@
             // Stop popups on final view
             if (level === 6) {
                 stopAnnoyingPopups();
-                setTimeout(() => initInstructionTest(), 100);
+                setTimeout(() => initFishCountTest(), 100);
             } else if (level > 0 && !popupInterval) {
                 // Start popups if game is active
                 startAnnoyingPopups();
@@ -2248,202 +2251,189 @@
         }
 
         // ============================================
-        // FINAL REVEAL - Instruktionsspel (STRESSIGT!)
+        // FINAL REVEAL - Räkna fiskar (STRESSIGT!)
         // ============================================
-        let currentInstruction = 0;
-        let instructionTimer = null;
-        let instructionTimeLeft = 3;
-        let instructionAnswered = false;
+        let currentFishRound = 0;
+        let fishTimer = null;
+        let fishTimeLeft = 3;
+        let fishAnswered = false;
+        let fishInterval = null;
+        let correctFishCount = 0;
         
-        // Instruktioner med olika typer
-        const instructions = [
-            {
-                type: 'dont-click',
-                text: "Klicka INTE på den röda knappen",
-                buttons: [
-                    { color: 'red', isCorrect: false },
-                    { color: 'blue', isCorrect: true },
-                    { color: 'green', isCorrect: true }
-                ]
-            },
-            {
-                type: 'click-color',
-                text: "Klicka på den gröna knappen",
-                buttons: [
-                    { color: 'red', isCorrect: false },
-                    { color: 'blue', isCorrect: false },
-                    { color: 'green', isCorrect: true },
-                    { color: 'yellow', isCorrect: false },
-                    { color: 'purple', isCorrect: false }
-                ]
-            },
-            {
-                type: 'doors',
-                text: "Öppna dörren till höger om den vänstra dörren",
-                doors: 3 // 3 dörrar, öppna den mellersta (höger om vänstra = mitten)
-            },
-            {
-                type: 'dont-click',
-                text: "Klicka INTE på den blå knappen",
-                buttons: [
-                    { color: 'red', isCorrect: true },
-                    { color: 'blue', isCorrect: false },
-                    { color: 'green', isCorrect: true },
-                    { color: 'yellow', isCorrect: true }
-                ]
-            },
-            {
-                type: 'click-color',
-                text: "Klicka på den röda knappen",
-                buttons: [
-                    { color: 'blue', isCorrect: false },
-                    { color: 'green', isCorrect: false },
-                    { color: 'red', isCorrect: true },
-                    { color: 'yellow', isCorrect: false }
-                ]
-            },
-            {
-                type: 'doors',
-                text: "Öppna den vänstra dörren",
-                doors: 3 // 3 dörrar, öppna den vänstra
-            }
+        // 5 rundor med olika antal fiskar
+        const fishRounds = [
+            { count: 5, text: "Räkna fiskarna!" },
+            { count: 8, text: "Räkna fiskarna!" },
+            { count: 12, text: "Räkna fiskarna!" },
+            { count: 15, text: "Räkna fiskarna!" },
+            { count: 20, text: "Räkna fiskarna!" }
         ];
         
-        function initInstructionTest() {
-            const container = document.getElementById('instructionTestContainer');
+        const fishEmojis = ['🐟', '🐠', '🐡', '🦈', '🐋'];
+        
+        function initFishCountTest() {
+            const container = document.getElementById('fishCountContainer');
             if (!container) return;
             
-            currentInstruction = 0;
-            instructionAnswered = false;
+            currentFishRound = 0;
+            fishAnswered = false;
+            correctFishCount = 0;
             
             // Dölj stort paket och presentkort
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Visa första instruktionen
-            showInstruction(0);
+            // Visa första rundan
+            showFishRound(0);
         }
         
-        function showInstruction(instructionIndex) {
-            const container = document.getElementById('instructionTestContainer');
-            if (!container || instructionIndex >= instructions.length) {
-                // Alla instruktioner klara - visa stort paket!
+        function showFishRound(roundIndex) {
+            const container = document.getElementById('fishCountContainer');
+            if (!container || roundIndex >= fishRounds.length) {
+                // Alla rundor klara - visa stort paket!
                 showFinalGiftBox();
                 return;
             }
             
-            const instruction = instructions[instructionIndex];
-            currentInstruction = instructionIndex;
-            instructionTimeLeft = 3;
-            instructionAnswered = false;
+            const round = fishRounds[roundIndex];
+            currentFishRound = roundIndex;
+            fishTimeLeft = 3;
+            fishAnswered = false;
             
-            let html = `
-                <div class="instruction-question">
-                    <div class="instruction-text">${instruction.text}</div>
-                    <div class="instruction-timer" id="instructionTimer">${instructionTimeLeft}</div>
+            container.innerHTML = `
+                <div class="fish-count-question">
+                    <div class="fish-count-round">Runda ${roundIndex + 1} av ${fishRounds.length}</div>
+                    <div class="fish-count-text">${round.text}</div>
+                    <div class="fish-count-timer" id="fishTimer">${fishTimeLeft}</div>
+                    
+                    <div class="fish-arena" id="fishArena"></div>
+                    
+                    <div class="fish-count-input-container">
+                        <input type="number" class="fish-count-input" id="fishInput" placeholder="?" min="0" max="50" autofocus>
+                        <button class="fish-count-submit" onclick="submitFishAnswer()">Svara</button>
+                    </div>
+                    
+                    <div class="fish-count-feedback" id="fishFeedback"></div>
+                </div>
             `;
             
-            if (instruction.type === 'dont-click' || instruction.type === 'click-color') {
-                html += '<div class="instruction-buttons-container">';
-                instruction.buttons.forEach((btn, index) => {
-                    html += `<button class="instruction-button" style="background: ${btn.color};" onclick="handleInstructionClick(${index}, ${btn.isCorrect})">${btn.color}</button>`;
-                });
-                html += '</div>';
-            } else if (instruction.type === 'doors') {
-                html += '<div class="instruction-doors-container">';
-                for (let i = 0; i < instruction.doors; i++) {
-                    const isCorrect = (instruction.text.includes('höger om den vänstra') && i === 1) || 
-                                     (instruction.text.includes('vänstra') && i === 0) ||
-                                     (instruction.text.includes('högra') && i === instruction.doors - 1);
-                    html += `<div class="instruction-door" onclick="handleDoorClick(${i}, ${isCorrect})">🚪</div>`;
-                }
-                html += '</div>';
-            }
-            
-            html += `<div class="instruction-feedback" id="instructionFeedback"></div></div>`;
-            
-            container.innerHTML = html;
+            // Skapa fiskar som rör sig
+            createSwimmingFish(round.count);
             
             // Starta timer
-            startInstructionTimer();
+            startFishTimer();
+            
+            // Fokusera på input
+            setTimeout(() => {
+                const input = document.getElementById('fishInput');
+                if (input) {
+                    input.focus();
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            submitFishAnswer();
+                        }
+                    });
+                }
+            }, 100);
         }
         
-        function startInstructionTimer() {
-            if (instructionTimer) {
-                clearInterval(instructionTimer);
+        function createSwimmingFish(count) {
+            const arena = document.getElementById('fishArena');
+            if (!arena) return;
+            
+            // Rensa gamla fiskar
+            arena.innerHTML = '';
+            
+            const arenaRect = arena.getBoundingClientRect();
+            
+            for (let i = 0; i < count; i++) {
+                const fish = document.createElement('div');
+                fish.className = 'swimming-fish';
+                fish.textContent = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
+                
+                // Slumpmässig startposition (vertikal)
+                const startY = Math.random() * (arenaRect.height - 60);
+                fish.style.top = startY + 'px';
+                
+                // Olika hastigheter och animation-delays
+                const speed = 2 + Math.random() * 2; // 2-4 sekunder
+                const delay = Math.random() * 2; // 0-2 sekunder delay
+                fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
+                
+                // Olika storlekar
+                const size = 0.8 + Math.random() * 0.4; // 0.8-1.2x
+                fish.style.transform = `scale(${size})`;
+                
+                arena.appendChild(fish);
+            }
+        }
+        
+        function startFishTimer() {
+            if (fishTimer) {
+                clearInterval(fishTimer);
             }
             
-            instructionTimer = setInterval(() => {
-                instructionTimeLeft--;
-                const timerEl = document.getElementById('instructionTimer');
+            fishTimer = setInterval(() => {
+                fishTimeLeft--;
+                const timerEl = document.getElementById('fishTimer');
                 if (timerEl) {
-                    timerEl.textContent = instructionTimeLeft;
+                    timerEl.textContent = fishTimeLeft;
                     
-                    if (instructionTimeLeft <= 0) {
+                    if (fishTimeLeft <= 0) {
                         // Tiden är ute!
-                        clearInterval(instructionTimer);
-                        if (!instructionAnswered) {
-                            const feedbackEl = document.getElementById('instructionFeedback');
-                            feedbackEl.textContent = '⏱️ Tiden är ute! Går vidare...';
-                            feedbackEl.className = 'instruction-feedback timeout';
+                        clearInterval(fishTimer);
+                        if (!fishAnswered) {
+                            const feedbackEl = document.getElementById('fishFeedback');
+                            feedbackEl.textContent = `⏱️ Tiden är ute! Rätt svar var ${fishRounds[currentFishRound].count}`;
+                            feedbackEl.className = 'fish-count-feedback timeout';
+                            
+                            // Disable input
+                            const input = document.getElementById('fishInput');
+                            const submitBtn = document.querySelector('.fish-count-submit');
+                            if (input) input.disabled = true;
+                            if (submitBtn) submitBtn.disabled = true;
                             
                             setTimeout(() => {
-                                showInstruction(currentInstruction + 1);
-                            }, 1500);
+                                showFishRound(currentFishRound + 1);
+                            }, 2000);
                         }
                     }
                 }
             }, 1000);
         }
         
-        function handleInstructionClick(buttonIndex, isCorrect) {
-            if (instructionAnswered) return;
+        function submitFishAnswer() {
+            if (fishAnswered) return;
             
-            instructionAnswered = true;
-            clearInterval(instructionTimer);
+            const input = document.getElementById('fishInput');
+            const feedbackEl = document.getElementById('fishFeedback');
+            const submitBtn = document.querySelector('.fish-count-submit');
             
-            const buttons = document.querySelectorAll('.instruction-button');
-            const feedbackEl = document.getElementById('instructionFeedback');
+            if (!input || !feedbackEl) return;
             
-            if (isCorrect) {
-                buttons[buttonIndex].classList.add('clicked');
-                feedbackEl.textContent = '✅ Rätt!';
-                feedbackEl.className = 'instruction-feedback correct';
+            const answer = parseInt(input.value);
+            const correctAnswer = fishRounds[currentFishRound].count;
+            
+            fishAnswered = true;
+            clearInterval(fishTimer);
+            
+            // Disable input
+            input.disabled = true;
+            if (submitBtn) submitBtn.disabled = true;
+            
+            if (answer === correctAnswer) {
+                correctFishCount++;
+                feedbackEl.textContent = `✅ Rätt! Det var ${correctAnswer} fiskar!`;
+                feedbackEl.className = 'fish-count-feedback correct';
             } else {
-                buttons[buttonIndex].classList.add('wrong-click');
-                feedbackEl.textContent = '❌ Fel!';
-                feedbackEl.className = 'instruction-feedback wrong';
+                feedbackEl.textContent = `❌ Fel! Det var ${correctAnswer} fiskar, inte ${answer || 0}`;
+                feedbackEl.className = 'fish-count-feedback wrong';
             }
             
-            // Gå vidare efter 1 sekund
+            // Gå vidare efter 2 sekunder
             setTimeout(() => {
-                showInstruction(currentInstruction + 1);
-            }, 1000);
-        }
-        
-        function handleDoorClick(doorIndex, isCorrect) {
-            if (instructionAnswered) return;
-            
-            instructionAnswered = true;
-            clearInterval(instructionTimer);
-            
-            const doors = document.querySelectorAll('.instruction-door');
-            const feedbackEl = document.getElementById('instructionFeedback');
-            
-            if (isCorrect) {
-                doors[doorIndex].classList.add('opened');
-                feedbackEl.textContent = '✅ Rätt!';
-                feedbackEl.className = 'instruction-feedback correct';
-            } else {
-                doors[doorIndex].classList.add('opened');
-                feedbackEl.textContent = '❌ Fel!';
-                feedbackEl.className = 'instruction-feedback wrong';
-            }
-            
-            // Gå vidare efter 1 sekund
-            setTimeout(() => {
-                showInstruction(currentInstruction + 1);
-            }, 1000);
+                showFishRound(currentFishRound + 1);
+            }, 2000);
         }
         
         function showFinalGiftBox() {
