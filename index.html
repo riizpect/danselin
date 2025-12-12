@@ -2479,21 +2479,16 @@
             // GLITCH-EFFEKT INNAN!
             doGlitchEffect();
             
-            // BYT POSITION PÅ FÄRGERNA INNAN VARJE NIVÅ! (efter glitch)
+            // Visa sekvensen (INGEN positionbyte innan!)
             setTimeout(() => {
-                shuffleColorPositions();
+                instruction.textContent = 'Titta N O G A på sekvensen!';
+                isShowingSequence = true;
+                isPlayerTurn = false;
+                disableAllButtons();
                 
-                // Efter positionbytet, visa sekvensen
                 setTimeout(() => {
-                    instruction.textContent = 'Titta N O G A på sekvensen!';
-                    isShowingSequence = true;
-                    isPlayerTurn = false;
-                    disableAllButtons();
-                    
-                    setTimeout(() => {
-                        showSequence(0);
-                    }, 500);
-                }, 700);
+                    showSequence(0);
+                }, 500);
             }, 600);
         }
         
@@ -2502,16 +2497,21 @@
                 // Sekvensen är klar - GLITCH EFFEKT EFTER!
                 doGlitchEffect();
                 
-                // Efter glitch, nu är det spelarens tur
+                // EFTER sekvensen - BYT POSITION PÅ FÄRGERNA! (förvirrande!)
                 setTimeout(() => {
-                    isShowingSequence = false;
-                    isPlayerTurn = true;
-                    playerSequence = [];
-                    enableAllButtons();
+                    shuffleColorPositions();
                     
-                    const instruction = document.getElementById('sequenceInstruction');
-                    instruction.textContent = 'Upprepa sekvensen! (Färgerna kan ha flyttat sig!)';
-                }, 600);
+                    // Efter positionbytet, nu är det spelarens tur
+                    setTimeout(() => {
+                        isShowingSequence = false;
+                        isPlayerTurn = true;
+                        playerSequence = [];
+                        enableAllButtons();
+                        
+                        const instruction = document.getElementById('sequenceInstruction');
+                        instruction.textContent = 'Upprepa sekvensen! (Färgerna har flyttat sig!)';
+                    }, 700); // Efter positionbytet är klar
+                }, 600); // Efter glitch
                 return;
             }
             
