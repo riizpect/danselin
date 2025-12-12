@@ -885,6 +885,15 @@
         // INITIALIZATION
         // ============================================
         function init() {
+            // Check if first visit
+            const hasVisited = localStorage.getItem('hasVisited');
+            if (!hasVisited) {
+                // Show fake loading screen
+                showFakeLoadingScreen();
+                localStorage.setItem('hasVisited', 'true');
+                return;
+            }
+            
             // Load progress from localStorage
             const savedLevel = localStorage.getItem('escapeRoomLevel');
             if (savedLevel) {
@@ -908,6 +917,18 @@
             
             // Create snowflakes
             createSnowflakes();
+            
+            // Start background music
+            startBackgroundMusic();
+            
+            // Setup click sounds
+            setupClickSounds();
+            
+            // Start fake countdown
+            startFakeCountdown();
+            
+            // Random fake saving messages
+            startFakeSavingMessages();
         }
 
         // ============================================
@@ -958,6 +979,13 @@
             setTimeout(() => {
                 setupTrollFeatures(level);
             }, 500);
+            
+            // Random fake captcha (10% chance)
+            if (level > 0 && level < 6 && Math.random() < 0.1) {
+                setTimeout(() => {
+                    showFakeCaptcha();
+                }, 5000 + Math.random() * 10000);
+            }
             
             // Random fake captcha (10% chance)
             if (level > 0 && level < 6 && Math.random() < 0.1) {
