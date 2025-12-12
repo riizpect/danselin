@@ -624,116 +624,89 @@
             min-height: 30px;
         }
 
-        /* Labyrint */
-        .maze-container {
+        /* Färgsekvens-spel */
+        .color-sequence-container {
             width: 100%;
-            max-width: 600px;
-            height: 400px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 3px solid #ffd700;
-            border-radius: 15px;
-            position: relative;
+            max-width: 500px;
             margin: 20px auto;
-            overflow: hidden;
+            display: none;
         }
 
-        .maze-wall {
-            position: absolute;
-            background: #ffd700;
-            z-index: 2;
+        .color-sequence-container.active {
+            display: block;
         }
 
-        .maze-start {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #4caf50;
-            border: 2px solid #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            z-index: 3;
-            cursor: move;
-            user-select: none;
-            touch-action: none;
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
         }
 
-        .maze-finish {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: #ff6b6b;
-            border: 3px solid #ffd700;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            z-index: 1;
-            animation: finishPulse 2s infinite;
+        .color-button {
+            aspect-ratio: 1;
+            border: 4px solid #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes finishPulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.6); }
-            50% { box-shadow: 0 0 40px rgba(255, 107, 107, 1); }
+        .color-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
-        .maze-fish {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            font-size: 2.5em;
-            z-index: 4;
-            transition: all 0.3s;
+        .color-button:active {
+            transform: scale(0.95);
+        }
+
+        .color-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
             pointer-events: none;
         }
 
-        .maze-trap {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: rgba(255, 107, 107, 0.7);
-            border: 2px solid #ff6b6b;
-            border-radius: 50%;
-            z-index: 2;
-            animation: trapPulse 1s infinite;
+        .color-button.flash {
+            animation: colorFlash 0.5s;
         }
 
-        @keyframes trapPulse {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.2); opacity: 1; }
+        .color-button.pressed {
+            transform: scale(0.9);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes wallAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
+        @keyframes colorFlash {
+            0%, 100% { 
                 transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.1);
+                filter: brightness(1.5);
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
             }
         }
 
-        @keyframes wallDisappear {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-        }
+        .color-red { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
+        .color-blue { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .color-yellow { background: linear-gradient(135deg, #ffe66d, #ffd93d); }
+        .color-green { background: linear-gradient(135deg, #95e1d3, #6bcf7f); }
 
-        .maze-instruction {
+        .sequence-instruction {
             text-align: center;
             color: #ffd700;
             font-size: 1.2em;
             margin: 15px 0;
-            min-height: 30px;
+            min-height: 50px;
+        }
+
+        .sequence-level {
+            text-align: center;
+            color: #fff;
+            font-size: 1.1em;
+            margin: 10px 0;
         }
 
         /* Presentkort (visas efter öppning) */
@@ -1304,13 +1277,17 @@
                     <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick(event)">🎁</div>
                     <div class="open-instruction" id="openInstruction">Dubbelklicka på paketet för att börja!</div>
                     
-                    <!-- Labyrint (visas efter dubbelklick) -->
-                    <div class="maze-container" id="mazeContainer" style="display: none;">
-                        <div class="maze-start" id="mazeStart" draggable="true">🎁</div>
-                        <div class="maze-finish" id="mazeFinish">🏁</div>
-                        <div class="maze-fish" id="mazeFish">🐟</div>
+                    <!-- Färgsekvens-spel (visas efter dubbelklick) -->
+                    <div class="color-sequence-container" id="colorSequenceContainer">
+                        <div class="sequence-level" id="sequenceLevel">Nivå 1</div>
+                        <div class="sequence-instruction" id="sequenceInstruction">Titta noga på sekvensen!</div>
+                        <div class="color-grid">
+                            <div class="color-button color-red" id="colorRed" data-color="red"></div>
+                            <div class="color-button color-blue" id="colorBlue" data-color="blue"></div>
+                            <div class="color-button color-yellow" id="colorYellow" data-color="yellow"></div>
+                            <div class="color-button color-green" id="colorGreen" data-color="green"></div>
+                        </div>
                     </div>
-                    <div class="maze-instruction" id="mazeInstruction" style="display: none;">Dra paketet till målet! Men akta dig för fisken! 🐟</div>
                 </div>
                 
                 <!-- Presentkort (visas efter öppning) -->
@@ -2157,16 +2134,10 @@
             giftBoxOpenStep = 0;
             clickSequence = [];
             sequenceStartTime = 0;
-            mazeStarted = false;
-            dynamicWalls = [];
-            lastPackageX = 30;
-            lastPackageY = 30;
-            if (fishInterval) {
-                clearInterval(fishInterval);
-                fishInterval = null;
-            }
-            // Ta bort alla dynamiska väggar
-            document.querySelectorAll('.maze-wall[style*="background: rgb(255, 107, 107)"]').forEach(wall => wall.remove());
+            sequenceGameStarted = false;
+            sequenceLevel = 1;
+            sequence = [];
+            playerSequence = [];
             
             // Stoppa eventuell rörelse
             if (giftBoxMovingInterval) {
@@ -2210,14 +2181,16 @@
                     giftBoxOpenSequence = [];
                     clickSequence = [];
                     sequenceStartTime = 0;
-                    mazeStarted = false;
+                    sequenceGameStarted = false;
+                    currentLevel = 1;
+                    sequence = [];
+                    playerSequence = [];
                     updateOpenInstruction();
                     
                     // Visa paketet igen
                     document.getElementById('giftBoxLarge').style.display = 'block';
                     document.getElementById('openInstruction').style.display = 'block';
-                    document.getElementById('mazeContainer').style.display = 'none';
-                    document.getElementById('mazeInstruction').style.display = 'none';
+                    document.getElementById('colorSequenceContainer').classList.remove('active');
                     
                     // Starta kontinuerliga troll-effekter
                     startGiftBoxTrollEffects();
@@ -2272,14 +2245,15 @@
             }
         }
         
-        // Öppningssekvens: 1) Dubbelklicka för att starta labyrinten
-        let mazeStarted = false;
-        let fishPosition = { x: 0, y: 0 };
-        let fishInterval = null;
-        let packagePosition = { x: 0, y: 0 };
-        let dynamicWalls = [];
-        let lastPackageX = 30;
-        let lastPackageY = 30;
+        // Öppningssekvens: Färgsekvens-spel (Simon Says)
+        let sequenceGameStarted = false;
+        let sequenceLevel = 1;
+        let sequence = [];
+        let playerSequence = [];
+        let isShowingSequence = false;
+        let isPlayerTurn = false;
+        const colors = ['red', 'blue', 'yellow', 'green'];
+        const MAX_SEQUENCE_LEVEL = 5;
         
         function handleGiftBoxClick(e) {
             const now = Date.now();
@@ -2290,353 +2264,188 @@
             // Troll-effekter varje gång man klickar!
             applyTrollEffects();
             
-            if (!mazeStarted && isDoubleClick) {
-                // Starta labyrinten!
-                startMaze();
+            if (!sequenceGameStarted && isDoubleClick) {
+                // Starta färgsekvens-spelet!
+                startSequenceGame();
             }
         }
         
-        function startMaze() {
-            mazeStarted = true;
+        function startSequenceGame() {
+            sequenceGameStarted = true;
+            sequenceLevel = 1;
+            sequence = [];
+            playerSequence = [];
+            
             document.getElementById('giftBoxLarge').style.display = 'none';
             document.getElementById('openInstruction').style.display = 'none';
-            document.getElementById('mazeContainer').style.display = 'block';
-            document.getElementById('mazeInstruction').style.display = 'block';
+            document.getElementById('colorSequenceContainer').classList.add('active');
             
-            // Skapa labyrint
-            createMaze();
-            
-            // Starta fisk-jakt
-            startFishChase();
-            
-            // Setup drag and drop
-            setupMazeDrag();
+            // Starta första nivån
+            startSequenceLevel();
         }
         
-        function createMaze() {
-            const container = document.getElementById('mazeContainer');
-            const containerRect = container.getBoundingClientRect();
-            const width = containerRect.width;
-            const height = containerRect.height;
+        function startSequenceLevel() {
+            const instruction = document.getElementById('sequenceInstruction');
+            const levelDisplay = document.getElementById('sequenceLevel');
             
-            // Ta bort gamla väggar
-            document.querySelectorAll('.maze-wall, .maze-trap').forEach(el => el.remove());
+            levelDisplay.textContent = `Nivå ${sequenceLevel} av ${MAX_SEQUENCE_LEVEL}`;
+            instruction.textContent = 'Titta noga på sekvensen!';
             
-            // SVÅR labyrint med faktisk väg från start till mål!
-            // Designad så att det finns en genomfart, men med många döda ändar
-            const walls = [
-                // Vänster sida - skapar korridorer
-                { x: 100, y: 0, w: 15, h: 80 },      // Lämnar öppning nedåt
-                { x: 100, y: 120, w: 15, h: 80 },    // Lämnar öppning uppåt
-                { x: 100, y: 240, w: 15, h: 160 },   // Blockar botten
-                
-                { x: 180, y: 60, w: 15, h: 80 },     // Blockar mitten
-                { x: 180, y: 180, w: 15, h: 100 },   // Blockar nedre delen
-                
-                // Mitten - komplexa väggar med öppningar
-                { x: 260, y: 0, w: 15, h: 120 },     // Lämnar öppning nedåt
-                { x: 260, y: 160, w: 15, h: 80 },    // Lämnar öppning uppåt
-                { x: 260, y: 280, w: 15, h: 120 },   // Blockar botten
-                
-                { x: 340, y: 40, w: 15, h: 100 },   // Blockar övre delen
-                { x: 340, y: 180, w: 15, h: 100 },   // Blockar nedre delen
-                
-                // Höger sida - närmare målet
-                { x: 420, y: 0, w: 15, h: 60 },      // Lämnar öppning nedåt
-                { x: 420, y: 100, w: 15, h: 80 },    // Lämnar öppning uppåt
-                { x: 420, y: 220, w: 15, h: 180 },  // Blockar botten
-                
-                { x: 500, y: 80, w: 15, h: 100 },    // Blockar mitten
-                { x: 500, y: 220, w: 15, h: 180 },   // Blockar nedre delen
-                
-                // Horisontella väggar - skapar korridorer
-                { x: 0, y: 80, w: 100, h: 15 },      // Blockar vänster
-                { x: 120, y: 80, w: 80, h: 15 },     // Öppning i mitten
-                { x: 220, y: 80, w: 100, h: 15 },    // Blockar höger
-                
-                { x: 0, y: 160, w: 100, h: 15 },     // Blockar vänster
-                { x: 120, y: 160, w: 140, h: 15 },   // Blockar mitten
-                { x: 280, y: 160, w: 80, h: 15 },    // Öppning höger
-                
-                { x: 0, y: 240, w: 180, h: 15 },     // Blockar vänster
-                { x: 200, y: 240, w: 60, h: 15 },    // Öppning mitten
-                { x: 280, y: 240, w: 320, h: 15 },   // Blockar höger
-                
-                { x: 0, y: 320, w: 420, h: 15 },     // Blockar vänster
-                { x: 440, y: 320, w: 160, h: 15 },   // Öppning höger (väg till mål!)
-            ];
+            // Lägg till en ny färg till sekvensen
+            sequence.push(colors[Math.floor(Math.random() * colors.length)]);
             
-            walls.forEach(wall => {
-                const wallEl = document.createElement('div');
-                wallEl.className = 'maze-wall';
-                wallEl.style.left = wall.x + 'px';
-                wallEl.style.top = wall.y + 'px';
-                wallEl.style.width = wall.w + 'px';
-                wallEl.style.height = wall.h + 'px';
-                container.appendChild(wallEl);
-            });
+            // Visa sekvensen
+            isShowingSequence = true;
+            isPlayerTurn = false;
+            disableAllButtons();
             
-            // Fällor placerade strategiskt (inte i den direkta vägen)
-            const traps = [
-                { x: 140, y: 100 },   // Död ände
-                { x: 220, y: 50 },    // Död ände
-                { x: 380, y: 120 },   // Död ände
-                { x: 460, y: 60 },    // Död ände
-                { x: 300, y: 200 },   // Död ände
-                { x: 520, y: 180 },   // Död ände
-            ];
-            
-            traps.forEach(trap => {
-                const trapEl = document.createElement('div');
-                trapEl.className = 'maze-trap';
-                trapEl.style.left = trap.x + 'px';
-                trapEl.style.top = trap.y + 'px';
-                trapEl.onclick = () => {
-                    // Fälla aktiveras - flytta paketet tillbaka
-                    resetPackagePosition();
-                };
-                container.appendChild(trapEl);
-            });
-            
-            // Positionera start och mål
-            const start = document.getElementById('mazeStart');
-            start.style.left = '30px';
-            start.style.top = '30px';
-            packagePosition = { x: 30, y: 30 };
-            
-            const finish = document.getElementById('mazeFinish');
-            finish.style.left = (width - 60) + 'px';
-            finish.style.top = (height - 60) + 'px';
-            
-            // Positionera fisken
-            fishPosition = { x: width - 100, y: height - 100 };
-            updateFishPosition();
+            setTimeout(() => {
+                showSequence(0);
+            }, 1000);
         }
         
-        function setupMazeDrag() {
-            const start = document.getElementById('mazeStart');
-            const container = document.getElementById('mazeContainer');
-            const containerRect = container.getBoundingClientRect();
-            
-            let isDragging = false;
-            let offset = { x: 0, y: 0 };
-            
-            start.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                const rect = start.getBoundingClientRect();
-                offset.x = e.clientX - rect.left - rect.width / 2;
-                offset.y = e.clientY - rect.top - rect.height / 2;
-            });
-            
-            start.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                const touch = e.touches[0];
-                const rect = start.getBoundingClientRect();
-                offset.x = touch.clientX - rect.left - rect.width / 2;
-                offset.y = touch.clientY - rect.top - rect.height / 2;
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    movePackage(e.clientX, e.clientY, containerRect, offset);
-                }
-            });
-            
-            document.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    movePackage(touch.clientX, touch.clientY, containerRect, offset);
-                }
-            });
-            
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                checkCollisions();
-            });
-            
-            document.addEventListener('touchend', () => {
-                isDragging = false;
-                checkCollisions();
-            });
-        }
-        
-        function movePackage(clientX, clientY, containerRect, offset) {
-            const start = document.getElementById('mazeStart');
-            const container = document.getElementById('mazeContainer');
-            
-            let x = clientX - containerRect.left - offset.x - 20;
-            let y = clientY - containerRect.top - offset.y - 20;
-            
-            // Begränsa till container
-            x = Math.max(0, Math.min(x, containerRect.width - 40));
-            y = Math.max(0, Math.min(y, containerRect.height - 40));
-            
-            start.style.left = x + 'px';
-            start.style.top = y + 'px';
-            packagePosition = { x, y };
-            
-            checkCollisions();
-        }
-        
-        function checkCollisions() {
-            const start = document.getElementById('mazeStart');
-            const finish = document.getElementById('mazeFinish');
-            const startRect = start.getBoundingClientRect();
-            const finishRect = finish.getBoundingClientRect();
-            
-            // Kolla kollision med mål
-            if (startRect.left < finishRect.right && startRect.right > finishRect.left &&
-                startRect.top < finishRect.bottom && startRect.bottom > finishRect.top) {
-                // Vinst! Öppna paketet
-                openGiftBox();
+        function showSequence(index) {
+            if (index >= sequence.length) {
+                // Sekvensen är klar, nu är det spelarens tur
+                isShowingSequence = false;
+                isPlayerTurn = true;
+                playerSequence = [];
+                enableAllButtons();
+                
+                const instruction = document.getElementById('sequenceInstruction');
+                instruction.textContent = 'Upprepa sekvensen!';
                 return;
             }
             
-            // Kolla kollision med väggar
-            const walls = document.querySelectorAll('.maze-wall');
-            walls.forEach(wall => {
-                const wallRect = wall.getBoundingClientRect();
-                if (startRect.left < wallRect.right && startRect.right > wallRect.left &&
-                    startRect.top < wallRect.bottom && startRect.bottom > wallRect.top) {
-                    // Kollision med vägg - flytta tillbaka
-                    resetPackagePosition();
-                }
-            });
+            const color = sequence[index];
+            const button = document.getElementById(`color${color.charAt(0).toUpperCase() + color.slice(1)}`);
             
-            // Kolla kollision med fisk
-            const fish = document.getElementById('mazeFish');
-            const fishRect = fish.getBoundingClientRect();
-            if (startRect.left < fishRect.right && startRect.right > fishRect.left &&
-                startRect.top < fishRect.bottom && startRect.bottom > fishRect.top) {
-                // Fisk fångade paketet!
-                resetPackagePosition();
-                showFishCaught();
-            }
-        }
-        
-        function resetPackagePosition() {
-            const start = document.getElementById('mazeStart');
-            start.style.left = '30px';
-            start.style.top = '30px';
-            packagePosition = { x: 30, y: 30 };
-            lastPackageX = 30;
-            lastPackageY = 30;
-            // Ta bort alla dynamiska väggar när man börjar om
-            dynamicWalls.forEach(wall => {
-                if (wall.parentNode) {
-                    wall.remove();
-                }
-            });
-            dynamicWalls = [];
-        }
-        
-        function startFishChase() {
-            fishInterval = setInterval(() => {
-                const start = document.getElementById('mazeStart');
-                const fish = document.getElementById('mazeFish');
-                const container = document.getElementById('mazeContainer');
-                const containerRect = container.getBoundingClientRect();
-                
-                // Fisk jagar paketet - SNABBARE!
-                const dx = packagePosition.x - fishPosition.x;
-                const dy = packagePosition.y - fishPosition.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance > 0) {
-                    const speed = 5; // Snabbare!
-                    fishPosition.x += (dx / distance) * speed;
-                    fishPosition.y += (dy / distance) * speed;
-                    
-                    // Begränsa till container
-                    fishPosition.x = Math.max(0, Math.min(fishPosition.x, containerRect.width - 50));
-                    fishPosition.y = Math.max(0, Math.min(fishPosition.y, containerRect.height - 50));
-                    
-                    updateFishPosition();
-                }
-                
-                // Kolla om paketet har rört sig - skapa dynamiska väggar!
-                if (Math.abs(packagePosition.x - lastPackageX) > 5 || Math.abs(packagePosition.y - lastPackageY) > 5) {
-                    // Paketet rör sig - chans att skapa vägg framför (men inte alltid!)
-                    if (Math.random() < 0.15) { // 15% chans (minskad från 30%)
-                        createDynamicWall(packagePosition.x, packagePosition.y, containerRect);
-                    }
-                    lastPackageX = packagePosition.x;
-                    lastPackageY = packagePosition.y;
-                }
-            }, 50);
-        }
-        
-        function createDynamicWall(x, y, containerRect) {
-            const container = document.getElementById('mazeContainer');
+            // Flash-knappen
+            button.classList.add('flash');
+            playColorSound(color);
             
-            // Skapa mindre vägg framför paketet (i rörelseriktningen)
-            // Men inte för stor så att den blockerar hela vägen
-            const wallEl = document.createElement('div');
-            wallEl.className = 'maze-wall';
-            wallEl.style.background = '#ff6b6b'; // Röd för att visa att den är dynamisk
-            wallEl.style.animation = 'wallAppear 0.3s ease-out';
-            
-            // Bestäm riktning baserat på var paketet rör sig
-            const dx = packagePosition.x - lastPackageX;
-            const dy = packagePosition.y - lastPackageY;
-            
-            // Gör väggarna mindre så de inte blockerar hela vägen
-            if (Math.abs(dx) > Math.abs(dy)) {
-                // Rör sig horisontellt - skapa mindre vertikal vägg
-                wallEl.style.width = '15px';
-                wallEl.style.height = '50px'; // Mindre höjd
-                wallEl.style.left = (x + (dx > 0 ? 50 : -15)) + 'px';
-                wallEl.style.top = (y - 25) + 'px';
-            } else {
-                // Rör sig vertikalt - skapa mindre horisontell vägg
-                wallEl.style.width = '50px'; // Mindre bredd
-                wallEl.style.height = '15px';
-                wallEl.style.left = (x - 25) + 'px';
-                wallEl.style.top = (y + (dy > 0 ? 50 : -15)) + 'px';
-            }
-            
-            // Begränsa till container
-            let wallX = parseFloat(wallEl.style.left);
-            let wallY = parseFloat(wallEl.style.top);
-            wallX = Math.max(0, Math.min(wallX, containerRect.width - parseFloat(wallEl.style.width)));
-            wallY = Math.max(0, Math.min(wallY, containerRect.height - parseFloat(wallEl.style.height)));
-            wallEl.style.left = wallX + 'px';
-            wallEl.style.top = wallY + 'px';
-            
-            container.appendChild(wallEl);
-            dynamicWalls.push(wallEl);
-            
-            // Ta bort väggen efter 2 sekunder (snabbare än innan)
             setTimeout(() => {
-                wallEl.style.animation = 'wallDisappear 0.3s ease-out';
+                button.classList.remove('flash');
+                
+                // Kort paus mellan färgerna
                 setTimeout(() => {
-                    if (wallEl.parentNode) {
-                        wallEl.remove();
-                    }
-                    const index = dynamicWalls.indexOf(wallEl);
-                    if (index > -1) {
-                        dynamicWalls.splice(index, 1);
-                    }
+                    showSequence(index + 1);
                 }, 300);
-            }, 2000); // 2 sekunder istället för 3
+            }, 600);
         }
         
-        function updateFishPosition() {
-            const fish = document.getElementById('mazeFish');
-            fish.style.left = fishPosition.x + 'px';
-            fish.style.top = fishPosition.y + 'px';
+        function handleColorClick(color) {
+            if (!isPlayerTurn || isShowingSequence) return;
+            
+            const button = document.getElementById(`color${color.charAt(0).toUpperCase() + color.slice(1)}`);
+            button.classList.add('pressed');
+            playColorSound(color);
+            
+            setTimeout(() => {
+                button.classList.remove('pressed');
+            }, 200);
+            
+            playerSequence.push(color);
+            
+            // Kolla om sekvensen är korrekt så långt
+            const currentIndex = playerSequence.length - 1;
+            if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+                // Fel! Börja om
+                wrongSequence();
+                return;
+            }
+            
+            // Om spelaren har klickat hela sekvensen korrekt
+            if (playerSequence.length === sequence.length) {
+                if (sequenceLevel >= MAX_SEQUENCE_LEVEL) {
+                    // Alla nivåer klara!
+                    openGiftBox();
+                } else {
+                    // Nästa nivå
+                    sequenceLevel++;
+                    playerSequence = [];
+                    disableAllButtons();
+                    
+                    const instruction = document.getElementById('sequenceInstruction');
+                    instruction.textContent = 'Rätt! Förbereder nästa nivå...';
+                    
+                    setTimeout(() => {
+                        startSequenceLevel();
+                    }, 1500);
+                }
+            }
         }
         
-        function showFishCaught() {
-            const instruction = document.getElementById('mazeInstruction');
-            instruction.textContent = 'Fisken fångade dig! Börja om! 🐟';
+        function wrongSequence() {
+            isPlayerTurn = false;
+            disableAllButtons();
+            
+            const instruction = document.getElementById('sequenceInstruction');
+            instruction.textContent = 'Fel! Börjar om från början...';
             instruction.style.color = '#ff6b6b';
             
+            // Börja om från nivå 1
             setTimeout(() => {
-                instruction.textContent = 'Dra paketet till målet! Men akta dig för fisken! 🐟';
+                sequenceLevel = 1;
+                sequence = [];
+                playerSequence = [];
                 instruction.style.color = '#ffd700';
+                startSequenceLevel();
             }, 2000);
+        }
+        
+        function disableAllButtons() {
+            document.querySelectorAll('.color-button').forEach(btn => {
+                btn.classList.add('disabled');
+            });
+        }
+        
+        function enableAllButtons() {
+            document.querySelectorAll('.color-button').forEach(btn => {
+                btn.classList.remove('disabled');
+            });
+        }
+        
+        function playColorSound(color) {
+            // Enkelt ljud för varje färg
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Olika frekvenser för olika färger
+            const frequencies = {
+                red: 300,
+                blue: 400,
+                yellow: 500,
+                green: 600
+            };
+            
+            oscillator.frequency.value = frequencies[color];
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+        
+        // Setup event listeners för färgknapparna (körs när spelet startar)
+        function setupColorButtons() {
+            document.getElementById('colorRed').addEventListener('click', () => handleColorClick('red'));
+            document.getElementById('colorBlue').addEventListener('click', () => handleColorClick('blue'));
+            document.getElementById('colorYellow').addEventListener('click', () => handleColorClick('yellow'));
+            document.getElementById('colorGreen').addEventListener('click', () => handleColorClick('green'));
+        }
+        
+        // Sätt upp event listeners direkt (knapparna finns redan i HTML)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupColorButtons);
+        } else {
+            setupColorButtons();
         }
         
         function applyTrollEffects() {
@@ -2804,22 +2613,17 @@
         
         function updateOpenInstruction() {
             const instruction = document.getElementById('openInstruction');
-            if (!mazeStarted) {
-                instruction.textContent = 'Dubbelklicka på paketet för att börja labyrinten!';
+            if (!sequenceGameStarted) {
+                instruction.textContent = 'Dubbelklicka på paketet för att börja!';
             }
         }
         
         function openGiftBox() {
-            // Stoppa troll-effekter och fisk-jakt
+            // Stoppa troll-effekter
             stopGiftBoxTrollEffects();
-            if (fishInterval) {
-                clearInterval(fishInterval);
-                fishInterval = null;
-            }
             
-            // Ta bort labyrint
-            document.getElementById('mazeContainer').style.display = 'none';
-            document.getElementById('mazeInstruction').style.display = 'none';
+            // Ta bort färgsekvens-spel
+            document.getElementById('colorSequenceContainer').classList.remove('active');
             
             const largeBox = document.getElementById('giftBoxLarge');
             largeBox.style.display = 'block';
