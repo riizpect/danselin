@@ -2029,9 +2029,11 @@
         let giftBoxClickCount = 0;
         let giftBoxOpenSequence = [];
         let giftBoxOpenStep = 0;
-        let isShiftPressed = false;
         let lastClickTime = 0;
         let giftBoxMovingInterval = null;
+        let giftBoxTrollInterval = null;
+        let clickSequence = [];
+        let sequenceStartTime = 0;
         const CORRECT_GIFT_INDEX = 7; // Rätt paket är det 8:e (index 7)
         const EXPLODE_GIFT_INDEX = 3; // Paket som sprängs
         const MOVE_GIFTS_INDEX = 12; // Paket som får alla att röra sig
@@ -2141,34 +2143,121 @@
             }
         }
         
-        // Öppningssekvens: 1) Håll Shift och klicka, 2) Dubbelklicka, 3) Klicka på hörnen i ordning
+        // Öppningssekvens: 1) Dubbelklicka, 2) Vänta 2 sekunder, 3) Klicka 3 gånger snabbt, 4) Klicka på hörnen i ordning
         function handleGiftBoxClick(e) {
             const now = Date.now();
-            const isDoubleClick = (now - lastClickTime) < 300;
+            const timeSinceLastClick = now - lastClickTime;
+            const isDoubleClick = timeSinceLastClick < 300;
             lastClickTime = now;
             
+            // Troll-effekter varje gång man klickar!
+            applyTrollEffects();
+            
             if (giftBoxOpenStep === 0) {
-                // Steg 1: Håll Shift och klicka
-                if (e.shiftKey) {
+                // Steg 1: Dubbelklicka
+                if (isDoubleClick && clickSequence.length === 0) {
+                    clickSequence.push(now);
                     giftBoxOpenStep = 1;
                     updateOpenInstruction();
+                    // Starta väntetid
+                    setTimeout(() => {
+                        if (giftBoxOpenStep === 1) {
+                            // Användaren väntade - gå vidare
+                            giftBoxOpenStep = 2;
+                            updateOpenInstruction();
+                        }
+                    }, 2000);
                 } else {
                     // Fel - börja om
                     giftBoxOpenStep = 0;
+                    clickSequence = [];
                     updateOpenInstruction();
                 }
-            } else if (giftBoxOpenStep === 1) {
-                // Steg 2: Dubbelklicka
-                if (isDoubleClick) {
-                    giftBoxOpenStep = 2;
-                    updateOpenInstruction();
-                    // Skapa hörn-markörer
-                    createCornerMarkers();
-                } else {
-                    // Fel - börja om
-                    giftBoxOpenStep = 0;
-                    updateOpenInstruction();
+            } else if (giftBoxOpenStep === 2) {
+                // Steg 2: Klicka 3 gånger snabbt (inom 1 sekund)
+                clickSequence.push(now);
+                if (clickSequence.length === 1) {
+                    sequenceStartTime = now;
                 }
+                
+                if (clickSequence.length === 3) {
+                    const totalTime = now - sequenceStartTime;
+                    if (totalTime < 1000) {
+                        // Rätt! Gå vidare till hörn
+                        giftBoxOpenStep = 3;
+                        updateOpenInstruction();
+                        createCornerMarkers();
+                    } else {
+                        // För långsamt - börja om
+                        giftBoxOpenStep = 0;
+                        clickSequence = [];
+                        updateOpenInstruction();
+                    }
+                }
+            }
+        }
+        
+        function applyTrollEffects() {
+            const largeBox = document.getElementById('giftBoxLarge');
+            const instruction = document.getElementById('openInstruction');
+            
+            // Slumpmässiga troll-effekter
+            const trollEffect = Math.floor(Math.random() * 6);
+            
+            switch(trollEffect) {
+                case 0:
+                    // Paketet rör sig
+                    const randomX = (Math.random() - 0.5) * 100;
+                    const randomY = (Math.random() - 0.5) * 100;
+                    largeBox.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                    setTimeout(() => {
+                        largeBox.style.transform = '';
+                    }, 500);
+                    break;
+                case 1:
+                    // Paketet ändrar storlek
+                    largeBox.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        largeBox.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            largeBox.style.transform = '';
+                        }, 300);
+                    }, 300);
+                    break;
+                case 2:
+                    // Falskt "öppnar..." meddelande
+                    const oldText = instruction.textContent;
+                    instruction.textContent = 'Öppnar...';
+                    instruction.style.color = '#4caf50';
+                    setTimeout(() => {
+                        instruction.textContent = oldText;
+                        instruction.style.color = '#ffd700';
+                    }, 1000);
+                    break;
+                case 3:
+                    // Paketet roterar
+                    largeBox.style.transform = 'rotate(180deg)';
+                    setTimeout(() => {
+                        largeBox.style.transform = 'rotate(0deg)';
+                    }, 500);
+                    break;
+                case 4:
+                    // Falskt felmeddelande
+                    const oldText2 = instruction.textContent;
+                    instruction.textContent = 'Fel! Försök igen!';
+                    instruction.style.color = '#ff6b6b';
+                    setTimeout(() => {
+                        instruction.textContent = oldText2;
+                        instruction.style.color = '#ffd700';
+                    }, 800);
+                    break;
+                case 5:
+                    // Paketet "hoppar"
+                    largeBox.style.transform = 'translateY(-30px)';
+                    setTimeout(() => {
+                        largeBox.style.transform = '';
+                    }, 400);
+                    break;
             }
         }
         
@@ -2223,26 +2312,71 @@
             });
         }
         
-        function handleGiftBoxHover() {
-            // Ingen hover-funktion längre
+        function startGiftBoxTrollEffects() {
+            // Kontinuerliga troll-effekter var 3-5 sekunder
+            giftBoxTrollInterval = setInterval(() => {
+                if (giftBoxOpenStep < 3) { // Bara när paketet inte är öppnat
+                    const largeBox = document.getElementById('giftBoxLarge');
+                    const troll = Math.floor(Math.random() * 4);
+                    
+                    switch(troll) {
+                        case 0:
+                            // Paketet "pulsar"
+                            largeBox.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                largeBox.style.transform = '';
+                            }, 300);
+                            break;
+                        case 1:
+                            // Paketet "skakar"
+                            largeBox.style.animation = 'shake 0.5s';
+                            setTimeout(() => {
+                                largeBox.style.animation = '';
+                            }, 500);
+                            break;
+                        case 2:
+                            // Paketet blir lite transparent
+                            largeBox.style.opacity = '0.7';
+                            setTimeout(() => {
+                                largeBox.style.opacity = '1';
+                            }, 500);
+                            break;
+                        case 3:
+                            // Paketet "hoppar" lite
+                            largeBox.style.transform = 'translateY(-10px)';
+                            setTimeout(() => {
+                                largeBox.style.transform = '';
+                            }, 400);
+                            break;
+                    }
+                }
+            }, 3000 + Math.random() * 2000); // Var 3-5 sekunder
         }
         
-        function handleGiftBoxLeave() {
-            // Ingen leave-funktion längre
+        function stopGiftBoxTrollEffects() {
+            if (giftBoxTrollInterval) {
+                clearInterval(giftBoxTrollInterval);
+                giftBoxTrollInterval = null;
+            }
         }
         
         function updateOpenInstruction() {
             const instruction = document.getElementById('openInstruction');
             if (giftBoxOpenStep === 0) {
-                instruction.textContent = 'Håll Shift-tangenten och klicka på paketet!';
+                instruction.textContent = 'Dubbelklicka på paketet för att börja!';
             } else if (giftBoxOpenStep === 1) {
-                instruction.textContent = 'Bra! Nu dubbelklicka på paketet!';
+                instruction.textContent = 'Bra! Vänta 2 sekunder...';
             } else if (giftBoxOpenStep === 2) {
+                instruction.textContent = `Klicka 3 gånger snabbt! (${3 - clickSequence.length} kvar)`;
+            } else if (giftBoxOpenStep === 3) {
                 instruction.textContent = 'Perfekt! Klicka på hörnen i rätt ordning: Övre vänster → Nedre höger → Övre höger → Nedre vänster';
             }
         }
         
         function openGiftBox() {
+            // Stoppa troll-effekter
+            stopGiftBoxTrollEffects();
+            
             // Ta bort corner-markers
             document.querySelectorAll('.corner-marker').forEach(marker => marker.remove());
             
