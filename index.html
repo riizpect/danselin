@@ -707,12 +707,12 @@
             cipherAnswer: "flugfiskaren",
             
             // Level 4: Logic Puzzle - Fishing
-            // Correct mapping: Erik=Gädda+Spinnfiske, Lisa=Lax+Isfiske, Olle=Ruda+Flugfiske, Sara=Abborre+Grundfiske
+            // Correct mapping: Erik=Abborre+Isfiske, Lisa=Gädda+Spinnfiske, Olle=Lax+Grundfiske, Sara=Ruda+Flugfiske
             logicAnswer: {
-                erik: { fish: "gädda", method: "spinnfiske" },
-                lisa: { fish: "lax", method: "isfiske" },
-                olle: { fish: "ruda", method: "flugfiske" },
-                sara: { fish: "abborre", method: "grundfiske" }
+                erik: { fish: "abborre", method: "isfiske" },
+                lisa: { fish: "gädda", method: "spinnfiske" },
+                olle: { fish: "lax", method: "grundfiske" },
+                sara: { fish: "ruda", method: "flugfiske" }
             },
             logicCode: "2468", // Will be generated from correct answers
             
@@ -1234,7 +1234,7 @@ FACIT:
 Nivå 1: ${CONFIG.wordAnswer}
 Nivå 2: Hitta alla par i memory-spelet. Koden är: 2468
 Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
-Nivå 4: Erik=Gädda+Spinnfiske, Lisa=Lax+Isfiske, Olle=Ruda+Flugfiske, Sara=Abborre+Grundfiske (Kod: 2468)
+Nivå 4: Erik=Abborre+Isfiske, Lisa=Gädda+Spinnfiske, Olle=Lax+Grundfiske, Sara=Ruda+Flugfiske (Kod: 2468)
 Nivå 5: Tryck A, B, C, D i ordning
             `;
             alert(answers);
