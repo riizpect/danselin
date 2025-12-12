@@ -2242,37 +2242,37 @@
         let currentNegationQuestion = 0;
         let negationAnswers = [];
         
-        // 5 frågor med negationer
+        // 5 frågor med AVANCERADE negationer (4-6 negationer!)
         const negationQuestions = [
             {
-                text: "I detta paket ligger det inte en icke-existerande hund",
-                hasContent: true, // "inte en icke-existerande" = dubbel negation = finns
+                text: "I detta paket ligger det inte något som inte saknar innehåll som inte är frånvarande",
+                hasContent: true, // "inte något som inte saknar innehåll som inte är frånvarande" = 4 negationer (jämnt) = finns
                 content: "🐕",
-                explanation: "Inte + icke-existerande = dubbel negation = det finns en hund!"
+                explanation: "4 negationer (jämnt) = det finns något! Inte + inte saknar + inte frånvarande = dubbel negation = finns!"
             },
             {
-                text: "Detta paket innehåller inte något som inte är tomt",
-                hasContent: true, // "inte något som inte är tomt" = dubbel negation = finns något
+                text: "Detta paket innehåller inte något som inte är tomt på saker som inte saknas",
+                hasContent: true, // "inte något som inte är tomt på saker som inte saknas" = 4 negationer (jämnt) = finns
                 content: "🎁",
-                explanation: "Inte + inte tomt = dubbel negation = det finns något!"
+                explanation: "4 negationer (jämnt) = det finns något! Inte + inte tomt + inte saknas = dubbel negation = finns!"
             },
             {
-                text: "Här finns det ingen sak som inte saknas",
-                hasContent: true, // "ingen sak som inte saknas" = trippel negation = finns något
-                content: "⭐",
-                explanation: "Ingen + inte saknas = trippel negation = det finns något!"
+                text: "Här finns det ingen sak som inte saknar innehåll som inte är frånvarande som inte finns",
+                hasContent: false, // "ingen sak som inte saknar innehåll som inte är frånvarande som inte finns" = 5 negationer (udda) = tomt
+                content: "",
+                explanation: "5 negationer (udda) = paketet är tomt! Ingen + inte saknar + inte frånvarande + inte finns = udda antal = tomt!"
             },
             {
-                text: "Detta paket är inte tomt på saker som inte finns",
-                hasContent: true, // "inte tomt på saker som inte finns" = trippel negation = finns något
+                text: "Detta paket är inte tomt på saker som inte saknas och som inte är frånvarande",
+                hasContent: true, // "inte tomt på saker som inte saknas och som inte är frånvarande" = 4 negationer (jämnt) = finns
                 content: "💎",
-                explanation: "Inte tomt + inte finns = trippel negation = det finns något!"
+                explanation: "4 negationer (jämnt) = det finns något! Inte tomt + inte saknas + inte frånvarande = jämnt antal = finns!"
             },
             {
-                text: "I detta paket ligger det inte något som inte är frånvarande",
-                hasContent: true, // "inte något som inte är frånvarande" = trippel negation = finns något
-                content: "🎣",
-                explanation: "Inte + inte frånvarande = trippel negation = det finns något!"
+                text: "I detta paket ligger det inte något som inte saknar innehåll som inte är frånvarande som inte finns",
+                hasContent: false, // "inte något som inte saknar innehåll som inte är frånvarande som inte finns" = 5 negationer (udda) = tomt
+                content: "",
+                explanation: "5 negationer (udda) = paketet är tomt! Inte + inte saknar + inte frånvarande + inte finns = udda antal = tomt!"
             }
         ];
         
@@ -2309,7 +2309,7 @@
                     
                     <div class="negation-package" id="negationPackage${questionIndex}">
                         <span>🎁</span>
-                        <div class="negation-package-content" id="negationContent${questionIndex}">${question.content}</div>
+                        <div class="negation-package-content" id="negationContent${questionIndex}">${question.hasContent ? question.content : ''}</div>
                     </div>
                     
                     <div class="negation-answer-buttons">
@@ -2339,8 +2339,15 @@
             packageEl.classList.add('opening');
             
             setTimeout(() => {
-                // Visa innehållet
-                contentEl.classList.add('revealed');
+                // Visa innehållet (eller tomt om det är tomt)
+                if (question.hasContent) {
+                    contentEl.classList.add('revealed');
+                } else {
+                    // Paketet är tomt - visa ingenting eller tomt-tecken
+                    contentEl.textContent = '📦';
+                    contentEl.style.opacity = '0.3';
+                    contentEl.classList.add('revealed');
+                }
                 
                 // Kolla om svaret var rätt
                 const isCorrect = hasContent === question.hasContent;
@@ -2353,10 +2360,10 @@
                     feedbackEl.className = 'negation-feedback wrong';
                 }
                 
-                // Gå vidare till nästa fråga efter 3 sekunder
+                // Gå vidare till nästa fråga efter 4 sekunder (mer tid för att läsa)
                 setTimeout(() => {
                     showNegationQuestion(currentNegationQuestion + 1);
-                }, 3000);
+                }, 4000);
             }, 800);
         }
         
