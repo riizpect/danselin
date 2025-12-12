@@ -1178,26 +1178,7 @@
         }
 
         // Secret test code input
-        let secretCode = '';
         const SECRET_KEY = 'test123'; // Hemlig kod för att hoppa mellan nivåer
-
-        function handleSecretKey(event) {
-            // Listen for Ctrl+Shift+T to open secret input
-            if (event.ctrlKey && event.shiftKey && event.key === 'T') {
-                event.preventDefault();
-                const code = prompt('Skriv hemlig kod för att hoppa till nivå (test123):');
-                if (code === SECRET_KEY) {
-                    const level = prompt('Vilken nivå? (0=Start, 1-5=Nivåer, 6=Final):');
-                    const levelNum = parseInt(level);
-                    if (!isNaN(levelNum) && levelNum >= 0 && levelNum <= 6) {
-                        goToLevel(levelNum);
-                    }
-                }
-            }
-        }
-
-        // Add keyboard listener
-        document.addEventListener('keydown', handleSecretKey);
 
         function showSecretInput() {
             document.getElementById('secretInput').style.display = 'block';
