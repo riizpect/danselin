@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julklapp Escape Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a0a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Snowflakes animation */
+        .snowflake {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1em;
+            font-family: Arial;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff6b6b);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .puzzle-container {
+            background: rgba(20, 20, 30, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .puzzle-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        /* Level 2: Hotspots */
+        .hotspot-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .hotspot {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px dashed rgba(255, 215, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+        }
+
+        .hotspot:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: scale(1.1);
+        }
+
+        .hotspot.found {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4caf50;
+        }
+
+        .hotspot.wrong {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Level 3: Cipher */
+        .cipher-text {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        /* Level 4: Logic Puzzle */
+        .logic-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .logic-header {
+            font-weight: bold;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.2);
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .logic-cell {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        /* Level 5: Timing Puzzle */
+        .timing-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .timing-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .timing-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .timing-sequence {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            min-height: 50px;
+        }
+
+        /* Hints */
+        .hint-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .hint-container.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1000;
+            display: none;
+            max-width: 300px;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-panel h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .admin-panel button {
+            width: 100%;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        /* Final Reveal */
+        .final-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .gift-box {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            box-shadow: 0 0 50px rgba(255, 107, 107, 0.6);
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .gift-reveal {
+            display: none;
+            margin-top: 30px;
+            animation: reveal 1s ease-out;
+        }
+
+        .gift-reveal.show {
+            display: block;
+        }
+
+        @keyframes reveal {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotateY(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .gift-title {
+            font-size: 2.5em;
+            color: #ffd700;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .gift-message {
+            font-size: 1.5em;
+            margin-top: 30px;
+            color: #fff;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .puzzle-container {
+                padding: 20px;
+            }
+
+            .hotspot-container {
+                height: 300px;
+            }
+
+            .hotspot {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+
+            .logic-grid {
+                grid-template-columns: repeat(3, 1fr);
+                font-size: 0.9em;
+            }
+
+            .timing-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2em;
+            }
+
+            .admin-panel {
+                max-width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+
+        .message {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <!-- Snowflakes -->
+    <div id="snowflakes"></div>
+
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+
+        <!-- View 0: Start -->
+        <div class="view active" id="view0">
+            <h1 id="title">🎄 Julklapp Escape Room 🎄</h1>
+            <div class="puzzle-container">
+                <p class="puzzle-description" style="text-align: center; font-size: 1.3em;">
+                    Välkommen! Du har 5 utmaningar att lösa för att låsa upp din julklapp.<br>
+                    Varje nivå blir lite svårare, men allt är rättvist.<br>
+                    Använd ledtrådar om du fastnar!
+                </p>
+                <button onclick="startGame()" style="display: block; margin: 30px auto;">Starta äventyret</button>
+            </div>
+        </div>
+
+        <!-- View 1: Level 1 - Word Puzzle -->
+        <div class="view" id="view1">
+            <h2>Nivå 1: Ordgåta</h2>
+            <div class="puzzle-container">
+                <p class="puzzle-description">
+                    <strong>Ledtråd:</strong> "Jag är något som faller från himlen vintertid, 
+                    men jag är också namnet på en berömd svensk författare som skrev om Nils Holgersson."
+                </p>
+                <input type="text" id="wordInput" placeholder="Skriv svaret här..." onkeypress="if(event.key==='Enter') checkWord()">
+                <button onclick="checkWord()">Kontrollera</button>
+                <button class="btn-secondary" onclick="showHint(1)">Ledtråd</button>
+                <div class="hint-container" id="hint1"></div>
+                <div id="message1"></div>
+            </div>
+        </div>
+
+        <!-- View 2: Level 2 - Hotspots -->
+        <div class="view" id="view2">
+            <h2>Nivå 2: Hitta Objekten</h2>
+            <div class="puzzle-container">
+                <p class="puzzle-description">
+                    I illustrationen nedan finns tre objekt dolda. Klicka på dem i rätt ordning för att fortsätta.
+                    <strong>Ordning:</strong> Först det som hör till julen, sedan det som flyger, sist det som lyser.
+                </p>
+                <div class="hotspot-container" id="hotspotContainer">
+                    <!-- Hotspots will be added by JavaScript -->
+                </div>
+                <button class="btn-secondary" onclick="showHint(2)">Ledtråd</button>
+                <div class="hint-container" id="hint2"></div>
+                <div id="message2"></div>
+            </div>
+        </div>
+
+        <!-- View 3: Level 3 - Cipher -->
+        <div class="view" id="view3">
+            <h2>Nivå 3: Avkodning</h2>
+            <div class="puzzle-container">
+                <p class="puzzle-description">
+                    Nedan finns ett krypterat ord. Använd Caesar-chiffer med skift 13 (ROT13) för att avkoda det.
+                    ROT13 betyder att varje bokstav skiftas 13 steg: A→N, B→O, C→P, osv.
+                    Svaret blir ditt lösenord (ett ord relaterat till fiske).
+                </p>
+                <div class="cipher-text" id="cipherText"></div>
+                <input type="text" id="cipherInput" placeholder="Skriv det avkodade lösenordet här..." onkeypress="if(event.key==='Enter') checkCipher()">
+                <button onclick="checkCipher()">Kontrollera</button>
+                <button class="btn-secondary" onclick="showHint(3)">Ledtråd</button>
+                <div class="hint-container" id="hint3"></div>
+                <div id="message3"></div>
+            </div>
+        </div>
+
+        <!-- View 4: Level 4 - Logic Puzzle -->
+        <div class="view" id="view4">
+            <h2>Nivå 4: Logikpussel</h2>
+            <div class="puzzle-container">
+                <p class="puzzle-description">
+                    Fyra personer har fyra olika yrken. Matcha rätt person med rätt yrke baserat på ledtrådarna:
+                    <br><br>
+                    <strong>Ledtrådar:</strong><br>
+                    1. Anna är inte läkare eller lärare.<br>
+                    2. Bengt är varken läkare eller ingenjör.<br>
+                    3. Cecilia är inte lärare eller ingenjör.<br>
+                    4. David är inte läkare eller lärare.<br>
+                </p>
+                <div class="logic-grid" id="logicGrid"></div>
+                <button onclick="checkLogic()">Kontrollera</button>
+                <button class="btn-secondary" onclick="showHint(4)">Ledtråd</button>
+                <div class="hint-container" id="hint4"></div>
+                <div id="message4"></div>
+            </div>
+        </div>
+
+        <!-- View 5: Level 5 - Timing Puzzle -->
+        <div class="view" id="view5">
+            <h2>Nivå 5: Timing & Sekvens</h2>
+            <div class="puzzle-container">
+                <p class="puzzle-description">
+                    Tryck på knapparna i rätt ordning. Ledtråden finns i sekvensen nedan.
+                    <strong>Tips:</strong> Tänk på ordningen i alfabetet och siffrorna.
+                </p>
+                <div class="timing-sequence" id="timingSequence"></div>
+                <div class="timing-buttons" id="timingButtons"></div>
+                <button onclick="resetTiming()">Återställ</button>
+                <button class="btn-secondary" onclick="showHint(5)">Ledtråd</button>
+                <div class="hint-container" id="hint5"></div>
+                <div id="message5"></div>
+            </div>
+        </div>
+
+        <!-- View 6: Final -->
+        <div class="view" id="view6">
+            <div class="final-container">
+                <h1>🎉 Grattis! 🎉</h1>
+                <p style="font-size: 1.3em; margin: 20px 0;">Du har löst alla utmaningar!</p>
+                <div class="gift-box" onclick="revealGift()">🎁</div>
+                <div class="gift-reveal" id="giftReveal">
+                    <div class="gift-title">Flugbindning för nybörjare</div>
+                    <p style="font-size: 1.2em; margin: 20px 0; line-height: 1.6;">
+                        En komplett guide för att lära sig konsten att binda flugor för fiske.<br>
+                        Perfekt för att börja ett nytt hobby!
+                    </p>
+                    <div class="gift-message">God Jul pappa! ❤️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>🔧 Admin Panel</h3>
+        <button onclick="goToLevel(0)">Start</button>
+        <button onclick="goToLevel(1)">Nivå 1</button>
+        <button onclick="goToLevel(2)">Nivå 2</button>
+        <button onclick="goToLevel(3)">Nivå 3</button>
+        <button onclick="goToLevel(4)">Nivå 4</button>
+        <button onclick="goToLevel(5)">Nivå 5</button>
+        <button onclick="goToLevel(6)">Final</button>
+        <button onclick="resetProgress()" class="btn-secondary">Nollställ Progress</button>
+        <button onclick="showAnswers()" class="btn-secondary">Visa Facit</button>
+        <button onclick="toggleAdmin()" style="background: #666;">Stäng</button>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - Alla svar och konstanter
+        // ============================================
+        const CONFIG = {
+            // Level 1: Word Puzzle
+            wordAnswer: "lagerlöf",
+            
+            // Level 2: Hotspots (positions as percentages: [x%, y%])
+            hotspots: [
+                { x: 20, y: 30, emoji: "🎄", order: 1 }, // Julgran
+                { x: 70, y: 50, emoji: "🦌", order: 2 }, // Ren
+                { x: 50, y: 75, emoji: "⭐", order: 3 }  // Stjärna
+            ],
+            
+            // Level 3: Cipher
+            cipherText: "Syhtovavqvat", // "Flugbindning" in ROT13
+            cipherAnswer: "flugbindning",
+            
+            // Level 4: Logic Puzzle
+            // Correct mapping: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt
+            logicAnswer: {
+                anna: "ingenjör",
+                bengt: "lärare",
+                cecilia: "läkare",
+                david: "arkitekt"
+            },
+            logicCode: "1234", // Will be generated from correct answers
+            
+            // Level 5: Timing Puzzle
+            // Sequence: A(1), B(2), C(3), D(4) -> Button order: 1, 2, 3, 4
+            timingSequence: [1, 2, 3, 4],
+            timingButtons: ["A", "B", "C", "D"]
+        };
+
+        // ============================================
+        // GAME STATE
+        // ============================================
+        let currentLevel = 0;
+        let titleClickCount = 0;
+        let adminMode = false;
+        let hotspotSequence = [];
+        let timingInput = [];
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            // Load progress from localStorage
+            const savedLevel = localStorage.getItem('escapeRoomLevel');
+            if (savedLevel) {
+                currentLevel = parseInt(savedLevel);
+            }
+            
+            // Setup title click for admin
+            document.getElementById('title').addEventListener('click', handleTitleClick);
+            
+            // Initialize views
+            showView(currentLevel);
+            updateProgress();
+            
+            // Initialize level-specific features
+            if (currentLevel === 2) initHotspots();
+            if (currentLevel === 4) initLogicPuzzle();
+            if (currentLevel === 5) initTimingPuzzle();
+            if (currentLevel === 3) {
+                document.getElementById('cipherText').textContent = CONFIG.cipherText;
+            }
+            
+            // Create snowflakes
+            createSnowflakes();
+        }
+
+        // ============================================
+        // PROGRESS & NAVIGATION
+        // ============================================
+        function updateProgress() {
+            const progress = (currentLevel / 6) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = Math.round(progress) + '%';
+        }
+
+        function showView(level) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show current view
+            const view = document.getElementById('view' + level);
+            if (view) {
+                view.classList.add('active');
+            }
+            
+            currentLevel = level;
+            localStorage.setItem('escapeRoomLevel', level);
+            updateProgress();
+        }
+
+        function startGame() {
+            showView(1);
+        }
+
+        // ============================================
+        // LEVEL 1: WORD PUZZLE
+        // ============================================
+        function checkWord() {
+            const input = document.getElementById('wordInput').value.toLowerCase().trim();
+            const normalized = normalizeSwedish(input);
+            const answer = normalizeSwedish(CONFIG.wordAnswer);
+            
+            if (normalized === answer) {
+                showMessage('message1', 'Korrekt! Du kan gå vidare.', 'success');
+                setTimeout(() => showView(2), 1500);
+            } else {
+                showMessage('message1', 'Fel svar. Försök igen!', 'error');
+            }
+        }
+
+        function normalizeSwedish(str) {
+            return str.toLowerCase()
+                .replace(/å/g, 'a')
+                .replace(/ä/g, 'a')
+                .replace(/ö/g, 'o')
+                .trim();
+        }
+
+        // ============================================
+        // LEVEL 2: HOTSPOTS
+        // ============================================
+        function initHotspots() {
+            const container = document.getElementById('hotspotContainer');
+            container.innerHTML = '';
+            hotspotSequence = [];
+            
+            // Create decorative elements
+            const decors = [
+                { x: 15, y: 20, emoji: "❄️" },
+                { x: 80, y: 25, emoji: "🎅" },
+                { x: 40, y: 40, emoji: "🎁" },
+                { x: 60, y: 60, emoji: "🔔" },
+                { x: 25, y: 70, emoji: "🕯️" },
+                { x: 75, y: 80, emoji: "🧦" }
+            ];
+            
+            // Add decorative elements
+            decors.forEach(dec => {
+                const elem = document.createElement('div');
+                elem.className = 'hotspot';
+                elem.style.left = dec.x + '%';
+                elem.style.top = dec.y + '%';
+                elem.textContent = dec.emoji;
+                elem.style.cursor = 'default';
+                elem.style.opacity = '0.5';
+                container.appendChild(elem);
+            });
+            
+            // Add actual hotspots
+            CONFIG.hotspots.forEach((hotspot, index) => {
+                const elem = document.createElement('div');
+                elem.className = 'hotspot';
+                elem.style.left = hotspot.x + '%';
+                elem.style.top = hotspot.y + '%';
+                elem.textContent = hotspot.emoji;
+                elem.dataset.order = hotspot.order;
+                elem.onclick = () => handleHotspotClick(elem, hotspot.order);
+                container.appendChild(elem);
+            });
+        }
+
+        function handleHotspotClick(elem, order) {
+            if (elem.classList.contains('found')) return;
+            
+            const expectedOrder = hotspotSequence.length + 1;
+            
+            if (order === expectedOrder) {
+                elem.classList.add('found');
+                hotspotSequence.push(order);
+                
+                if (hotspotSequence.length === 3) {
+                    showMessage('message2', 'Korrekt! Du kan gå vidare.', 'success');
+                    setTimeout(() => showView(3), 1500);
+                }
+            } else {
+                elem.classList.add('wrong');
+                setTimeout(() => {
+                    elem.classList.remove('wrong');
+                    hotspotSequence = [];
+                    document.querySelectorAll('.hotspot.found').forEach(h => {
+                        h.classList.remove('found');
+                    });
+                }, 1000);
+                showMessage('message2', 'Fel ordning! Börja om.', 'error');
+            }
+        }
+
+        // ============================================
+        // LEVEL 3: CIPHER
+        // ============================================
+        function checkCipher() {
+            const input = document.getElementById('cipherInput').value.toLowerCase().trim();
+            const normalized = normalizeSwedish(input);
+            const answer = normalizeSwedish(CONFIG.cipherAnswer);
+            
+            if (normalized === answer) {
+                showMessage('message3', 'Korrekt! Du kan gå vidare.', 'success');
+                setTimeout(() => showView(4), 1500);
+            } else {
+                showMessage('message3', 'Fel svar. Försök igen!', 'error');
+            }
+        }
+
+        // ============================================
+        // LEVEL 4: LOGIC PUZZLE
+        // ============================================
+        function initLogicPuzzle() {
+            const grid = document.getElementById('logicGrid');
+            grid.innerHTML = '';
+            
+            const people = ['', 'Anna', 'Bengt', 'Cecilia', 'David'];
+            const jobs = ['', 'Läkare', 'Lärare', 'Ingenjör', 'Arkitekt'];
+            
+            // Create header row
+            jobs.forEach(job => {
+                const cell = document.createElement('div');
+                cell.className = 'logic-header';
+                cell.textContent = job;
+                grid.appendChild(cell);
+            });
+            
+            // Create rows for each person
+            for (let i = 1; i < people.length; i++) {
+                const person = people[i];
+                const personCell = document.createElement('div');
+                personCell.className = 'logic-header';
+                personCell.textContent = person;
+                grid.appendChild(personCell);
+                
+                for (let j = 1; j < jobs.length; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'logic-cell';
+                    const select = document.createElement('select');
+                    select.id = `logic-${person.toLowerCase()}-${jobs[j].toLowerCase()}`;
+                    select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
+                    cell.appendChild(select);
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function checkLogic() {
+            const people = ['anna', 'bengt', 'cecilia', 'david'];
+            const jobs = ['läkare', 'lärare', 'ingenjör', 'arkitekt'];
+            let allCorrect = true;
+            
+            // Verify all answers are correct
+            people.forEach(person => {
+                const correctJob = CONFIG.logicAnswer[person];
+                let found = false;
+                
+                jobs.forEach(job => {
+                    const select = document.getElementById(`logic-${person}-${job}`);
+                    if (select && select.value === 'yes') {
+                        if (job === correctJob) {
+                            found = true;
+                        } else {
+                            allCorrect = false;
+                        }
+                    }
+                });
+                
+                if (!found) allCorrect = false;
+            });
+            
+            if (allCorrect) {
+                // Use the code from CONFIG (as specified in hints)
+                const code = CONFIG.logicCode;
+                showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
+                setTimeout(() => showView(5), 2000);
+            } else {
+                showMessage('message4', 'Inte helt rätt. Kontrollera dina val!', 'error');
+            }
+        }
+
+        // ============================================
+        // LEVEL 5: TIMING PUZZLE
+        // ============================================
+        function initTimingPuzzle() {
+            const buttonsDiv = document.getElementById('timingButtons');
+            const sequenceDiv = document.getElementById('timingSequence');
+            buttonsDiv.innerHTML = '';
+            timingInput = [];
+            
+            // Show sequence hint: A=1, B=2, C=3, D=4
+            sequenceDiv.innerHTML = '<strong>Ledtråd:</strong> A=1, B=2, C=3, D=4. Tryck i ordning: 1, 2, 3, 4';
+            
+            CONFIG.timingButtons.forEach((btn, index) => {
+                const button = document.createElement('button');
+                button.className = 'timing-btn';
+                button.textContent = btn;
+                button.onclick = () => handleTimingClick(index + 1);
+                buttonsDiv.appendChild(button);
+            });
+        }
+
+        function handleTimingClick(value) {
+            timingInput.push(value);
+            
+            // Highlight button
+            const buttons = document.querySelectorAll('.timing-btn');
+            buttons[value - 1].classList.add('active');
+            setTimeout(() => {
+                buttons[value - 1].classList.remove('active');
+            }, 300);
+            
+            // Check if sequence is complete
+            if (timingInput.length === CONFIG.timingSequence.length) {
+                const correct = timingInput.every((val, idx) => val === CONFIG.timingSequence[idx]);
+                
+                if (correct) {
+                    showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
+                    setTimeout(() => showView(6), 2000);
+                } else {
+                    showMessage('message5', 'Fel sekvens! Försök igen.', 'error');
+                    resetTiming();
+                }
+            }
+        }
+
+        function resetTiming() {
+            timingInput = [];
+            showMessage('message5', '', '');
+        }
+
+        // ============================================
+        // HINTS SYSTEM
+        // ============================================
+        const hints = {
+            1: {
+                step1: "Tänk på en svensk författare som vann Nobelpriset i litteratur...",
+                step2: "Hennes förnamn börjar på S och efternamnet på L. Hon skrev om en pojke som flyger med gäss."
+            },
+            2: {
+                step1: "Tänk på vad som är mest juligt, sedan något som kan flyga, och sist något som lyser...",
+                step2: "Ordning: 🎄 (julgran), 🦌 (ren som flyger), ⭐ (stjärna som lyser)"
+            },
+            3: {
+                step1: "ROT13 betyder att varje bokstav skiftas 13 steg i alfabetet. A blir N, B blir O, osv.",
+                step2: "Avkoda texten med ROT13. Svaret är ett ord som beskriver en hobby relaterad till fiske."
+            },
+            4: {
+                step1: "Börja med att eliminera möjligheter. Anna kan bara vara Ingenjör eller Arkitekt.",
+                step2: "Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt. Koden är positionerna: 1,2,3,4"
+            },
+            5: {
+                step1: "A=1, B=2, C=3, D=4. Tryck på knapparna i stigande ordning.",
+                step2: "Tryck på knapparna i ordning: A (1), B (2), C (3), D (4)"
+            }
+        };
+
+        let hintStates = {};
+
+        function showHint(level) {
+            const hintDiv = document.getElementById('hint' + level);
+            if (!hintStates[level]) {
+                hintStates[level] = 1;
+            } else {
+                hintStates[level] = 2;
+            }
+            
+            const hint = hints[level];
+            if (hintStates[level] === 1) {
+                hintDiv.textContent = hint.step1;
+            } else {
+                hintDiv.textContent = hint.step2;
+            }
+            
+            hintDiv.classList.add('show');
+        }
+
+        // ============================================
+        // FINAL REVEAL
+        // ============================================
+        function revealGift() {
+            const reveal = document.getElementById('giftReveal');
+            reveal.classList.add('show');
+        }
+
+        // ============================================
+        // ADMIN PANEL
+        // ============================================
+        function handleTitleClick() {
+            titleClickCount++;
+            if (titleClickCount >= 7) {
+                toggleAdmin();
+                titleClickCount = 0;
+            }
+        }
+
+        function toggleAdmin() {
+            adminMode = !adminMode;
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('show', adminMode);
+        }
+
+        function goToLevel(level) {
+            showView(level);
+            if (level === 2) initHotspots();
+            if (level === 4) initLogicPuzzle();
+            if (level === 5) initTimingPuzzle();
+            if (level === 3) {
+                document.getElementById('cipherText').textContent = CONFIG.cipherText;
+            }
+        }
+
+        function resetProgress() {
+            localStorage.removeItem('escapeRoomLevel');
+            currentLevel = 0;
+            showView(0);
+            alert('Progress nollställd!');
+        }
+
+        function showAnswers() {
+            const answers = `
+FACIT:
+Nivå 1: ${CONFIG.wordAnswer}
+Nivå 2: Klicka i ordning: 🎄, 🦌, ⭐
+Nivå 3: ${CONFIG.cipherAnswer} (ROT13 av "${CONFIG.cipherText}")
+Nivå 4: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt (Kod: 1234)
+Nivå 5: Tryck A, B, C, D i ordning
+            `;
+            alert(answers);
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showMessage(elementId, message, type) {
+            const elem = document.getElementById(elementId);
+            if (!message) {
+                elem.innerHTML = '';
+                elem.className = 'message';
+                return;
+            }
+            elem.innerHTML = message;
+            elem.className = 'message ' + type;
+        }
+
+        function createSnowflakes() {
+            const container = document.getElementById('snowflakes');
+            const flakes = ['❄', '❅', '❆'];
+            
+            for (let i = 0; i < 50; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+                flake.style.left = Math.random() * 100 + '%';
+                flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                flake.style.animationDelay = Math.random() * 2 + 's';
+                flake.style.opacity = Math.random() * 0.5 + 0.3;
+                container.appendChild(flake);
+            }
+        }
+
+        // ============================================
+        // START GAME
+        // ============================================
+        init();
+    </script>
+</body>
+</html>
+
