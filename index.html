@@ -2243,6 +2243,9 @@
         }
         
         function openGiftBox() {
+            // Ta bort corner-markers
+            document.querySelectorAll('.corner-marker').forEach(marker => marker.remove());
+            
             const largeBox = document.getElementById('giftBoxLarge');
             largeBox.classList.add('opening');
             
