@@ -2367,15 +2367,22 @@
         }
         
         function startColorMovement() {
-            // Färgerna rör sig kontinuerligt
+            // Färgerna kan röra sig lite när det är spelarens tur (men inte byta position automatiskt)
+            // Positionbytet sker bara efter sekvensen!
             movementInterval = setInterval(() => {
                 if (isPlayerTurn && !isShowingSequence) {
-                    // Byt position på färgerna var 2-3 sekunder när det är spelarens tur
-                    if (Math.random() < 0.3) { // 30% chans
-                        shuffleColorPositions();
-                    }
+                    // Liten subtil rörelse, men INTE positionbyte (det sker bara efter sekvensen)
+                    const buttons = document.querySelectorAll('.color-button');
+                    buttons.forEach(btn => {
+                        if (Math.random() < 0.1) { // 10% chans för liten rörelse
+                            btn.classList.add('moving');
+                            setTimeout(() => {
+                                btn.classList.remove('moving');
+                            }, 3000);
+                        }
+                    });
                 }
-            }, 2000);
+            }, 3000);
         }
         
         function shuffleColorPositions() {
