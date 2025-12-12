@@ -2322,35 +2322,48 @@
             // Ta bort gamla väggar
             document.querySelectorAll('.maze-wall, .maze-trap').forEach(el => el.remove());
             
-            // MYCKET SVÅRARE labyrint med många fler väggar!
+            // SVÅR labyrint med faktisk väg från start till mål!
+            // Designad så att det finns en genomfart, men med många döda ändar
             const walls = [
-                // Vänster sida - vertikala väggar
-                { x: 80, y: 0, w: 15, h: 100 },
-                { x: 120, y: 80, w: 15, h: 120 },
-                { x: 160, y: 0, w: 15, h: 60 },
-                { x: 200, y: 100, w: 15, h: 100 },
-                { x: 240, y: 0, w: 15, h: 80 },
-                { x: 280, y: 120, w: 15, h: 80 },
+                // Vänster sida - skapar korridorer
+                { x: 100, y: 0, w: 15, h: 80 },      // Lämnar öppning nedåt
+                { x: 100, y: 120, w: 15, h: 80 },    // Lämnar öppning uppåt
+                { x: 100, y: 240, w: 15, h: 160 },   // Blockar botten
                 
-                // Mitten - komplexa väggar
-                { x: 320, y: 0, w: 15, h: 140 },
-                { x: 360, y: 160, w: 15, h: 100 },
-                { x: 400, y: 0, w: 15, h: 60 },
-                { x: 440, y: 100, w: 15, h: 160 },
-                { x: 480, y: 0, w: 15, h: 120 },
-                { x: 520, y: 140, w: 15, h: 120 },
+                { x: 180, y: 60, w: 15, h: 80 },     // Blockar mitten
+                { x: 180, y: 180, w: 15, h: 100 },   // Blockar nedre delen
                 
-                // Horisontella väggar
-                { x: 0, y: 60, w: 200, h: 15 },
-                { x: 240, y: 80, w: 120, h: 15 },
-                { x: 0, y: 140, w: 160, h: 15 },
-                { x: 200, y: 180, w: 200, h: 15 },
-                { x: 440, y: 60, w: 160, h: 15 },
-                { x: 0, y: 220, w: 120, h: 15 },
-                { x: 160, y: 260, w: 200, h: 15 },
-                { x: 400, y: 220, w: 200, h: 15 },
-                { x: 0, y: 300, w: 280, h: 15 },
-                { x: 320, y: 320, w: 280, h: 15 },
+                // Mitten - komplexa väggar med öppningar
+                { x: 260, y: 0, w: 15, h: 120 },     // Lämnar öppning nedåt
+                { x: 260, y: 160, w: 15, h: 80 },    // Lämnar öppning uppåt
+                { x: 260, y: 280, w: 15, h: 120 },   // Blockar botten
+                
+                { x: 340, y: 40, w: 15, h: 100 },   // Blockar övre delen
+                { x: 340, y: 180, w: 15, h: 100 },   // Blockar nedre delen
+                
+                // Höger sida - närmare målet
+                { x: 420, y: 0, w: 15, h: 60 },      // Lämnar öppning nedåt
+                { x: 420, y: 100, w: 15, h: 80 },    // Lämnar öppning uppåt
+                { x: 420, y: 220, w: 15, h: 180 },  // Blockar botten
+                
+                { x: 500, y: 80, w: 15, h: 100 },    // Blockar mitten
+                { x: 500, y: 220, w: 15, h: 180 },   // Blockar nedre delen
+                
+                // Horisontella väggar - skapar korridorer
+                { x: 0, y: 80, w: 100, h: 15 },      // Blockar vänster
+                { x: 120, y: 80, w: 80, h: 15 },     // Öppning i mitten
+                { x: 220, y: 80, w: 100, h: 15 },    // Blockar höger
+                
+                { x: 0, y: 160, w: 100, h: 15 },     // Blockar vänster
+                { x: 120, y: 160, w: 140, h: 15 },   // Blockar mitten
+                { x: 280, y: 160, w: 80, h: 15 },    // Öppning höger
+                
+                { x: 0, y: 240, w: 180, h: 15 },     // Blockar vänster
+                { x: 200, y: 240, w: 60, h: 15 },    // Öppning mitten
+                { x: 280, y: 240, w: 320, h: 15 },   // Blockar höger
+                
+                { x: 0, y: 320, w: 420, h: 15 },     // Blockar vänster
+                { x: 440, y: 320, w: 160, h: 15 },   // Öppning höger (väg till mål!)
             ];
             
             walls.forEach(wall => {
@@ -2363,16 +2376,14 @@
                 container.appendChild(wallEl);
             });
             
-            // Fler fällor!
+            // Fällor placerade strategiskt (inte i den direkta vägen)
             const traps = [
-                { x: 150, y: 100 },
-                { x: 300, y: 50 },
-                { x: 450, y: 150 },
-                { x: 200, y: 200 },
-                { x: 350, y: 100 },
-                { x: 500, y: 200 },
-                { x: 100, y: 250 },
-                { x: 250, y: 300 },
+                { x: 140, y: 100 },   // Död ände
+                { x: 220, y: 50 },    // Död ände
+                { x: 380, y: 120 },   // Död ände
+                { x: 460, y: 60 },    // Död ände
+                { x: 300, y: 200 },   // Död ände
+                { x: 520, y: 180 },   // Död ände
             ];
             
             traps.forEach(trap => {
@@ -2546,8 +2557,8 @@
                 
                 // Kolla om paketet har rört sig - skapa dynamiska väggar!
                 if (Math.abs(packagePosition.x - lastPackageX) > 5 || Math.abs(packagePosition.y - lastPackageY) > 5) {
-                    // Paketet rör sig - chans att skapa vägg framför
-                    if (Math.random() < 0.3) { // 30% chans
+                    // Paketet rör sig - chans att skapa vägg framför (men inte alltid!)
+                    if (Math.random() < 0.15) { // 15% chans (minskad från 30%)
                         createDynamicWall(packagePosition.x, packagePosition.y, containerRect);
                     }
                     lastPackageX = packagePosition.x;
@@ -2559,7 +2570,8 @@
         function createDynamicWall(x, y, containerRect) {
             const container = document.getElementById('mazeContainer');
             
-            // Skapa vägg framför paketet (i rörelseriktningen)
+            // Skapa mindre vägg framför paketet (i rörelseriktningen)
+            // Men inte för stor så att den blockerar hela vägen
             const wallEl = document.createElement('div');
             wallEl.className = 'maze-wall';
             wallEl.style.background = '#ff6b6b'; // Röd för att visa att den är dynamisk
@@ -2569,18 +2581,19 @@
             const dx = packagePosition.x - lastPackageX;
             const dy = packagePosition.y - lastPackageY;
             
+            // Gör väggarna mindre så de inte blockerar hela vägen
             if (Math.abs(dx) > Math.abs(dy)) {
-                // Rör sig horisontellt - skapa vertikal vägg
-                wallEl.style.width = '20px';
-                wallEl.style.height = '80px';
-                wallEl.style.left = (x + (dx > 0 ? 50 : -20)) + 'px';
-                wallEl.style.top = (y - 40) + 'px';
+                // Rör sig horisontellt - skapa mindre vertikal vägg
+                wallEl.style.width = '15px';
+                wallEl.style.height = '50px'; // Mindre höjd
+                wallEl.style.left = (x + (dx > 0 ? 50 : -15)) + 'px';
+                wallEl.style.top = (y - 25) + 'px';
             } else {
-                // Rör sig vertikalt - skapa horisontell vägg
-                wallEl.style.width = '80px';
-                wallEl.style.height = '20px';
-                wallEl.style.left = (x - 40) + 'px';
-                wallEl.style.top = (y + (dy > 0 ? 50 : -20)) + 'px';
+                // Rör sig vertikalt - skapa mindre horisontell vägg
+                wallEl.style.width = '50px'; // Mindre bredd
+                wallEl.style.height = '15px';
+                wallEl.style.left = (x - 25) + 'px';
+                wallEl.style.top = (y + (dy > 0 ? 50 : -15)) + 'px';
             }
             
             // Begränsa till container
@@ -2594,7 +2607,7 @@
             container.appendChild(wallEl);
             dynamicWalls.push(wallEl);
             
-            // Ta bort väggen efter 3 sekunder
+            // Ta bort väggen efter 2 sekunder (snabbare än innan)
             setTimeout(() => {
                 wallEl.style.animation = 'wallDisappear 0.3s ease-out';
                 setTimeout(() => {
@@ -2606,7 +2619,7 @@
                         dynamicWalls.splice(index, 1);
                     }
                 }, 300);
-            }, 3000);
+            }, 2000); // 2 sekunder istället för 3
         }
         
         function updateFishPosition() {
