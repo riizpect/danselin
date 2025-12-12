@@ -1971,7 +1971,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                     if (overlay) overlay.remove();
                     isPopupOpen = false;
                     
-                    // Schedule next popup after 15 seconds
+                    // Schedule next popup after 60 seconds (1 minute)
                     if (nextPopupTimeout) {
                         clearTimeout(nextPopupTimeout);
                     }
@@ -1981,7 +1981,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                             const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
                             createAnnoyingPopup(message, isMoving, true);
                         }
-                    }, 15000);
+                    }, 60000); // 60 seconds = 1 minute
                 }, 300);
             } else if (overlay) {
                 overlay.remove();
