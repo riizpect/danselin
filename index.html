@@ -173,21 +173,24 @@
             border-radius: 10px;
             margin: 20px 0;
             overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.3);
         }
 
         .hotspot {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: rgba(255, 215, 0, 0.2);
-            border: 2px dashed rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.3);
+            border: 3px solid rgba(255, 215, 0, 0.7);
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 2.5em;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 10;
         }
 
         .hotspot:hover {
@@ -697,6 +700,17 @@
             currentLevel = level;
             localStorage.setItem('escapeRoomLevel', level);
             updateProgress();
+            
+            // Initialize level-specific features when switching views
+            if (level === 2) {
+                setTimeout(() => initHotspots(), 100); // Small delay to ensure DOM is ready
+            } else if (level === 3) {
+                document.getElementById('cipherText').textContent = CONFIG.cipherText;
+            } else if (level === 4) {
+                setTimeout(() => initLogicPuzzle(), 100);
+            } else if (level === 5) {
+                setTimeout(() => initTimingPuzzle(), 100);
+            }
         }
 
         function startGame() {
@@ -732,10 +746,12 @@
         // ============================================
         function initHotspots() {
             const container = document.getElementById('hotspotContainer');
+            if (!container) return; // Safety check
+            
             container.innerHTML = '';
             hotspotSequence = [];
             
-            // Create decorative elements
+            // Create decorative background elements (non-clickable)
             const decors = [
                 { x: 15, y: 20, emoji: "❄️" },
                 { x: 80, y: 25, emoji: "🎅" },
@@ -745,19 +761,21 @@
                 { x: 75, y: 80, emoji: "🧦" }
             ];
             
-            // Add decorative elements
+            // Add decorative elements (background, not clickable)
             decors.forEach(dec => {
                 const elem = document.createElement('div');
-                elem.className = 'hotspot';
+                elem.style.position = 'absolute';
                 elem.style.left = dec.x + '%';
                 elem.style.top = dec.y + '%';
+                elem.style.fontSize = '2em';
+                elem.style.opacity = '0.3';
+                elem.style.pointerEvents = 'none';
+                elem.style.zIndex = '1';
                 elem.textContent = dec.emoji;
-                elem.style.cursor = 'default';
-                elem.style.opacity = '0.5';
                 container.appendChild(elem);
             });
             
-            // Add actual hotspots
+            // Add actual clickable hotspots
             CONFIG.hotspots.forEach((hotspot, index) => {
                 const elem = document.createElement('div');
                 elem.className = 'hotspot';
