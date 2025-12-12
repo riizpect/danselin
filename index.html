@@ -2407,28 +2407,38 @@
                 
                 // Fiskarna simmar från vänster till höger - BARA EN GÅNG!
                 if (shouldSwim) {
-                    fish.classList.add('visible');
-                    
                     // Olika hastigheter och animation-delays
                     const speed = 3 + Math.random() * 2; // 3-5 sekunder
                     const delay = Math.random() * 3; // 0-3 sekunder delay (sprid ut dem)
-                    // Använd animation-iteration-count: 1 för att säkerställa att den bara körs en gång
-                    fish.style.animation = `swim ${speed}s linear ${delay}s 1 forwards`;
-                    fish.style.animationIterationCount = '1';
+                    
+                    // Sätt animation-egenskaperna SEPARAT för att säkerställa att det inte loopar
+                    fish.style.animationName = 'swim';
+                    fish.style.animationDuration = `${speed}s`;
+                    fish.style.animationTimingFunction = 'linear';
+                    fish.style.animationDelay = `${delay}s`;
+                    fish.style.animationIterationCount = '1'; // BARA EN GÅNG!
+                    fish.style.animationFillMode = 'forwards';
+                    fish.style.animationPlayState = 'running';
                     
                     // När animationen är klar, räkna upp och stoppa animationen
-                    fish.addEventListener('animationend', () => {
+                    const handleAnimationEnd = () => {
                         // Stoppa animationen explicit
                         fish.style.animation = 'none';
+                        fish.style.animationName = 'none';
                         fish.style.opacity = '0';
                         fish.style.display = 'none';
+                        
+                        // Ta bort event listener så den inte triggas igen
+                        fish.removeEventListener('animationend', handleAnimationEnd);
                         
                         fishFinished++;
                         // När alla fiskar har simmat förbi, starta räkningsfasen!
                         if (fishFinished === totalFish) {
                             startCountingPhase();
                         }
-                    });
+                    };
+                    
+                    fish.addEventListener('animationend', handleAnimationEnd, { once: true });
                 }
                 
                 arena.appendChild(fish);
