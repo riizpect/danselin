@@ -1121,18 +1121,11 @@
                 setupTrollFeatures(level);
             }, 500);
             
-            // Random fake captcha (10% chance)
-            if (level > 0 && level < 6 && Math.random() < 0.1) {
-                setTimeout(() => {
-                    showFakeCaptcha();
-                }, 5000 + Math.random() * 10000);
-            }
-            
-            // Random fake captcha (10% chance)
-            if (level > 0 && level < 6 && Math.random() < 0.1) {
-                setTimeout(() => {
-                    showFakeCaptcha();
-                }, 5000 + Math.random() * 10000);
+            // Start captcha interval (shows in beginning and every 3 minutes)
+            if (level > 0 && level < 6) {
+                startCaptchaInterval();
+            } else {
+                stopCaptchaInterval();
             }
         }
         
@@ -1832,6 +1825,8 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         let fakeCountdownTime = 300; // 5 minutes
         let backgroundMusicPlaying = false;
         let audioContext = null;
+        let captchaInterval = null;
+        let captchaAttempts = 0;
 
         const annoyingMessages = [
             "Har du kollat under sängen?",
@@ -2148,6 +2143,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 clearInterval(popupInterval);
                 popupInterval = null;
             }
+            stopCaptchaInterval();
             // Close all existing popups
             document.querySelectorAll('.annoying-popup').forEach(popup => popup.remove());
         }
@@ -2436,12 +2432,13 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             const grid = document.getElementById('fakeCaptchaGrid');
             grid.innerHTML = '';
             
-            // Create 9 empty boxes (no images)
+            // Create 9 boxes with emoji "images" (no actual traffic lights)
+            const emojis = ['🚗', '🌳', '🏠', '☁️', '⭐', '🌙', '🎄', '❄️', '🎁'];
             for (let i = 0; i < 9; i++) {
                 const box = document.createElement('div');
                 box.className = 'fake-captcha-image';
                 box.dataset.index = i;
-                box.textContent = '?';
+                box.textContent = emojis[i];
                 box.onclick = function() {
                     this.classList.toggle('selected');
                 };
@@ -2449,22 +2446,64 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             }
             
             captcha.style.display = 'flex';
+            captchaAttempts = 0;
         }
         
         function checkFakeCaptcha() {
             const selected = document.querySelectorAll('.fake-captcha-image.selected');
             const message = document.getElementById('fakeCaptchaMessage');
+            captchaAttempts++;
             
-            // Always fail, no matter what
-            message.textContent = 'Felaktig verifiering. Försök igen.';
+            // Always fail first 2 attempts, then allow to proceed
+            if (captchaAttempts < 3) {
+                message.textContent = 'Felaktig verifiering. Försök igen.';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    document.querySelectorAll('.fake-captcha-image').forEach(box => {
+                        box.classList.remove('selected');
+                    });
+                    message.textContent = '';
+                }, 2000);
+            } else {
+                // After 3 attempts, allow to proceed
+                message.textContent = 'Verifiering lyckades!';
+                message.style.color = '#4caf50';
+                
+                setTimeout(() => {
+                    document.getElementById('fakeCaptcha').style.display = 'none';
+                    message.textContent = '';
+                    message.style.color = '#ff6b6b';
+                }, 1500);
+            }
+        }
+        
+        function startCaptchaInterval() {
+            // Clear any existing interval
+            if (captchaInterval) {
+                clearInterval(captchaInterval);
+            }
             
-            // Reset after 2 seconds
+            // Show captcha immediately (after loading screen)
             setTimeout(() => {
-                document.querySelectorAll('.fake-captcha-image').forEach(box => {
-                    box.classList.remove('selected');
-                });
-                message.textContent = '';
+                if (currentLevel > 0 && currentLevel < 6) {
+                    showFakeCaptcha();
+                }
             }, 2000);
+            
+            // Then show every 3 minutes (180000 ms)
+            captchaInterval = setInterval(() => {
+                if (currentLevel > 0 && currentLevel < 6) {
+                    showFakeCaptcha();
+                }
+            }, 180000); // 3 minutes
+        }
+        
+        function stopCaptchaInterval() {
+            if (captchaInterval) {
+                clearInterval(captchaInterval);
+                captchaInterval = null;
+            }
         }
 
         // ============================================
