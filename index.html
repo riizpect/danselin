@@ -971,8 +971,8 @@
                 step2: "Svenska alfabetet: A(1), B(2), C(3)...S(19)...Y(25), Z(26), Å(27), Ä(28), Ö(29). För att avkoda 'Syetvscxnbrå', gå 16 steg framåt från varje bokstav: S(19)+16=35→F(6), y(25)+16=41→l(12), e(5)+16=21→u(21), t(20)+16=36→g(7), v(22)+16=38→f(6), s(19)+16=35→i(9), c(3)+16=19→s(19), x(24)+16=40→k(11), n(14)+16=30→a(1), b(2)+16=18→r(18), r(18)+16=34→e(5), å(27)+16=43→n(14). Svaret är 'flugfiskaren'!"
             },
             4: {
-                step1: "Börja med att eliminera möjligheter. Anna kan bara vara Ingenjör eller Arkitekt.",
-                step2: "Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt. Koden är positionerna: 1,2,3,4"
+                step1: "Börja med ledtråd 5 och 6: Ingenjören är Anna eller David. Läraren är Bengt eller David. Men David kan inte vara både Ingenjör och Lärare, så...",
+                step2: "Från ledtråd 6: Lärare måste vara Bengt (David kan inte vara Lärare eftersom han inte är läkare eller lärare). Från ledtråd 3: Cecilia är Läkare. Från ledtråd 5: Ingenjör är Anna eller David. Men Anna är inte läkare eller lärare, så Anna=Ingenjör. Då är David=Arkitekt. Koden: 1,2,3,4"
             },
             5: {
                 step1: "A=1, B=2, C=3, D=4. Tryck på knapparna i stigande ordning.",
