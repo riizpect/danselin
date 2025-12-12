@@ -424,10 +424,16 @@
             cursor: pointer;
             font-size: 16px;
             line-height: 1;
+            z-index: 10001;
         }
 
         .annoying-popup .close-btn:hover {
             background: rgba(0,0,0,0.5);
+        }
+        
+        /* Make close button sometimes hard to click on moving popups */
+        .annoying-popup.moving .close-btn {
+            cursor: crosshair;
         }
 
         /* Hints */
@@ -1427,10 +1433,47 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             popup.style.left = x + 'px';
             popup.style.top = y + 'px';
             
+            // Create illogical button options
+            const buttonOptions = [
+                { text: "Ja", action: "close" },
+                { text: "Nej", action: "close" },
+                { text: "Kanske", action: "close" },
+                { text: "Avbryt", action: "close" },
+                { text: "Fortsätt", action: "close" },
+                { text: "Stäng", action: "close" },
+                { text: "OK", action: "close" },
+                { text: "Acceptera", action: "close" },
+                { text: "Avvisa", action: "close" },
+                { text: "Ignorera", action: "close" }
+            ];
+            
+            // Random button text (all close the popup, but confusing)
+            const buttonText = buttonOptions[Math.floor(Math.random() * buttonOptions.length)].text;
+            
+            // Sometimes add fake buttons that don't work
+            const hasFakeButtons = Math.random() > 0.5;
+            let buttonsHTML = '';
+            
+            if (hasFakeButtons) {
+                // Add 2-3 fake buttons and 1 real one
+                const fakeButtons = ['Stäng', 'Avbryt', 'OK', 'Fortsätt', 'Ignorera'].filter(b => b !== buttonText);
+                const shuffled = fakeButtons.sort(() => Math.random() - 0.5).slice(0, 2);
+                
+                buttonsHTML = `
+                    <button onclick="this.style.opacity='0.5'; this.disabled=true; setTimeout(() => { this.style.opacity='1'; this.disabled=false; }, 500);" style="margin: 5px;">${shuffled[0]}</button>
+                    <button onclick="this.style.opacity='0.5'; this.disabled=true; setTimeout(() => { this.style.opacity='1'; this.disabled=false; }, 500);" style="margin: 5px;">${shuffled[1]}</button>
+                    <button onclick="closeAnnoyingPopup(${popupCount})" style="margin: 5px;">${buttonText}</button>
+                `;
+            } else {
+                buttonsHTML = `<button onclick="closeAnnoyingPopup(${popupCount})" style="margin: 5px;">${buttonText}</button>`;
+            }
+            
             popup.innerHTML = `
                 ${hasClose ? '<button class="close-btn" onclick="closeAnnoyingPopup(' + popupCount + ')">×</button>' : ''}
                 <div style="margin-bottom: 15px;">${message}</div>
-                <button onclick="closeAnnoyingPopup(${popupCount})">OK</button>
+                <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+                    ${buttonsHTML}
+                </div>
             `;
             
             document.body.appendChild(popup);
@@ -1448,19 +1491,10 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                     popup.style.top = newY + 'px';
                 }, 1000);
                 
-                // Stop moving after 10 seconds
-                setTimeout(() => {
-                    clearInterval(moveInterval);
-                    popup.classList.remove('moving');
-                }, 10000);
+                // Keep moving indefinitely until closed
             }
             
-            // Auto-close after 20 seconds if not closed
-            setTimeout(() => {
-                if (document.getElementById('annoyingPopup' + popupCount)) {
-                    closeAnnoyingPopup(popupCount);
-                }
-            }, 20000);
+            // NO AUTO-CLOSE - user must click to close
         }
 
         function closeAnnoyingPopup(id) {
