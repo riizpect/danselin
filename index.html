@@ -704,29 +704,6 @@
             }
         }
 
-        @keyframes swimLoop {
-            0% {
-                transform: translateX(-100px) translateY(0) scale(1.5);
-                opacity: 0;
-                filter: brightness(2) drop-shadow(0 0 10px #ffd700);
-            }
-            8% {
-                opacity: 1;
-                filter: brightness(2) drop-shadow(0 0 15px #ffd700);
-            }
-            15% {
-                transform: translateX(-50px) translateY(0) scale(1);
-                filter: brightness(1) drop-shadow(0 0 0px);
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(calc(100vw + 100px)) translateY(0);
-                opacity: 0;
-            }
-        }
-
         .fish-count-phase {
             color: #ffd700;
             font-size: 1.1em;
@@ -2427,13 +2404,13 @@
         let correctFishCount = 0;
         let fishPhase = 'showing'; // 'showing' eller 'counting'
         
-        // 5 rundor med olika antal fiskar
+        // 5 rundor med olika antal fiskar (fler nu, och de simmar bara en gång)
         const fishRounds = [
-            { count: 5, text: "Räkna fiskarna!" },
             { count: 8, text: "Räkna fiskarna!" },
             { count: 12, text: "Räkna fiskarna!" },
-            { count: 15, text: "Räkna fiskarna!" },
-            { count: 20, text: "Räkna fiskarna!" }
+            { count: 18, text: "Räkna fiskarna!" },
+            { count: 24, text: "Räkna fiskarna!" },
+            { count: 30, text: "Räkna fiskarna!" }
         ];
         
         const fishEmojis = ['🐟', '🐠', '🐡', '🦈', '🐋'];
@@ -2530,35 +2507,16 @@
             }, 100);
         }
         
-        function createSwimmingFish(count, shouldSwim = true) {
+        function createSwimmingFish(count, shouldSwim = true, roundIndex) {
             const arena = document.getElementById('fishArena');
             if (!arena) return;
             
             // Rensa gamla fiskar
             arena.innerHTML = '';
             
-            // Skapa loop-linje, text och loading bar (visas när fiskar loopar)
-            const loopLine = document.createElement('div');
-            loopLine.className = 'loop-line';
-            loopLine.id = 'loopLine';
-            arena.appendChild(loopLine);
-            
-            const loopText = document.createElement('div');
-            loopText.className = 'loop-text';
-            loopText.id = 'loopText';
-            loopText.textContent = 'LOOP!';
-            arena.appendChild(loopText);
-            
-            const loopLoadingBar = document.createElement('div');
-            loopLoadingBar.className = 'loop-loading-bar';
-            loopLoadingBar.id = 'loopLoadingBar';
-            const loopLoadingFill = document.createElement('div');
-            loopLoadingFill.className = 'loop-loading-fill';
-            loopLoadingFill.id = 'loopLoadingFill';
-            loopLoadingBar.appendChild(loopLoadingFill);
-            arena.appendChild(loopLoadingBar);
-            
             const arenaRect = arena.getBoundingClientRect();
+            let fishFinished = 0;
+            const totalFish = count;
             
             for (let i = 0; i < count; i++) {
                 const fish = document.createElement('div');
@@ -2573,70 +2531,27 @@
                 const size = 0.8 + Math.random() * 0.4; // 0.8-1.2x
                 fish.style.transform = `scale(${size})`;
                 
-                // Fiskarna simmar från vänster till höger
+                // Fiskarna simmar från vänster till höger - BARA EN GÅNG!
                 if (shouldSwim) {
-                    // Första gången - normal animation
                     fish.classList.add('visible');
                     
                     // Olika hastigheter och animation-delays
                     const speed = 3 + Math.random() * 2; // 3-5 sekunder
-                    const delay = Math.random() * 2; // 0-2 sekunder delay
-                    fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
+                    const delay = Math.random() * 3; // 0-3 sekunder delay (sprid ut dem)
+                    fish.style.animation = `swim ${speed}s linear ${delay}s forwards`; // forwards = ingen loop!
                     
-                    // När animationen loopar, visa markering och pausa innan nästa loop
-                    fish.addEventListener('animationiteration', () => {
-                        // Detta händer när fiskarna loopar - visa markering!
-                        showLoopMarkers(startY);
-                        
-                        // PAUSA - stoppa animationen
-                        fish.style.animation = 'none';
-                        fish.style.opacity = '0';
-                        
-                        // Efter 1.5 sekunder (när loading bar är klar), starta nästa loop
-                        setTimeout(() => {
-                            fish.classList.remove('visible');
-                            fish.classList.add('looping');
-                            fish.style.animation = `swimLoop ${speed}s linear 0s infinite`;
-                        }, 1500);
+                    // När animationen är klar, räkna upp
+                    fish.addEventListener('animationend', () => {
+                        fishFinished++;
+                        // När alla fiskar har simmat förbi, starta räkningsfasen!
+                        if (fishFinished === totalFish) {
+                            startCountingPhase();
+                        }
                     });
                 }
                 
                 arena.appendChild(fish);
             }
-        }
-        
-        function showLoopMarkers(fishY) {
-            const loopLine = document.getElementById('loopLine');
-            const loopText = document.getElementById('loopText');
-            const loopLoadingBar = document.getElementById('loopLoadingBar');
-            const loopLoadingFill = document.getElementById('loopLoadingFill');
-            
-            if (!loopLine || !loopText || !loopLoadingBar || !loopLoadingFill) return;
-            
-            // Placera markeringarna på samma höjd som fisken
-            loopLine.style.top = fishY + 'px';
-            loopText.style.top = (fishY - 25) + 'px';
-            loopLoadingBar.style.top = (fishY + 15) + 'px';
-            
-            // Reset loading bar
-            loopLoadingFill.style.width = '0%';
-            loopLoadingFill.classList.remove('active');
-            
-            // Visa markeringarna med animation
-            loopLine.classList.remove('active');
-            loopText.classList.remove('active');
-            loopLoadingBar.classList.remove('active');
-            
-            setTimeout(() => {
-                loopLine.classList.add('active');
-                loopText.classList.add('active');
-                loopLoadingBar.classList.add('active');
-                
-                // Starta loading bar
-                setTimeout(() => {
-                    loopLoadingFill.classList.add('active');
-                }, 50);
-            }, 10);
         }
         
         function startFishTimer() {
