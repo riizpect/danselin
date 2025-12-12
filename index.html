@@ -942,51 +942,80 @@
             const grid = document.getElementById('logicGrid');
             grid.innerHTML = '';
             
-            const fishers = ['', 'Erik', 'Lisa', 'Olle', 'Sara'];
-            const fishes = ['', 'Lax', 'Abborre', 'Gädda', 'Ruda'];
-            const methods = ['', 'Flugfiske', 'Spinnfiske', 'Grundfiske', 'Isfiske'];
+            const fishers = ['Erik', 'Lisa', 'Olle', 'Sara'];
+            const fishes = ['Lax', 'Abborre', 'Gädda', 'Ruda'];
+            const methods = ['Flugfiske', 'Spinnfiske', 'Grundfiske', 'Isfiske'];
             
-            // Create header row: Fisher | Fisk types | Metod types
-            const headers = ['Fiskare', ...fishes.slice(1), ...methods.slice(1)];
-            headers.forEach(header => {
+            // Header row: Fiskare | Fisk section | Metod section
+            const fisherHeader = document.createElement('div');
+            fisherHeader.className = 'logic-header';
+            fisherHeader.textContent = 'Fiskare';
+            grid.appendChild(fisherHeader);
+            
+            const fishSectionHeader = document.createElement('div');
+            fishSectionHeader.className = 'logic-section-header';
+            fishSectionHeader.textContent = 'Fisk';
+            grid.appendChild(fishSectionHeader);
+            
+            fishes.forEach(fish => {
                 const cell = document.createElement('div');
                 cell.className = 'logic-header';
-                cell.textContent = header;
+                cell.textContent = fish;
+                grid.appendChild(cell);
+            });
+            
+            const methodSectionHeader = document.createElement('div');
+            methodSectionHeader.className = 'logic-section-header';
+            methodSectionHeader.textContent = 'Metod';
+            grid.appendChild(methodSectionHeader);
+            
+            methods.forEach(method => {
+                const cell = document.createElement('div');
+                cell.className = 'logic-header';
+                cell.textContent = method;
                 grid.appendChild(cell);
             });
             
             // Create rows for each fisher
-            for (let i = 1; i < fishers.length; i++) {
-                const fisher = fishers[i];
-                
+            fishers.forEach(fisher => {
                 // Fisher name
                 const fisherCell = document.createElement('div');
                 fisherCell.className = 'logic-header';
                 fisherCell.textContent = fisher;
                 grid.appendChild(fisherCell);
                 
+                // Empty cell for section header alignment
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'logic-cell';
+                grid.appendChild(emptyCell);
+                
                 // Fish selects
-                for (let f = 1; f < fishes.length; f++) {
+                fishes.forEach(fish => {
                     const cell = document.createElement('div');
                     cell.className = 'logic-cell';
                     const select = document.createElement('select');
-                    select.id = `logic-${fisher.toLowerCase()}-fish-${fishes[f].toLowerCase()}`;
+                    select.id = `logic-${fisher.toLowerCase()}-fish-${fish.toLowerCase()}`;
                     select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
                     cell.appendChild(select);
                     grid.appendChild(cell);
-                }
+                });
+                
+                // Empty cell for section header alignment
+                const emptyCell2 = document.createElement('div');
+                emptyCell2.className = 'logic-cell';
+                grid.appendChild(emptyCell2);
                 
                 // Method selects
-                for (let m = 1; m < methods.length; m++) {
+                methods.forEach(method => {
                     const cell = document.createElement('div');
                     cell.className = 'logic-cell';
                     const select = document.createElement('select');
-                    select.id = `logic-${fisher.toLowerCase()}-method-${methods[m].toLowerCase()}`;
+                    select.id = `logic-${fisher.toLowerCase()}-method-${method.toLowerCase()}`;
                     select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
                     cell.appendChild(select);
                     grid.appendChild(cell);
-                }
-            }
+                });
+            });
         }
 
         function checkLogic() {
