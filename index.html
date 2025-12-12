@@ -1365,6 +1365,9 @@
                     if (methodSelect) methodSelect.value = '';
                 });
                 
+                stopAnnoyingPopups();
+                hasShownRestartTroll = false;
+                popupCount = 0;
                 showView(0);
             }
         }
