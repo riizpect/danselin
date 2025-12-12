@@ -2347,14 +2347,22 @@
             const inputContainer = document.getElementById('fishInputContainer');
             const arena = document.getElementById('fishArena');
             
+            // Stoppa alla fisk-animationer och ta bort dem från skärmen
+            if (arena) {
+                const allFish = arena.querySelectorAll('.swimming-fish');
+                allFish.forEach(fish => {
+                    fish.style.animation = 'none';
+                    fish.style.opacity = '0';
+                    fish.style.display = 'none';
+                });
+            }
+            
             if (phaseEl) phaseEl.textContent = 'Räkna fiskarna nu!';
             if (timerEl) {
                 timerEl.style.display = 'block';
                 timerEl.textContent = fishTimeLeft;
             }
             if (inputContainer) inputContainer.style.display = 'flex';
-            
-            // Fiskarna rör sig redan, inget att göra här
             
             // Starta timer
             startFishTimer();
