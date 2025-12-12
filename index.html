@@ -1171,7 +1171,10 @@
                 // Use the code from CONFIG
                 const code = CONFIG.logicCode;
                 showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
-                setTimeout(() => showView(5), 2000);
+                // Show troll popup after completing level 4
+                setTimeout(() => {
+                    showRestartTrollPopup();
+                }, 1500);
             } else {
                 showMessage('message4', 'Inte helt rätt. Kontrollera dina val!', 'error');
             }
@@ -1547,9 +1550,6 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
 
         function showRestartTrollPopup() {
-            if (hasShownRestartTroll) return;
-            hasShownRestartTroll = true;
-            
             popupCount++;
             
             // Create overlay to block interaction
@@ -1573,7 +1573,10 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 <div style="margin-bottom: 15px; font-size: 1.2em;">
                     <strong>Vill du börja om från början?</strong>
                 </div>
-                <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                </div>
             `;
             
             document.body.appendChild(popup);
@@ -1594,19 +1597,70 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
 
         function handleTrollRestart() {
-            // Just close the popup, don't actually restart
+            // Actually restart the game!
             const popup = document.getElementById('annoyingPopupTroll');
             const overlay = document.getElementById('popupOverlayTroll');
             if (popup) {
-                popup.style.animation = 'popupPulse 0.3s ease-out reverse';
-                setTimeout(() => {
-                    popup.remove();
-                    if (overlay) overlay.remove();
-                }, 300);
-            } else if (overlay) {
+                popup.remove();
+            }
+            if (overlay) {
                 overlay.remove();
             }
-            createAnnoyingPopup("Haha, bara skojade! Fortsätt spela! 😄", false, true);
+            
+            // Reset everything and restart
+            localStorage.removeItem('escapeRoomLevel');
+            currentLevel = 0;
+            hintStates = {};
+            hasShownRestartTroll = false;
+            popupCount = 0;
+            
+            // Reset all inputs
+            const wordInput = document.getElementById('wordInput');
+            if (wordInput) wordInput.value = '';
+            
+            const cipherInput = document.getElementById('cipherInput');
+            if (cipherInput) cipherInput.value = '';
+            
+            const fishCodeInput = document.getElementById('fishCodeInput');
+            if (fishCodeInput) fishCodeInput.value = '';
+            
+            // Reset all messages
+            for (let i = 1; i <= 5; i++) {
+                showMessage('message' + i, '', '');
+            }
+            
+            // Reset hints
+            for (let i = 1; i <= 5; i++) {
+                const hintDiv = document.getElementById('hint' + i);
+                if (hintDiv) {
+                    hintDiv.classList.remove('show');
+                    hintDiv.textContent = '';
+                }
+            }
+            
+            // Reset memory game
+            matchedPairs = 0;
+            flippedCards = [];
+            canFlip = true;
+            const memoryGrid = document.getElementById('memoryGrid');
+            if (memoryGrid) {
+                memoryGrid.innerHTML = '';
+            }
+            
+            // Reset logic puzzle selects
+            const fishers = ['erik', 'lisa', 'olle', 'sara'];
+            fishers.forEach(fisher => {
+                const fishSelect = document.getElementById(`logic-${fisher}-fish`);
+                const methodSelect = document.getElementById(`logic-${fisher}-method`);
+                if (fishSelect) fishSelect.value = '';
+                if (methodSelect) methodSelect.value = '';
+            });
+            
+            // Stop all popups
+            stopAnnoyingPopups();
+            
+            // Go back to start
+            showView(0);
         }
 
         function startAnnoyingPopups() {
