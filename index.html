@@ -601,6 +601,38 @@
             animation: loopTextFlash 1s ease-out;
         }
 
+        .loop-loading-bar {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            z-index: 12;
+            opacity: 0;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .loop-loading-bar.active {
+            opacity: 1;
+            animation: loadingBarShow 1.5s ease-out;
+        }
+
+        .loop-loading-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffd700, #ff0000);
+            transition: width 1.5s linear;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .loop-loading-fill.active {
+            width: 100%;
+        }
+
         @keyframes loopLineFlash {
             0% {
                 opacity: 0;
@@ -636,6 +668,25 @@
             100% {
                 opacity: 0;
                 transform: translateX(-50%) translateY(40px) scale(0.5);
+            }
+        }
+
+        @keyframes loadingBarShow {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.8);
+            }
+            10% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.8);
             }
         }
 
@@ -2486,7 +2537,7 @@
             // Rensa gamla fiskar
             arena.innerHTML = '';
             
-            // Skapa loop-linje och text (visas när fiskar loopar)
+            // Skapa loop-linje, text och loading bar (visas när fiskar loopar)
             const loopLine = document.createElement('div');
             loopLine.className = 'loop-line';
             loopLine.id = 'loopLine';
@@ -2497,6 +2548,15 @@
             loopText.id = 'loopText';
             loopText.textContent = 'LOOP!';
             arena.appendChild(loopText);
+            
+            const loopLoadingBar = document.createElement('div');
+            loopLoadingBar.className = 'loop-loading-bar';
+            loopLoadingBar.id = 'loopLoadingBar';
+            const loopLoadingFill = document.createElement('div');
+            loopLoadingFill.className = 'loop-loading-fill';
+            loopLoadingFill.id = 'loopLoadingFill';
+            loopLoadingBar.appendChild(loopLoadingFill);
+            arena.appendChild(loopLoadingBar);
             
             const arenaRect = arena.getBoundingClientRect();
             
@@ -2523,14 +2583,21 @@
                     const delay = Math.random() * 2; // 0-2 sekunder delay
                     fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
                     
-                    // När animationen loopar, DRAG EN LINJE och byt till looping-animation
+                    // När animationen loopar, visa markering och pausa innan nästa loop
                     fish.addEventListener('animationiteration', () => {
-                        // Detta händer när fiskarna loopar - DRAG EN LINJE!
-                        showLoopLine(startY);
+                        // Detta händer när fiskarna loopar - visa markering!
+                        showLoopMarkers(startY);
                         
-                        fish.classList.remove('visible');
-                        fish.classList.add('looping');
-                        fish.style.animation = `swimLoop ${speed}s linear 0s infinite`;
+                        // PAUSA - stoppa animationen
+                        fish.style.animation = 'none';
+                        fish.style.opacity = '0';
+                        
+                        // Efter 1.5 sekunder (när loading bar är klar), starta nästa loop
+                        setTimeout(() => {
+                            fish.classList.remove('visible');
+                            fish.classList.add('looping');
+                            fish.style.animation = `swimLoop ${speed}s linear 0s infinite`;
+                        }, 1500);
                     });
                 }
                 
@@ -2538,21 +2605,37 @@
             }
         }
         
-        function showLoopLine(fishY) {
+        function showLoopMarkers(fishY) {
             const loopLine = document.getElementById('loopLine');
             const loopText = document.getElementById('loopText');
-            if (!loopLine || !loopText) return;
+            const loopLoadingBar = document.getElementById('loopLoadingBar');
+            const loopLoadingFill = document.getElementById('loopLoadingFill');
             
-            // Placera linjen och texten på samma höjd som fisken
+            if (!loopLine || !loopText || !loopLoadingBar || !loopLoadingFill) return;
+            
+            // Placera markeringarna på samma höjd som fisken
             loopLine.style.top = fishY + 'px';
             loopText.style.top = (fishY - 25) + 'px';
+            loopLoadingBar.style.top = (fishY + 15) + 'px';
             
-            // Visa linjen och texten med animation
+            // Reset loading bar
+            loopLoadingFill.style.width = '0%';
+            loopLoadingFill.classList.remove('active');
+            
+            // Visa markeringarna med animation
             loopLine.classList.remove('active');
             loopText.classList.remove('active');
+            loopLoadingBar.classList.remove('active');
+            
             setTimeout(() => {
                 loopLine.classList.add('active');
                 loopText.classList.add('active');
+                loopLoadingBar.classList.add('active');
+                
+                // Starta loading bar
+                setTimeout(() => {
+                    loopLoadingFill.classList.add('active');
+                }, 50);
             }, 10);
         }
         
