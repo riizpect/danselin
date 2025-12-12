@@ -2463,13 +2463,9 @@
                 </div>
             `;
             
-            // Skapa fiskar som rör sig direkt
-            createSwimmingFish(round.count, true);
-            
-            // Efter 3 sekunder, visa input och starta timer
-            setTimeout(() => {
-                startCountingPhase();
-            }, 3000);
+            // Skapa fiskar som simmar en gång (ingen loop)
+            // Tiden börjar EFTER att alla fiskar har simmat förbi
+            createSwimmingFish(round.count, true, roundIndex);
         }
         
         function startCountingPhase() {
