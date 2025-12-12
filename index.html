@@ -608,20 +608,22 @@
 
         <!-- View 4: Level 4 - Logic Puzzle -->
         <div class="view" id="view4">
-            <h2>Nivå 4: Logikpussel</h2>
+            <h2>Nivå 4: Fiskelogik</h2>
             <div class="puzzle-container">
                 <p class="puzzle-description">
-                    Fyra personer har fyra olika yrken. Matcha rätt person med rätt yrke baserat på ledtrådarna:
+                    Fyra fiskare fångar fyra olika fisketyper med fyra olika metoder. Matcha rätt fiskare med rätt fisk och metod baserat på ledtrådarna:
                     <br><br>
                     <strong>Ledtrådar:</strong><br>
-                    1. Anna är inte läkare eller lärare.<br>
-                    2. Bengt är varken läkare eller ingenjör.<br>
-                    3. Cecilia är inte lärare eller ingenjör.<br>
-                    4. David är inte läkare eller lärare.<br>
-                    5. Ingenjören är varken Bengt eller Cecilia.<br>
-                    6. Läraren är varken Anna eller Cecilia.<br>
-                    7. Arkitekten är varken Anna eller Bengt.<br>
-                    8. Läkaren är varken Anna, Bengt eller David.<br>
+                    1. Erik fiskar inte lax eller ruda.<br>
+                    2. Lisa använder inte flugfiske eller grundfiske.<br>
+                    3. Olle fiskar inte abborre eller gädda.<br>
+                    4. Sara använder inte spinnfiske eller isfiske.<br>
+                    5. Den som fiskar lax använder inte flugfiske.<br>
+                    6. Den som fiskar abborre använder inte spinnfiske.<br>
+                    7. Den som fiskar gädda använder inte grundfiske.<br>
+                    8. Den som fiskar ruda använder inte isfiske.<br>
+                    9. Den som använder flugfiske fiskar inte abborre eller gädda.<br>
+                    10. Den som använder spinnfiske fiskar inte lax eller ruda.<br>
                 </p>
                 <div class="logic-grid" id="logicGrid"></div>
                 <button onclick="checkLogic()">Kontrollera</button>
@@ -940,30 +942,46 @@
             const grid = document.getElementById('logicGrid');
             grid.innerHTML = '';
             
-            const people = ['', 'Anna', 'Bengt', 'Cecilia', 'David'];
-            const jobs = ['', 'Läkare', 'Lärare', 'Ingenjör', 'Arkitekt'];
+            const fishers = ['', 'Erik', 'Lisa', 'Olle', 'Sara'];
+            const fishes = ['', 'Lax', 'Abborre', 'Gädda', 'Ruda'];
+            const methods = ['', 'Flugfiske', 'Spinnfiske', 'Grundfiske', 'Isfiske'];
             
-            // Create header row
-            jobs.forEach(job => {
+            // Create header row: Fisher | Fisk types | Metod types
+            const headers = ['Fiskare', ...fishes.slice(1), ...methods.slice(1)];
+            headers.forEach(header => {
                 const cell = document.createElement('div');
                 cell.className = 'logic-header';
-                cell.textContent = job;
+                cell.textContent = header;
                 grid.appendChild(cell);
             });
             
-            // Create rows for each person
-            for (let i = 1; i < people.length; i++) {
-                const person = people[i];
-                const personCell = document.createElement('div');
-                personCell.className = 'logic-header';
-                personCell.textContent = person;
-                grid.appendChild(personCell);
+            // Create rows for each fisher
+            for (let i = 1; i < fishers.length; i++) {
+                const fisher = fishers[i];
                 
-                for (let j = 1; j < jobs.length; j++) {
+                // Fisher name
+                const fisherCell = document.createElement('div');
+                fisherCell.className = 'logic-header';
+                fisherCell.textContent = fisher;
+                grid.appendChild(fisherCell);
+                
+                // Fish selects
+                for (let f = 1; f < fishes.length; f++) {
                     const cell = document.createElement('div');
                     cell.className = 'logic-cell';
                     const select = document.createElement('select');
-                    select.id = `logic-${person.toLowerCase()}-${jobs[j].toLowerCase()}`;
+                    select.id = `logic-${fisher.toLowerCase()}-fish-${fishes[f].toLowerCase()}`;
+                    select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
+                    cell.appendChild(select);
+                    grid.appendChild(cell);
+                }
+                
+                // Method selects
+                for (let m = 1; m < methods.length; m++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'logic-cell';
+                    const select = document.createElement('select');
+                    select.id = `logic-${fisher.toLowerCase()}-method-${methods[m].toLowerCase()}`;
                     select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
                     cell.appendChild(select);
                     grid.appendChild(cell);
@@ -972,31 +990,46 @@
         }
 
         function checkLogic() {
-            const people = ['anna', 'bengt', 'cecilia', 'david'];
-            const jobs = ['läkare', 'lärare', 'ingenjör', 'arkitekt'];
+            const fishers = ['erik', 'lisa', 'olle', 'sara'];
+            const fishes = ['lax', 'abborre', 'gädda', 'ruda'];
+            const methods = ['flugfiske', 'spinnfiske', 'grundfiske', 'isfiske'];
             let allCorrect = true;
             
             // Verify all answers are correct
-            people.forEach(person => {
-                const correctJob = CONFIG.logicAnswer[person];
-                let found = false;
+            fishers.forEach(fisher => {
+                const correct = CONFIG.logicAnswer[fisher];
+                let foundFish = false;
+                let foundMethod = false;
                 
-                jobs.forEach(job => {
-                    const select = document.getElementById(`logic-${person}-${job}`);
+                // Check fish
+                fishes.forEach(fish => {
+                    const select = document.getElementById(`logic-${fisher}-fish-${fish}`);
                     if (select && select.value === 'yes') {
-                        if (job === correctJob) {
-                            found = true;
+                        if (fish === correct.fish) {
+                            foundFish = true;
                         } else {
                             allCorrect = false;
                         }
                     }
                 });
                 
-                if (!found) allCorrect = false;
+                // Check method
+                methods.forEach(method => {
+                    const select = document.getElementById(`logic-${fisher}-method-${method}`);
+                    if (select && select.value === 'yes') {
+                        if (method === correct.method) {
+                            foundMethod = true;
+                        } else {
+                            allCorrect = false;
+                        }
+                    }
+                });
+                
+                if (!foundFish || !foundMethod) allCorrect = false;
             });
             
             if (allCorrect) {
-                // Use the code from CONFIG (as specified in hints)
+                // Use the code from CONFIG
                 const code = CONFIG.logicCode;
                 showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
                 setTimeout(() => showView(5), 2000);
@@ -1181,11 +1214,16 @@
                 }
                 
                 // Reset logic puzzle selects
-                const people = ['anna', 'bengt', 'cecilia', 'david'];
-                const jobs = ['läkare', 'lärare', 'ingenjör', 'arkitekt'];
-                people.forEach(person => {
-                    jobs.forEach(job => {
-                        const select = document.getElementById(`logic-${person}-${job}`);
+                const fishers = ['erik', 'lisa', 'olle', 'sara'];
+                const fishes = ['lax', 'abborre', 'gädda', 'ruda'];
+                const methods = ['flugfiske', 'spinnfiske', 'grundfiske', 'isfiske'];
+                fishers.forEach(fisher => {
+                    fishes.forEach(fish => {
+                        const select = document.getElementById(`logic-${fisher}-fish-${fish}`);
+                        if (select) select.value = '';
+                    });
+                    methods.forEach(method => {
+                        const select = document.getElementById(`logic-${fisher}-method-${method}`);
                         if (select) select.value = '';
                     });
                 });
@@ -1200,7 +1238,7 @@ FACIT:
 Nivå 1: ${CONFIG.wordAnswer}
 Nivå 2: Hitta alla par i memory-spelet. Koden är: 2468
 Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
-Nivå 4: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt (Kod: 1234)
+Nivå 4: Erik=Gädda+Spinnfiske, Lisa=Lax+Isfiske, Olle=Ruda+Flugfiske, Sara=Abborre+Grundfiske (Kod: 2468)
 Nivå 5: Tryck A, B, C, D i ordning
             `;
             alert(answers);
