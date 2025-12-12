@@ -1798,6 +1798,11 @@
         function resetProgress() {
             localStorage.removeItem('escapeRoomLevel');
             currentLevel = 0;
+            
+            // Reset captcha interval flag
+            stopCaptchaInterval();
+            captchaIntervalStarted = false;
+            
             showView(0);
             alert('Progress nollställd!');
         }
@@ -1807,6 +1812,10 @@
                 localStorage.removeItem('escapeRoomLevel');
                 currentLevel = 0;
                 hintStates = {};
+                
+                // Reset captcha interval flag so it can start again
+                stopCaptchaInterval();
+                captchaIntervalStarted = false;
                 
                 // Reset all inputs
                 const wordInput = document.getElementById('wordInput');
