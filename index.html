@@ -2318,52 +2318,59 @@
                 }
                 
                 if (index === EXPLODE_GIFT_INDEX) {
-                // Troll-paket: Sprängs!
-                const box = document.querySelectorAll('.gift-box-small')[index];
-                box.textContent = '💥';
-                box.style.background = 'linear-gradient(135deg, #ff0000, #ff6600)';
-                box.style.transform = 'scale(1.5) rotate(360deg)';
-                box.style.transition = 'all 0.5s';
-                
-                setTimeout(() => {
-                    box.style.opacity = '0';
-                    setTimeout(() => {
-                        box.textContent = '🎁';
-                        box.style.background = '';
-                        box.style.transform = '';
-                        box.style.opacity = '1';
-                        box.style.transition = '';
-                    }, 500);
-                }, 500);
-            } else if (index === MOVE_GIFTS_INDEX) {
-                // Troll-paket: Får alla paket att röra sig!
-                const boxes = document.querySelectorAll('.gift-box-small');
-                boxes.forEach((b, i) => {
-                    if (i !== index) {
-                        const randomX = (Math.random() - 0.5) * 50;
-                        const randomY = (Math.random() - 0.5) * 50;
-                        b.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                        b.style.transition = 'transform 0.3s';
+                    // Troll-paket: Sprängs!
+                    if (box) {
+                        box.textContent = '💥';
+                        box.style.background = 'linear-gradient(135deg, #ff0000, #ff6600)';
+                        box.style.transform = 'scale(1.5) rotate(360deg)';
+                        box.style.transition = 'all 0.5s';
+                        
+                        setTimeout(() => {
+                            box.style.opacity = '0';
+                            setTimeout(() => {
+                                box.textContent = '🎁';
+                                box.style.background = '';
+                                box.style.transform = '';
+                                box.style.opacity = '1';
+                                box.style.transition = '';
+                            }, 500);
+                        }, 500);
                     }
-                });
-                
-                // Stoppa rörelse efter 2 sekunder
-                setTimeout(() => {
-                    boxes.forEach((b, i) => {
-                        if (i !== index) {
-                            b.style.transform = '';
+                } else if (index === MOVE_GIFTS_INDEX) {
+                    // Troll-paket: Får alla paket att röra sig!
+                    const allBoxes = document.querySelectorAll('.gift-box-small');
+                    allBoxes.forEach((b) => {
+                        const originalIdx = parseInt(b.dataset.originalIndex);
+                        if (originalIdx !== index) {
+                            const randomX = (Math.random() - 0.5) * 50;
+                            const randomY = (Math.random() - 0.5) * 50;
+                            b.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                            b.style.transition = 'transform 0.3s';
                         }
                     });
-                }, 2000);
-            } else {
-                // Vanligt fel paket - lite animation
-                const box = document.querySelectorAll('.gift-box-small')[index];
-                box.style.transform = 'scale(0.9)';
-                box.style.opacity = '0.7';
-                setTimeout(() => {
-                    box.style.transform = '';
-                    box.style.opacity = '';
-                }, 300);
+                    
+                    // Stoppa rörelse efter 2 sekunder
+                    setTimeout(() => {
+                        allBoxes.forEach((b) => {
+                            const originalIdx = parseInt(b.dataset.originalIndex);
+                            if (originalIdx !== index) {
+                                b.style.transform = '';
+                            }
+                        });
+                    }, 2000);
+                } else {
+                    // Vanligt fel paket - lite animation
+                    if (box) {
+                        box.style.transform = 'scale(0.85)';
+                        box.style.opacity = '0.6';
+                        box.style.filter = 'grayscale(50%)';
+                        setTimeout(() => {
+                            box.style.transform = '';
+                            box.style.opacity = '';
+                            box.style.filter = '';
+                        }, 400);
+                    }
+                }
             }
         }
         
