@@ -492,13 +492,170 @@
             font-size: 0.9em;
         }
 
-        /* Final Reveal - Presentkort */
+        /* Final Reveal - Paketväljare */
         .final-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 80vh;
             padding: 40px 20px;
+        }
+
+        .gift-selection-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin: 30px 0;
+        }
+
+        .gift-box-small {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f, #ff8c8c);
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: boxFloat 3s ease-in-out infinite;
+        }
+
+        .gift-box-small:nth-child(odd) {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes boxFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .gift-box-small:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+            border-color: #fff;
+        }
+
+        .gift-box-small.correct {
+            border-color: #4caf50;
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+            animation: correctPulse 1s ease-in-out;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .gift-box-large-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto;
+        }
+
+        .gift-box-large-container.show {
+            display: flex;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .gift-box-large {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f, #ff8c8c);
+            border: 5px solid #ffd700;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6em;
+            cursor: pointer;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6),
+                        0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: all 0.3s;
+            animation: largeBoxPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes largeBoxPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), 0 20px 60px rgba(0, 0, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 70px rgba(255, 215, 0, 0.8), 0 25px 70px rgba(0, 0, 0, 0.6); }
+        }
+
+        .gift-box-large:hover {
+            transform: scale(1.1);
+        }
+
+        .gift-box-large.opening {
+            animation: openBox 1s ease-out forwards;
+        }
+
+        @keyframes openBox {
+            0% { transform: scale(1) rotateY(0deg); }
+            50% { transform: scale(1.2) rotateY(90deg); }
+            100% { transform: scale(1) rotateY(0deg); opacity: 0; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .open-instruction {
+            margin-top: 20px;
+            color: #ffd700;
+            font-size: 1.2em;
+            text-align: center;
+            min-height: 30px;
+        }
+
+        .open-progress {
+            width: 300px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .open-progress.show {
+            display: block;
+        }
+
+        .open-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            width: 0%;
+            transition: width 0.1s;
+            border-radius: 5px;
+        }
+
+        /* Presentkort (visas efter öppning) */
+        .gift-card-container {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .gift-card-container.show {
+            display: block;
+            animation: cardReveal 1.5s ease-out;
         }
 
         .gift-card {
@@ -1095,7 +1252,7 @@
                     </div>
                     
                     <div class="gift-card-footer">
-                        <div class="gift-message">God Jul pappa! ❤️</div>
+                        <div class="gift-message">God Jul Dan! ❤️</div>
                     </div>
                 </div>
                 
@@ -1236,6 +1393,7 @@
             // Stop popups on final view
             if (level === 6) {
                 stopAnnoyingPopups();
+                setTimeout(() => initGiftSelection(), 100);
             } else if (level > 0 && !popupInterval) {
                 // Start popups if game is active
                 startAnnoyingPopups();
