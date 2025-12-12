@@ -366,6 +366,69 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
+        /* Annoying Popups */
+        .annoying-popup {
+            position: fixed;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+            z-index: 10000;
+            cursor: pointer;
+            font-size: 1.1em;
+            text-align: center;
+            color: #fff;
+            min-width: 250px;
+            animation: popupPulse 0.5s ease-out;
+            user-select: none;
+        }
+
+        .annoying-popup.moving {
+            transition: all 0.3s ease-out;
+        }
+
+        @keyframes popupPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .annoying-popup button {
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .annoying-popup button:hover {
+            background: #ffed4e;
+        }
+
+        .annoying-popup .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .annoying-popup .close-btn:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
         /* Hints */
         .hint-container {
             margin-top: 20px;
@@ -830,6 +893,14 @@
             localStorage.setItem('escapeRoomLevel', level);
             updateProgress();
             
+            // Stop popups on final view
+            if (level === 6) {
+                stopAnnoyingPopups();
+            } else if (level > 0 && !popupInterval) {
+                // Start popups if game is active
+                startAnnoyingPopups();
+            }
+            
             // Initialize level-specific features when switching views
             if (level === 2) {
                 setTimeout(() => initMemoryGame(), 100); // Small delay to ensure DOM is ready
@@ -844,6 +915,7 @@
 
         function startGame() {
             showView(1);
+            startAnnoyingPopups();
         }
 
         // ============================================
