@@ -1363,10 +1363,10 @@
                 clearInterval(memorySwapInterval);
             }
             
-            // Swap two unmatched cards every 10 seconds
+            // Swap two unmatched cards every 3 seconds (make it really hard!)
             memorySwapInterval = setInterval(() => {
                 swapTwoUnmatchedCards();
-            }, 10000); // 10 seconds
+            }, 3000); // 3 seconds - very challenging!
         }
         
         function stopMemoryCardSwapping() {
