@@ -556,6 +556,9 @@
             font-size: 2.5em;
             user-select: none;
             pointer-events: none;
+        }
+
+        .swimming-fish.visible {
             animation: swim 3s linear infinite;
         }
 
@@ -566,6 +569,13 @@
             100% {
                 transform: translateX(calc(100vw + 100px)) translateY(0);
             }
+        }
+
+        .fish-count-phase {
+            color: #ffd700;
+            font-size: 1.1em;
+            margin: 15px 0;
+            font-weight: bold;
         }
 
         .fish-count-input-container {
@@ -2255,10 +2265,11 @@
         // ============================================
         let currentFishRound = 0;
         let fishTimer = null;
-        let fishTimeLeft = 3;
+        let fishTimeLeft = 15; // Mer tid nu!
         let fishAnswered = false;
         let fishInterval = null;
         let correctFishCount = 0;
+        let fishPhase = 'showing'; // 'showing' eller 'counting'
         
         // 5 rundor med olika antal fiskar
         const fishRounds = [
@@ -2297,18 +2308,20 @@
             
             const round = fishRounds[roundIndex];
             currentFishRound = roundIndex;
-            fishTimeLeft = 3;
+            fishTimeLeft = 15;
             fishAnswered = false;
+            fishPhase = 'showing';
             
             container.innerHTML = `
                 <div class="fish-count-question">
                     <div class="fish-count-round">Runda ${roundIndex + 1} av ${fishRounds.length}</div>
+                    <div class="fish-count-phase" id="fishPhase">Titta på fiskarna...</div>
                     <div class="fish-count-text">${round.text}</div>
-                    <div class="fish-count-timer" id="fishTimer">${fishTimeLeft}</div>
+                    <div class="fish-count-timer" id="fishTimer" style="display: none;"></div>
                     
                     <div class="fish-arena" id="fishArena"></div>
                     
-                    <div class="fish-count-input-container">
+                    <div class="fish-count-input-container" id="fishInputContainer" style="display: none;">
                         <input type="number" class="fish-count-input" id="fishInput" placeholder="?" min="0" max="50" autofocus>
                         <button class="fish-count-submit" onclick="submitFishAnswer()">Svara</button>
                     </div>
@@ -2317,8 +2330,36 @@
                 </div>
             `;
             
-            // Skapa fiskar som rör sig
-            createSwimmingFish(round.count);
+            // Skapa fiskar (alla synliga, inte rör sig ännu)
+            createSwimmingFish(round.count, false);
+            
+            // Efter 3 sekunder, visa input och starta timer
+            setTimeout(() => {
+                startCountingPhase();
+            }, 3000);
+        }
+        
+        function startCountingPhase() {
+            fishPhase = 'counting';
+            fishTimeLeft = 15;
+            
+            const phaseEl = document.getElementById('fishPhase');
+            const timerEl = document.getElementById('fishTimer');
+            const inputContainer = document.getElementById('fishInputContainer');
+            const arena = document.getElementById('fishArena');
+            
+            if (phaseEl) phaseEl.textContent = 'Räkna fiskarna nu!';
+            if (timerEl) {
+                timerEl.style.display = 'block';
+                timerEl.textContent = fishTimeLeft;
+            }
+            if (inputContainer) inputContainer.style.display = 'flex';
+            
+            // Få fiskarna att röra sig lite (men de ska fortfarande vara synliga)
+            const fishes = arena.querySelectorAll('.swimming-fish');
+            fishes.forEach(fish => {
+                fish.classList.add('visible');
+            });
             
             // Starta timer
             startFishTimer();
@@ -2337,7 +2378,7 @@
             }, 100);
         }
         
-        function createSwimmingFish(count) {
+        function createSwimmingFish(count, shouldSwim = false) {
             const arena = document.getElementById('fishArena');
             if (!arena) return;
             
@@ -2351,18 +2392,24 @@
                 fish.className = 'swimming-fish';
                 fish.textContent = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
                 
-                // Slumpmässig startposition (vertikal)
+                // Slumpmässig position (sprid ut dem)
+                const startX = Math.random() * (arenaRect.width - 80);
                 const startY = Math.random() * (arenaRect.height - 60);
+                fish.style.left = startX + 'px';
                 fish.style.top = startY + 'px';
-                
-                // Olika hastigheter och animation-delays
-                const speed = 2 + Math.random() * 2; // 2-4 sekunder
-                const delay = Math.random() * 2; // 0-2 sekunder delay
-                fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
                 
                 // Olika storlekar
                 const size = 0.8 + Math.random() * 0.4; // 0.8-1.2x
                 fish.style.transform = `scale(${size})`;
+                
+                // Om de ska simma, lägg till animation
+                if (shouldSwim) {
+                    fish.classList.add('visible');
+                    // Olika hastigheter och animation-delays
+                    const speed = 3 + Math.random() * 2; // 3-5 sekunder
+                    const delay = Math.random() * 1; // 0-1 sekunder delay
+                    fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
+                }
                 
                 arena.appendChild(fish);
             }
@@ -2374,6 +2421,8 @@
             }
             
             fishTimer = setInterval(() => {
+                if (fishPhase !== 'counting') return;
+                
                 fishTimeLeft--;
                 const timerEl = document.getElementById('fishTimer');
                 if (timerEl) {
