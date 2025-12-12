@@ -1108,7 +1108,12 @@
             // Initialize level-specific features when switching views
             if (level === 2) {
                 setTimeout(() => initMemoryGame(), 100); // Small delay to ensure DOM is ready
-            } else if (level === 3) {
+            } else {
+                // Stop memory swapping if leaving level 2
+                stopMemoryCardSwapping();
+            }
+            
+            if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
             } else if (level === 4) {
                 setTimeout(() => initLogicPuzzle(), 100);
