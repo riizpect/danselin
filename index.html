@@ -2091,7 +2091,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
         
         function skipFakeLoading() {
-            document.getElementById('fakeLoadingScreen').style.display = 'none';
+            document.getElementById('fakeLoadingScreen').classList.remove('show');
             
             // Now do the real init
             const savedLevel = localStorage.getItem('escapeRoomLevel');
@@ -2221,31 +2221,63 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             try {
                 audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Generate a simple background melody
-                const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C major scale
-                let noteIndex = 0;
+                // Christmas melody: "Jingle Bells" simplified
+                // Notes: E E E, E E E, E G C D E
+                const melody = [
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 329.63, duration: 400 }, // E (long)
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 329.63, duration: 400 }, // E (long)
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 392.00, duration: 200 }, // G
+                    { freq: 261.63, duration: 200 }, // C
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 329.63, duration: 600 }, // E (long)
+                    // Rest
+                    { freq: 0, duration: 200 },
+                    // Repeat with variation
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 293.66, duration: 400 }, // D (long)
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 293.66, duration: 400 }, // D (long)
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 329.63, duration: 200 }, // E
+                    { freq: 293.66, duration: 200 }, // D
+                    { freq: 246.94, duration: 200 }, // B
+                    { freq: 261.63, duration: 600 }, // C (long)
+                ];
+                
+                let melodyIndex = 0;
                 
                 function playNote() {
                     if (!backgroundMusicPlaying || !audioContext) return;
                     
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
+                    const note = melody[melodyIndex];
                     
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
+                    if (note.freq > 0) {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = note.freq;
+                        oscillator.type = 'triangle'; // Softer sound
+                        
+                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + note.duration / 1000);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + note.duration / 1000);
+                    }
                     
-                    oscillator.frequency.value = notes[noteIndex];
-                    oscillator.type = 'sine';
+                    melodyIndex = (melodyIndex + 1) % melody.length;
                     
-                    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                    
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                    
-                    noteIndex = (noteIndex + 1) % notes.length;
-                    
-                    setTimeout(playNote, 600);
+                    setTimeout(playNote, note.duration);
                 }
                 
                 backgroundMusicPlaying = true;
