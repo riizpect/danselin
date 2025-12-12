@@ -1171,7 +1171,7 @@
                 // Use the code from CONFIG
                 const code = CONFIG.logicCode;
                 showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
-                // Show troll popup after completing level 4
+                // Show troll popup after completing level 4 (only first time)
                 setTimeout(() => {
                     showRestartTrollPopup();
                 }, 1500);
@@ -1410,6 +1410,8 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         // ============================================
         let popupInterval = null;
         let popupCount = 0;
+        let nextPopupTimeout = null;
+        let isPopupOpen = false;
 
         const annoyingMessages = [
             "Har du kollat under sängen?",
@@ -1435,6 +1437,12 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         ];
 
         function createAnnoyingPopup(message, isMoving = false, hasClose = true) {
+            // Don't create if another popup is already open
+            if (isPopupOpen) {
+                return;
+            }
+            
+            isPopupOpen = true;
             popupCount++;
             
             // Create overlay to block interaction
@@ -1541,13 +1549,44 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 setTimeout(() => {
                     popup.remove();
                     if (overlay) overlay.remove();
+                    isPopupOpen = false;
+                    
+                    // Schedule next popup after 15 seconds
+                    if (nextPopupTimeout) {
+                        clearTimeout(nextPopupTimeout);
+                    }
+                    nextPopupTimeout = setTimeout(() => {
+                        if (currentLevel > 0 && currentLevel < 6 && !isPopupOpen) {
+                            const isMoving = Math.random() > 0.7;
+                            const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
+                            createAnnoyingPopup(message, isMoving, true);
+                        }
+                    }, 15000);
                 }, 300);
             } else if (overlay) {
                 overlay.remove();
+                isPopupOpen = false;
             }
         }
 
         function showRestartTrollPopup() {
+            // Check if troll popup has already been shown (first time only)
+            const hasShownTroll = localStorage.getItem('hasShownTrollPopup');
+            if (hasShownTroll === 'true') {
+                // Skip troll popup, go directly to level 5
+                setTimeout(() => showView(5), 500);
+                return;
+            }
+            
+            // Don't create if another popup is already open
+            if (isPopupOpen) {
+                return;
+            }
+            
+            // Mark as shown
+            localStorage.setItem('hasShownTrollPopup', 'true');
+            
+            isPopupOpen = true;
             popupCount++;
             
             // Create overlay to block interaction
@@ -1605,8 +1644,11 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 overlay.remove();
             }
             
+            isPopupOpen = false;
+            
             // Reset everything and restart
             localStorage.removeItem('escapeRoomLevel');
+            localStorage.removeItem('hasShownTrollPopup'); // Reset so it shows again next time
             currentLevel = 0;
             hintStates = {};
             popupCount = 0;
@@ -1666,23 +1708,19 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 clearInterval(popupInterval);
             }
             
-            // Show first popup immediately
-            if (currentLevel > 0 && currentLevel < 6) {
+            // Clear any pending popup timeout
+            if (nextPopupTimeout) {
+                clearTimeout(nextPopupTimeout);
+            }
+            
+            // Show first popup immediately (only if no popup is open)
+            if (currentLevel > 0 && currentLevel < 6 && !isPopupOpen) {
                 const isMoving = Math.random() > 0.7; // 30% chance of moving popup
                 const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
                 createAnnoyingPopup(message, isMoving, true);
             }
             
-            // Show popups every 10 seconds
-            popupInterval = setInterval(() => {
-                if (currentLevel > 0 && currentLevel < 6) {
-                    const isMoving = Math.random() > 0.7; // 30% chance of moving popup
-                    const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
-                    createAnnoyingPopup(message, isMoving, true);
-                }
-            }, 10000); // 10 seconds
-            
-            // Troll popup is now shown after completing level 4, not here
+            // Don't use interval anymore - popups are scheduled when previous one closes
         }
 
         function stopAnnoyingPopups() {
