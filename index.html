@@ -492,7 +492,7 @@
             font-size: 0.9em;
         }
 
-        /* Final Reveal - Negationstest */
+        /* Final Reveal - Instruktionsspel */
         .final-container {
             display: flex;
             flex-direction: column;
@@ -502,13 +502,13 @@
             padding: 40px 20px;
         }
 
-        .negation-test-container {
-            max-width: 700px;
+        .instruction-test-container {
+            max-width: 800px;
             width: 100%;
             margin: 20px auto;
         }
 
-        .negation-question {
+        .instruction-question {
             background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
             border: 3px solid #ffd700;
             border-radius: 20px;
@@ -518,115 +518,126 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        .negation-question-number {
-            color: #ffd700;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .negation-question-text {
+        .instruction-text {
             color: #fff;
-            font-size: 1.3em;
+            font-size: 1.5em;
             line-height: 1.6;
             margin: 20px 0;
-            min-height: 80px;
+            font-weight: bold;
+            min-height: 60px;
         }
 
-        .negation-package {
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            border: 4px solid #ffd700;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4em;
-            cursor: pointer;
-            margin: 30px auto;
-            transition: all 0.3s;
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .negation-package:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
-        }
-
-        .negation-package.opening {
-            animation: packageOpen 0.8s ease-out forwards;
-        }
-
-        @keyframes packageOpen {
-            0% { transform: scale(1) rotateY(0deg); }
-            50% { transform: scale(1.2) rotateY(90deg); }
-            100% { transform: scale(1) rotateY(0deg); opacity: 0.3; }
-        }
-
-        .negation-package-content {
-            position: absolute;
-            font-size: 3em;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.5s;
-        }
-
-        .negation-package-content.revealed {
-            opacity: 1;
-            transform: scale(1);
-            animation: contentReveal 0.6s ease-out;
-        }
-
-        @keyframes contentReveal {
-            0% { transform: scale(0) rotate(-180deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .negation-answer-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+        .instruction-timer {
+            color: #ff6b6b;
+            font-size: 2em;
+            font-weight: bold;
             margin: 20px 0;
+            animation: timerPulse 1s infinite;
         }
 
-        .negation-button {
-            padding: 15px 40px;
-            font-size: 1.2em;
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .instruction-buttons-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .instruction-button {
+            padding: 20px 30px;
+            font-size: 1.3em;
             border: 3px solid #ffd700;
             border-radius: 10px;
             background: rgba(0, 0, 0, 0.5);
             color: #ffd700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-weight: bold;
+            min-width: 120px;
         }
 
-        .negation-button:hover {
+        .instruction-button:hover {
             background: rgba(255, 215, 0, 0.2);
             transform: scale(1.05);
         }
 
-        .negation-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .instruction-button:active {
+            transform: scale(0.95);
         }
 
-        .negation-feedback {
+        .instruction-button.clicked {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .instruction-button.wrong-click {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .instruction-doors-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .instruction-door {
+            width: 120px;
+            height: 180px;
+            background: linear-gradient(135deg, #8b4513, #654321);
+            border: 4px solid #ffd700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .instruction-door:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        }
+
+        .instruction-door.opened {
+            transform: rotateY(90deg);
+            opacity: 0.5;
+        }
+
+        .instruction-feedback {
             text-align: center;
             margin: 20px 0;
             min-height: 40px;
             font-size: 1.2em;
+            font-weight: bold;
         }
 
-        .negation-feedback.correct {
+        .instruction-feedback.correct {
             color: #4caf50;
         }
 
-        .negation-feedback.wrong {
+        .instruction-feedback.wrong {
             color: #ff6b6b;
+        }
+
+        .instruction-feedback.timeout {
+            color: #ffaa00;
         }
 
         .gift-box-large-container {
@@ -1403,8 +1414,8 @@
                 <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
                 <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
-                <!-- Negationstest -->
-                <div class="negation-test-container" id="negationTestContainer"></div>
+                <!-- Instruktionsspel -->
+                <div class="instruction-test-container" id="instructionTestContainer"></div>
                 
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
@@ -1618,7 +1629,7 @@
             // Stop popups on final view
             if (level === 6) {
                 stopAnnoyingPopups();
-                setTimeout(() => initNegationTest(), 100);
+                setTimeout(() => initInstructionTest(), 100);
             } else if (level > 0 && !popupInterval) {
                 // Start popups if game is active
                 startAnnoyingPopups();
@@ -2237,134 +2248,202 @@
         }
 
         // ============================================
-        // FINAL REVEAL - Negationstest
+        // FINAL REVEAL - Instruktionsspel (STRESSIGT!)
         // ============================================
-        let currentNegationQuestion = 0;
-        let negationAnswers = [];
+        let currentInstruction = 0;
+        let instructionTimer = null;
+        let instructionTimeLeft = 3;
+        let instructionAnswered = false;
         
-        // 5 frågor med AVANCERADE negationer (4-6 negationer!)
-        const negationQuestions = [
+        // Instruktioner med olika typer
+        const instructions = [
             {
-                text: "I detta paket ligger det inte något som inte saknar innehåll som inte är frånvarande",
-                hasContent: true, // "inte något som inte saknar innehåll som inte är frånvarande" = 4 negationer (jämnt) = finns
-                content: "🐕",
-                explanation: "4 negationer (jämnt) = det finns något! Inte + inte saknar + inte frånvarande = dubbel negation = finns!"
+                type: 'dont-click',
+                text: "Klicka INTE på den röda knappen",
+                buttons: [
+                    { color: 'red', isCorrect: false },
+                    { color: 'blue', isCorrect: true },
+                    { color: 'green', isCorrect: true }
+                ]
             },
             {
-                text: "Detta paket innehåller inte något som inte är tomt på saker som inte saknas",
-                hasContent: true, // "inte något som inte är tomt på saker som inte saknas" = 4 negationer (jämnt) = finns
-                content: "🎁",
-                explanation: "4 negationer (jämnt) = det finns något! Inte + inte tomt + inte saknas = dubbel negation = finns!"
+                type: 'click-color',
+                text: "Klicka på den gröna knappen",
+                buttons: [
+                    { color: 'red', isCorrect: false },
+                    { color: 'blue', isCorrect: false },
+                    { color: 'green', isCorrect: true },
+                    { color: 'yellow', isCorrect: false },
+                    { color: 'purple', isCorrect: false }
+                ]
             },
             {
-                text: "Här finns det ingen sak som inte saknar innehåll som inte är frånvarande som inte finns",
-                hasContent: false, // "ingen sak som inte saknar innehåll som inte är frånvarande som inte finns" = 5 negationer (udda) = tomt
-                content: "",
-                explanation: "5 negationer (udda) = paketet är tomt! Ingen + inte saknar + inte frånvarande + inte finns = udda antal = tomt!"
+                type: 'doors',
+                text: "Öppna dörren till höger om den vänstra dörren",
+                doors: 3 // 3 dörrar, öppna den mellersta (höger om vänstra = mitten)
             },
             {
-                text: "Detta paket är inte tomt på saker som inte saknas och som inte är frånvarande",
-                hasContent: true, // "inte tomt på saker som inte saknas och som inte är frånvarande" = 4 negationer (jämnt) = finns
-                content: "💎",
-                explanation: "4 negationer (jämnt) = det finns något! Inte tomt + inte saknas + inte frånvarande = jämnt antal = finns!"
+                type: 'dont-click',
+                text: "Klicka INTE på den blå knappen",
+                buttons: [
+                    { color: 'red', isCorrect: true },
+                    { color: 'blue', isCorrect: false },
+                    { color: 'green', isCorrect: true },
+                    { color: 'yellow', isCorrect: true }
+                ]
             },
             {
-                text: "I detta paket ligger det inte något som inte saknar innehåll som inte är frånvarande som inte finns",
-                hasContent: false, // "inte något som inte saknar innehåll som inte är frånvarande som inte finns" = 5 negationer (udda) = tomt
-                content: "",
-                explanation: "5 negationer (udda) = paketet är tomt! Inte + inte saknar + inte frånvarande + inte finns = udda antal = tomt!"
+                type: 'click-color',
+                text: "Klicka på den röda knappen",
+                buttons: [
+                    { color: 'blue', isCorrect: false },
+                    { color: 'green', isCorrect: false },
+                    { color: 'red', isCorrect: true },
+                    { color: 'yellow', isCorrect: false }
+                ]
+            },
+            {
+                type: 'doors',
+                text: "Öppna den vänstra dörren",
+                doors: 3 // 3 dörrar, öppna den vänstra
             }
         ];
         
-        function initNegationTest() {
-            const container = document.getElementById('negationTestContainer');
+        function initInstructionTest() {
+            const container = document.getElementById('instructionTestContainer');
             if (!container) return;
             
-            currentNegationQuestion = 0;
-            negationAnswers = [];
+            currentInstruction = 0;
+            instructionAnswered = false;
             
             // Dölj stort paket och presentkort
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Visa första frågan
-            showNegationQuestion(0);
+            // Visa första instruktionen
+            showInstruction(0);
         }
         
-        function showNegationQuestion(questionIndex) {
-            const container = document.getElementById('negationTestContainer');
-            if (!container || questionIndex >= negationQuestions.length) {
-                // Alla frågor besvarade - visa stort paket!
+        function showInstruction(instructionIndex) {
+            const container = document.getElementById('instructionTestContainer');
+            if (!container || instructionIndex >= instructions.length) {
+                // Alla instruktioner klara - visa stort paket!
                 showFinalGiftBox();
                 return;
             }
             
-            const question = negationQuestions[questionIndex];
-            currentNegationQuestion = questionIndex;
+            const instruction = instructions[instructionIndex];
+            currentInstruction = instructionIndex;
+            instructionTimeLeft = 3;
+            instructionAnswered = false;
             
-            container.innerHTML = `
-                <div class="negation-question">
-                    <div class="negation-question-number">Fråga ${questionIndex + 1} av ${negationQuestions.length}</div>
-                    <div class="negation-question-text">${question.text}</div>
-                    
-                    <div class="negation-package" id="negationPackage${questionIndex}">
-                        <span>🎁</span>
-                        <div class="negation-package-content" id="negationContent${questionIndex}">${question.hasContent ? question.content : ''}</div>
-                    </div>
-                    
-                    <div class="negation-answer-buttons">
-                        <button class="negation-button" onclick="answerNegationQuestion(true)">Det finns något i paketet</button>
-                        <button class="negation-button" onclick="answerNegationQuestion(false)">Paketet är tomt</button>
-                    </div>
-                    
-                    <div class="negation-feedback" id="negationFeedback${questionIndex}"></div>
-                </div>
+            let html = `
+                <div class="instruction-question">
+                    <div class="instruction-text">${instruction.text}</div>
+                    <div class="instruction-timer" id="instructionTimer">${instructionTimeLeft}</div>
             `;
+            
+            if (instruction.type === 'dont-click' || instruction.type === 'click-color') {
+                html += '<div class="instruction-buttons-container">';
+                instruction.buttons.forEach((btn, index) => {
+                    html += `<button class="instruction-button" style="background: ${btn.color};" onclick="handleInstructionClick(${index}, ${btn.isCorrect})">${btn.color}</button>`;
+                });
+                html += '</div>';
+            } else if (instruction.type === 'doors') {
+                html += '<div class="instruction-doors-container">';
+                for (let i = 0; i < instruction.doors; i++) {
+                    const isCorrect = (instruction.text.includes('höger om den vänstra') && i === 1) || 
+                                     (instruction.text.includes('vänstra') && i === 0) ||
+                                     (instruction.text.includes('högra') && i === instruction.doors - 1);
+                    html += `<div class="instruction-door" onclick="handleDoorClick(${i}, ${isCorrect})">🚪</div>`;
+                }
+                html += '</div>';
+            }
+            
+            html += `<div class="instruction-feedback" id="instructionFeedback"></div></div>`;
+            
+            container.innerHTML = html;
+            
+            // Starta timer
+            startInstructionTimer();
         }
         
-        function answerNegationQuestion(hasContent) {
-            const question = negationQuestions[currentNegationQuestion];
-            const packageEl = document.getElementById(`negationPackage${currentNegationQuestion}`);
-            const contentEl = document.getElementById(`negationContent${currentNegationQuestion}`);
-            const feedbackEl = document.getElementById(`negationFeedback${currentNegationQuestion}`);
-            const buttons = document.querySelectorAll('.negation-button');
+        function startInstructionTimer() {
+            if (instructionTimer) {
+                clearInterval(instructionTimer);
+            }
             
-            // Disable buttons
-            buttons.forEach(btn => btn.disabled = true);
+            instructionTimer = setInterval(() => {
+                instructionTimeLeft--;
+                const timerEl = document.getElementById('instructionTimer');
+                if (timerEl) {
+                    timerEl.textContent = instructionTimeLeft;
+                    
+                    if (instructionTimeLeft <= 0) {
+                        // Tiden är ute!
+                        clearInterval(instructionTimer);
+                        if (!instructionAnswered) {
+                            const feedbackEl = document.getElementById('instructionFeedback');
+                            feedbackEl.textContent = '⏱️ Tiden är ute! Går vidare...';
+                            feedbackEl.className = 'instruction-feedback timeout';
+                            
+                            setTimeout(() => {
+                                showInstruction(currentInstruction + 1);
+                            }, 1500);
+                        }
+                    }
+                }
+            }, 1000);
+        }
+        
+        function handleInstructionClick(buttonIndex, isCorrect) {
+            if (instructionAnswered) return;
             
-            // Spara svaret
-            negationAnswers.push(hasContent);
+            instructionAnswered = true;
+            clearInterval(instructionTimer);
             
-            // Öppna paketet
-            packageEl.classList.add('opening');
+            const buttons = document.querySelectorAll('.instruction-button');
+            const feedbackEl = document.getElementById('instructionFeedback');
             
+            if (isCorrect) {
+                buttons[buttonIndex].classList.add('clicked');
+                feedbackEl.textContent = '✅ Rätt!';
+                feedbackEl.className = 'instruction-feedback correct';
+            } else {
+                buttons[buttonIndex].classList.add('wrong-click');
+                feedbackEl.textContent = '❌ Fel!';
+                feedbackEl.className = 'instruction-feedback wrong';
+            }
+            
+            // Gå vidare efter 1 sekund
             setTimeout(() => {
-                // Visa innehållet (eller tomt om det är tomt)
-                if (question.hasContent) {
-                    contentEl.classList.add('revealed');
-                } else {
-                    // Paketet är tomt - visa ingenting eller tomt-tecken
-                    contentEl.textContent = '📦';
-                    contentEl.style.opacity = '0.3';
-                    contentEl.classList.add('revealed');
-                }
-                
-                // Kolla om svaret var rätt
-                const isCorrect = hasContent === question.hasContent;
-                
-                if (isCorrect) {
-                    feedbackEl.textContent = `✅ Rätt! ${question.explanation}`;
-                    feedbackEl.className = 'negation-feedback correct';
-                } else {
-                    feedbackEl.textContent = `❌ Fel! ${question.explanation}`;
-                    feedbackEl.className = 'negation-feedback wrong';
-                }
-                
-                // Gå vidare till nästa fråga efter 4 sekunder (mer tid för att läsa)
-                setTimeout(() => {
-                    showNegationQuestion(currentNegationQuestion + 1);
-                }, 4000);
-            }, 800);
+                showInstruction(currentInstruction + 1);
+            }, 1000);
+        }
+        
+        function handleDoorClick(doorIndex, isCorrect) {
+            if (instructionAnswered) return;
+            
+            instructionAnswered = true;
+            clearInterval(instructionTimer);
+            
+            const doors = document.querySelectorAll('.instruction-door');
+            const feedbackEl = document.getElementById('instructionFeedback');
+            
+            if (isCorrect) {
+                doors[doorIndex].classList.add('opened');
+                feedbackEl.textContent = '✅ Rätt!';
+                feedbackEl.className = 'instruction-feedback correct';
+            } else {
+                doors[doorIndex].classList.add('opened');
+                feedbackEl.textContent = '❌ Fel!';
+                feedbackEl.className = 'instruction-feedback wrong';
+            }
+            
+            // Gå vidare efter 1 sekund
+            setTimeout(() => {
+                showInstruction(currentInstruction + 1);
+            }, 1000);
         }
         
         function showFinalGiftBox() {
