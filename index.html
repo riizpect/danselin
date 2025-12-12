@@ -1583,6 +1583,12 @@
                 stopAnnoyingPopups();
                 popupCount = 0;
                 fakeLevelCompleteShown = {}; // Reset fake level complete
+                if (fakeCountdownInterval) {
+                    clearInterval(fakeCountdownInterval);
+                    const countdown = document.getElementById('fakeCountdown');
+                    if (countdown) countdown.remove();
+                }
+                backgroundMusicPlaying = false;
                 showView(0);
             }
         }
