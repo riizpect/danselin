@@ -651,7 +651,6 @@
         let currentLevel = 0;
         let titleClickCount = 0;
         let adminMode = false;
-        let hotspotSequence = [];
         let timingInput = [];
 
         // ============================================
@@ -672,7 +671,7 @@
             updateProgress();
             
             // Initialize level-specific features
-            if (currentLevel === 2) initHotspots();
+            if (currentLevel === 2) initMemoryGame();
             if (currentLevel === 4) initLogicPuzzle();
             if (currentLevel === 5) initTimingPuzzle();
             if (currentLevel === 3) {
@@ -1077,7 +1076,6 @@
             if (confirm('Är du säker på att du vill börja om från början? All progress kommer att försvinna.')) {
                 localStorage.removeItem('escapeRoomLevel');
                 currentLevel = 0;
-                hotspotSequence = [];
                 timingInput = [];
                 hintStates = {};
                 
