@@ -641,21 +641,23 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             margin: 20px 0;
+            position: relative;
         }
 
         .color-button {
             aspect-ratio: 1;
-            border: 4px solid #fff;
-            border-radius: 20px;
+            border: 5px solid #fff;
+            border-radius: 25px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
+                        0 0 0 0 rgba(255, 255, 255, 0.5);
         }
 
         .color-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
 
         .color-button:active {
@@ -663,36 +665,82 @@
         }
 
         .color-button.disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             pointer-events: none;
         }
 
         .color-button.flash {
-            animation: colorFlash 0.5s;
+            animation: colorFlash 0.4s;
         }
 
         .color-button.pressed {
             transform: scale(0.9);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .color-button.moving {
+            animation: colorMove 3s ease-in-out infinite;
+        }
+
+        .color-button.distraction {
+            animation: distractionBlink 0.3s;
         }
 
         @keyframes colorFlash {
             0%, 100% { 
                 transform: scale(1);
-                filter: brightness(1);
+                filter: brightness(1) saturate(1);
             }
             50% { 
-                transform: scale(1.1);
-                filter: brightness(1.5);
-                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+                transform: scale(1.15);
+                filter: brightness(1.8) saturate(1.5);
+                box-shadow: 0 0 50px rgba(255, 255, 255, 1),
+                            0 0 80px currentColor;
             }
         }
 
-        .color-red { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
-        .color-blue { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
-        .color-yellow { background: linear-gradient(135deg, #ffe66d, #ffd93d); }
-        .color-green { background: linear-gradient(135deg, #95e1d3, #6bcf7f); }
+        @keyframes colorMove {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(10px, -5px) rotate(2deg);
+            }
+            50% {
+                transform: translate(-8px, 8px) rotate(-2deg);
+            }
+            75% {
+                transform: translate(5px, 5px) rotate(1deg);
+            }
+        }
+
+        @keyframes distractionBlink {
+            0%, 100% {
+                filter: brightness(1);
+            }
+            50% {
+                filter: brightness(2) saturate(2);
+            }
+        }
+
+        /* STARKARE, KLARARE FÄRGER */
+        .color-red { 
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+        }
+        .color-blue { 
+            background: linear-gradient(135deg, #0066ff, #0044cc);
+            box-shadow: 0 6px 20px rgba(0, 102, 255, 0.5);
+        }
+        .color-yellow { 
+            background: linear-gradient(135deg, #ffdd00, #ffaa00);
+            box-shadow: 0 6px 20px rgba(255, 221, 0, 0.5);
+        }
+        .color-green { 
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.5);
+        }
 
         .sequence-instruction {
             text-align: center;
@@ -2138,6 +2186,8 @@
             sequenceLevel = 1;
             sequence = [];
             playerSequence = [];
+            colorPositions = [0, 1, 2, 3];
+            stopColorEffects();
             
             // Stoppa eventuell rörelse
             if (giftBoxMovingInterval) {
@@ -2245,7 +2295,7 @@
             }
         }
         
-        // Öppningssekvens: Färgsekvens-spel (Simon Says)
+        // Öppningssekvens: Färgsekvens-spel (Simon Says) - MYCKET SVÅRARE!
         let sequenceGameStarted = false;
         let sequenceLevel = 1;
         let sequence = [];
@@ -2253,7 +2303,11 @@
         let isShowingSequence = false;
         let isPlayerTurn = false;
         const colors = ['red', 'blue', 'yellow', 'green'];
-        const MAX_SEQUENCE_LEVEL = 5;
+        const MAX_SEQUENCE_LEVEL = 7; // Fler nivåer!
+        let colorPositions = [0, 1, 2, 3]; // Positioner för färgerna
+        let movementInterval = null;
+        let distractionInterval = null;
+        let colorButtonMap = {}; // Mappar färg -> knapp element
         
         function handleGiftBoxClick(e) {
             const now = Date.now();
@@ -2280,8 +2334,95 @@
             document.getElementById('openInstruction').style.display = 'none';
             document.getElementById('colorSequenceContainer').classList.add('active');
             
+            // Sätt upp färgknapp-mappning
+            setupColorButtonMap();
+            
+            // Starta kontinuerlig rörelse
+            startColorMovement();
+            
+            // Starta distraktionsblinkningar
+            startDistractionBlinks();
+            
             // Starta första nivån
             startSequenceLevel();
+        }
+        
+        function setupColorButtonMap() {
+            colorButtonMap = {
+                'red': document.getElementById('colorRed'),
+                'blue': document.getElementById('colorBlue'),
+                'yellow': document.getElementById('colorYellow'),
+                'green': document.getElementById('colorGreen')
+            };
+        }
+        
+        function startColorMovement() {
+            // Färgerna rör sig kontinuerligt
+            movementInterval = setInterval(() => {
+                if (isPlayerTurn && !isShowingSequence) {
+                    // Byt position på färgerna var 2-3 sekunder när det är spelarens tur
+                    if (Math.random() < 0.3) { // 30% chans
+                        shuffleColorPositions();
+                    }
+                }
+            }, 2000);
+        }
+        
+        function shuffleColorPositions() {
+            // Blanda positionerna
+            const grid = document.querySelector('.color-grid');
+            const buttons = Array.from(grid.querySelectorAll('.color-button'));
+            
+            // Fisher-Yates shuffle av positioner
+            const positions = [0, 1, 2, 3];
+            for (let i = positions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+            
+            colorPositions = positions;
+            
+            // Flytta knapparna till nya positioner med animation
+            buttons.forEach((btn, index) => {
+                const newIndex = colorPositions[index];
+                btn.style.order = newIndex;
+                btn.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                btn.classList.add('moving');
+                
+                setTimeout(() => {
+                    btn.classList.remove('moving');
+                    btn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                }, 500);
+            });
+        }
+        
+        function startDistractionBlinks() {
+            // Distraktionsblinkningar - falska färger som blinkar
+            distractionInterval = setInterval(() => {
+                if (isShowingSequence || isPlayerTurn) {
+                    const buttons = document.querySelectorAll('.color-button');
+                    const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
+                    
+                    // Blinka en slumpmässig knapp (som inte är i sekvensen just nu)
+                    if (!randomButton.classList.contains('flash')) {
+                        randomButton.classList.add('distraction');
+                        setTimeout(() => {
+                            randomButton.classList.remove('distraction');
+                        }, 300);
+                    }
+                }
+            }, 800 + Math.random() * 1200); // Var 0.8-2 sekunder
+        }
+        
+        function stopColorEffects() {
+            if (movementInterval) {
+                clearInterval(movementInterval);
+                movementInterval = null;
+            }
+            if (distractionInterval) {
+                clearInterval(distractionInterval);
+                distractionInterval = null;
+            }
         }
         
         function startSequenceLevel() {
@@ -2289,10 +2430,13 @@
             const levelDisplay = document.getElementById('sequenceLevel');
             
             levelDisplay.textContent = `Nivå ${sequenceLevel} av ${MAX_SEQUENCE_LEVEL}`;
-            instruction.textContent = 'Titta noga på sekvensen!';
+            instruction.textContent = 'Titta N O G A på sekvensen!';
             
             // Lägg till en ny färg till sekvensen
             sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            
+            // BYT POSITION PÅ FÄRGERNA INNAN VARJE NIVÅ!
+            shuffleColorPositions();
             
             // Visa sekvensen
             isShowingSequence = true;
@@ -2301,7 +2445,7 @@
             
             setTimeout(() => {
                 showSequence(0);
-            }, 1000);
+            }, 1500);
         }
         
         function showSequence(index) {
@@ -2313,31 +2457,37 @@
                 enableAllButtons();
                 
                 const instruction = document.getElementById('sequenceInstruction');
-                instruction.textContent = 'Upprepa sekvensen!';
+                instruction.textContent = 'Upprepa sekvensen! (Färgerna kan ha flyttat sig!)';
                 return;
             }
             
             const color = sequence[index];
-            const button = document.getElementById(`color${color.charAt(0).toUpperCase() + color.slice(1)}`);
+            // Hitta rätt knapp baserat på färg (inte position!)
+            const button = colorButtonMap[color];
             
-            // Flash-knappen
+            if (!button) return;
+            
+            // Flash-knappen - STARKARE!
             button.classList.add('flash');
             playColorSound(color);
             
             setTimeout(() => {
                 button.classList.remove('flash');
                 
-                // Kort paus mellan färgerna
+                // SNABBARE paus mellan färgerna (svårare!)
                 setTimeout(() => {
                     showSequence(index + 1);
-                }, 300);
-            }, 600);
+                }, 200); // Snabbare! (tidigare 300)
+            }, 400); // Snabbare flash! (tidigare 600)
         }
         
         function handleColorClick(color) {
             if (!isPlayerTurn || isShowingSequence) return;
             
-            const button = document.getElementById(`color${color.charAt(0).toUpperCase() + color.slice(1)}`);
+            // Hitta rätt knapp baserat på färg (inte position!)
+            const button = colorButtonMap[color];
+            if (!button) return;
+            
             button.classList.add('pressed');
             playColorSound(color);
             
@@ -2359,6 +2509,7 @@
             if (playerSequence.length === sequence.length) {
                 if (sequenceLevel >= MAX_SEQUENCE_LEVEL) {
                     // Alla nivåer klara!
+                    stopColorEffects();
                     openGiftBox();
                 } else {
                     // Nästa nivå
@@ -2389,6 +2540,7 @@
                 sequenceLevel = 1;
                 sequence = [];
                 playerSequence = [];
+                colorPositions = [0, 1, 2, 3]; // Återställ positioner
                 instruction.style.color = '#ffd700';
                 startSequenceLevel();
             }, 2000);
@@ -2621,6 +2773,9 @@
         function openGiftBox() {
             // Stoppa troll-effekter
             stopGiftBoxTrollEffects();
+            
+            // Stoppa färgrörelser och distraktionsblinkningar
+            stopColorEffects();
             
             // Ta bort färgsekvens-spel
             document.getElementById('colorSequenceContainer').classList.remove('active');
