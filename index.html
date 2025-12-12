@@ -492,46 +492,34 @@
             font-size: 0.9em;
         }
 
-        /* Final Reveal */
+        /* Final Reveal - Presentkort */
         .final-container {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
             padding: 40px 20px;
         }
 
-        .gift-box {
-            width: 200px;
-            height: 200px;
-            margin: 30px auto;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            box-shadow: 0 0 50px rgba(255, 107, 107, 0.6);
-            animation: pulse 2s infinite;
-            cursor: pointer;
+        .gift-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.4), 
+                        0 20px 60px rgba(0, 0, 0, 0.5),
+                        inset 0 0 30px rgba(255, 215, 0, 0.1);
+            position: relative;
+            animation: cardReveal 1.5s ease-out;
+            text-align: center;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .gift-reveal {
-            display: none;
-            margin-top: 30px;
-            animation: reveal 1s ease-out;
-        }
-
-        .gift-reveal.show {
-            display: block;
-        }
-
-        @keyframes reveal {
+        @keyframes cardReveal {
             from {
                 opacity: 0;
-                transform: scale(0.5) rotateY(180deg);
+                transform: scale(0.8) rotateY(-10deg);
             }
             to {
                 opacity: 1;
@@ -539,17 +527,123 @@
             }
         }
 
-        .gift-title {
-            font-size: 2.5em;
+        .gift-card::before {
+            content: '🎁';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4em;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .gift-card-header {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .gift-card-title {
+            font-size: 2.8em;
             color: #ffd700;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                         2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .gift-card-subtitle {
+            font-size: 1.3em;
+            color: #fff;
+            margin: 10px 0 30px 0;
+            opacity: 0.9;
+        }
+
+        .gift-card-content {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .gift-info-row {
+            display: flex;
+            align-items: center;
             margin: 20px 0;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .gift-info-icon {
+            font-size: 2em;
+            margin-right: 20px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .gift-info-text {
+            flex: 1;
+            color: #fff;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .gift-info-label {
+            color: #ffd700;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gift-card-footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
         }
 
         .gift-message {
-            font-size: 1.5em;
-            margin-top: 30px;
-            color: #fff;
+            font-size: 1.8em;
+            color: #ffd700;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .gift-card {
+                padding: 30px 20px;
+            }
+
+            .gift-card-title {
+                font-size: 2em;
+            }
+
+            .gift-info-row {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .gift-info-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .gift-info-text {
+                text-align: center;
+            }
         }
 
         /* Mobile Responsive */
@@ -952,18 +1046,60 @@
         <!-- View 6: Final -->
         <div class="view" id="view6">
             <div class="final-container">
-                <h1>🎉 Grattis! 🎉</h1>
-                <p style="font-size: 1.3em; margin: 20px 0;">Du har löst alla utmaningar!</p>
-                <div class="gift-box" onclick="revealGift()">🎁</div>
-                <div class="gift-reveal" id="giftReveal">
-                    <div class="gift-title">Flugfiskaren</div>
-                    <p style="font-size: 1.2em; margin: 20px 0; line-height: 1.6;">
-                        En komplett guide för att lära sig konsten att fiska med flugor.<br>
-                        Perfekt för att börja ett nytt hobby!
-                    </p>
-                    <div class="gift-message">God Jul pappa! ❤️</div>
+                <div class="gift-card">
+                    <div class="gift-card-header">
+                        <h1 class="gift-card-title">🎉 Grattis! 🎉</h1>
+                        <p class="gift-card-subtitle">Du har löst alla utmaningar!</p>
+                    </div>
+                    
+                    <div class="gift-card-content">
+                        <div class="gift-info-row">
+                            <div class="gift-info-icon">🎣</div>
+                            <div class="gift-info-text">
+                                <span class="gift-info-label">Present</span>
+                                Flugbindning för nybörjare
+                            </div>
+                        </div>
+                        
+                        <div class="gift-info-row">
+                            <div class="gift-info-icon">📅</div>
+                            <div class="gift-info-text">
+                                <span class="gift-info-label">Datum</span>
+                                20 januari 2026
+                            </div>
+                        </div>
+                        
+                        <div class="gift-info-row">
+                            <div class="gift-info-icon">🕐</div>
+                            <div class="gift-info-text">
+                                <span class="gift-info-label">Tid</span>
+                                18:00 - 20:30
+                            </div>
+                        </div>
+                        
+                        <div class="gift-info-row">
+                            <div class="gift-info-icon">📍</div>
+                            <div class="gift-info-text">
+                                <span class="gift-info-label">Plats</span>
+                                Residensgatan 7, Vänersborg
+                            </div>
+                        </div>
+                        
+                        <div class="gift-info-row">
+                            <div class="gift-info-icon">✨</div>
+                            <div class="gift-info-text">
+                                <span class="gift-info-label">Antal tillfällen</span>
+                                10 tillfällen
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gift-card-footer">
+                        <div class="gift-message">God Jul pappa! ❤️</div>
+                    </div>
                 </div>
-                <button onclick="restartGame()" style="background: #666; margin-top: 30px;">Börja om från början</button>
+                
+                <button onclick="restartGame()" style="background: #666; margin-top: 30px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">Börja om från början</button>
             </div>
         </div>
     </div>
