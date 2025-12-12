@@ -1208,7 +1208,7 @@
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
                     <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick(event)">🎁</div>
-                    <div class="open-instruction" id="openInstruction">Håll Shift-tangenten och klicka på paketet!</div>
+                    <div class="open-instruction" id="openInstruction">Dubbelklicka på paketet för att börja!</div>
                 </div>
                 
                 <!-- Presentkort (visas efter öppning) -->
@@ -2053,12 +2053,17 @@
             giftBoxClickCount = 0;
             giftBoxOpenSequence = [];
             giftBoxOpenStep = 0;
-            isShiftPressed = false;
+            clickSequence = [];
+            sequenceStartTime = 0;
             
             // Stoppa eventuell rörelse
             if (giftBoxMovingInterval) {
                 clearInterval(giftBoxMovingInterval);
                 giftBoxMovingInterval = null;
+            }
+            if (giftBoxTrollInterval) {
+                clearInterval(giftBoxTrollInterval);
+                giftBoxTrollInterval = null;
             }
             
             // Skapa 20 paket i olika storlekar - alla ser likadana ut!
@@ -2091,7 +2096,12 @@
                     giftBoxClickCount = 0;
                     giftBoxOpenStep = 0;
                     giftBoxOpenSequence = [];
+                    clickSequence = [];
+                    sequenceStartTime = 0;
                     updateOpenInstruction();
+                    
+                    // Starta kontinuerliga troll-effekter
+                    startGiftBoxTrollEffects();
                 }, 300);
             } else if (index === EXPLODE_GIFT_INDEX) {
                 // Troll-paket: Sprängs!
