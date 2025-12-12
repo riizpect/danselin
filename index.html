@@ -528,6 +528,8 @@
                     <br><br>
                     <strong>Tips:</strong> För att avkoda "Syhtovavqvat", ta varje bokstav och skifta 13 steg framåt i alfabetet (eller använd en ROT13-kalkylator online).
                     <br><br>
+                    <strong>Obs:</strong> ROT13 fungerar bara med A-Z (inga Å, Ä, Ö). Detta ord innehåller bara vanliga bokstäver.
+                    <br><br>
                     Svaret blir ditt lösenord (ett ord relaterat till fiske).
                 </p>
                 <div class="cipher-text" id="cipherText"></div>
@@ -584,9 +586,9 @@
                 <p style="font-size: 1.3em; margin: 20px 0;">Du har löst alla utmaningar!</p>
                 <div class="gift-box" onclick="revealGift()">🎁</div>
                 <div class="gift-reveal" id="giftReveal">
-                    <div class="gift-title">Flugbindning för nybörjare</div>
+                    <div class="gift-title">Flugfiskaren</div>
                     <p style="font-size: 1.2em; margin: 20px 0; line-height: 1.6;">
-                        En komplett guide för att lära sig konsten att binda flugor för fiske.<br>
+                        En komplett guide för att lära sig konsten att fiska med flugor.<br>
                         Perfekt för att börja ett nytt hobby!
                     </p>
                     <div class="gift-message">God Jul pappa! ❤️</div>
@@ -626,8 +628,8 @@
             ],
             
             // Level 3: Cipher
-            cipherText: "Syhtovavqvat", // "Flugbindning" in ROT13
-            cipherAnswer: "flugbindning",
+            cipherText: "Syhtfvxnera", // "Flugfiskaren" in ROT13
+            cipherAnswer: "flugfiskaren",
             
             // Level 4: Logic Puzzle
             // Correct mapping: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt
@@ -973,7 +975,7 @@
             },
             3: {
                 step1: "ROT13: Varje bokstav skiftas 13 steg. För att avkoda 'S', tänk: S är bokstav 19, 19-13=6, bokstav 6 är F. För 'y': y är bokstav 25, 25-13=12, bokstav 12 är l.",
-                step2: "Fortsätt så: S→F, y→l, h→u, t→g, o→b, v→i, a→n, v→i, q→d, v→i, a→n, t→g. Svaret är 'flugbindning' - en hobby relaterad till fiske!"
+                step2: "Fortsätt så: S→F, y→l, h→u, t→g, f→s, v→i, x→k, n→a, e→r, r→e, a→n. Svaret är 'flugfiskaren' - en hobby relaterad till fiske!"
             },
             4: {
                 step1: "Börja med att eliminera möjligheter. Anna kan bara vara Ingenjör eller Arkitekt.",
