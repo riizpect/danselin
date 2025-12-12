@@ -519,17 +519,7 @@
             <h2>Nivå 3: Avkodning</h2>
             <div class="puzzle-container">
                 <p class="puzzle-description">
-                    Nedan finns ett krypterat ord. Använd Caesar-chiffer med skift 13 (ROT13) för att avkoda det.
-                    <br><br>
-                    <strong>Hur ROT13 fungerar med svenska alfabetet:</strong><br>
-                    Varje bokstav skiftas 13 steg framåt i det svenska alfabetet (A-Z, Å, Ä, Ö = 29 bokstäver totalt).
-                    För att avkoda, skifta 13 steg framåt igen (eller tillbaka, eftersom 13+13=26, men vi har 29 bokstäver).
-                    <br><br>
-                    <strong>Svenska alfabetet:</strong> A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Å, Ä, Ö
-                    <br><br>
-                    <strong>Exempel:</strong> A(1)→N(14), B(2)→O(15), ..., S(19)→E(5, eftersom 19+13=32, 32-29=3, men vänta...), faktiskt S(19)+13=32, 32-29=3, så S→C.
-                    <br><br>
-                    <strong>Tips:</strong> Räkna positionen för varje bokstav i svenska alfabetet, lägg till 13, och om det blir mer än 29, subtrahera 29.
+                    Nedan finns ett krypterat ord. Avkoda det med ROT13 (Caesar-chiffer med skift 13).
                     <br><br>
                     Svaret blir ditt lösenord (ett ord relaterat till fiske).
                 </p>
@@ -554,6 +544,8 @@
                     2. Bengt är varken läkare eller ingenjör.<br>
                     3. Cecilia är inte lärare eller ingenjör.<br>
                     4. David är inte läkare eller lärare.<br>
+                    5. Ingenjören är varken Bengt eller Cecilia.<br>
+                    6. Läraren är varken Anna eller Cecilia.<br>
                 </p>
                 <div class="logic-grid" id="logicGrid"></div>
                 <button onclick="checkLogic()">Kontrollera</button>
