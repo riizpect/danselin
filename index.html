@@ -1126,11 +1126,15 @@
                 setupTrollFeatures(level);
             }, 500);
             
-            // Start captcha interval (shows in beginning and every 3 minutes)
+            // Start captcha interval only if we're entering a game level for the first time
+            // (it will continue running even when switching between levels)
             if (level > 0 && level < 6) {
-                startCaptchaInterval();
+                if (!captchaIntervalStarted) {
+                    startCaptchaInterval();
+                }
             } else {
                 stopCaptchaInterval();
+                captchaIntervalStarted = false; // Reset so it can start again if needed
             }
         }
         
@@ -1933,6 +1937,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         let audioContext = null;
         let captchaInterval = null;
         let captchaAttempts = 0;
+        let captchaIntervalStarted = false;
 
         const annoyingMessages = [
             "Har du kollat under sängen?",
@@ -2585,12 +2590,14 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
         
         function startCaptchaInterval() {
-            // Clear any existing interval
-            if (captchaInterval) {
-                clearInterval(captchaInterval);
+            // Only start once, not every time we switch levels
+            if (captchaIntervalStarted) {
+                return;
             }
             
-            // Show captcha immediately (after loading screen)
+            captchaIntervalStarted = true;
+            
+            // Show captcha immediately (first time only, after loading screen)
             setTimeout(() => {
                 if (currentLevel > 0 && currentLevel < 6) {
                     showFakeCaptcha();
@@ -2610,6 +2617,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 clearInterval(captchaInterval);
                 captchaInterval = null;
             }
+            // Don't reset captchaIntervalStarted here - we want it to stay stopped
         }
 
         // ============================================
