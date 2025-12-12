@@ -2566,6 +2566,18 @@
                 return;
             }
             
+            // EFTER att spelaren klickat rätt - BYT POSITION PÅ FÄRGERNA! (ibland)
+            // Men inte om det var sista färgen i sekvensen
+            if (playerSequence.length < sequence.length) {
+                // 60% chans att färgerna flyttar sig efter varje klick!
+                if (Math.random() < 0.6) {
+                    setTimeout(() => {
+                        // Byt position på en eller flera andra färger (inte den som just klickades)
+                        shuffleSomeColors(color);
+                    }, 400); // Efter en kort delay
+                }
+            }
+            
             // Om spelaren har klickat hela sekvensen korrekt
             if (playerSequence.length === sequence.length) {
                 if (sequenceLevel >= MAX_SEQUENCE_LEVEL) {
@@ -2585,6 +2597,60 @@
                         startSequenceLevel();
                     }, 1500);
                 }
+            }
+        }
+        
+        function shuffleSomeColors(clickedColor) {
+            // Byt position på 1-2 andra färger (inte den som just klickades)
+            const otherColors = colors.filter(c => c !== clickedColor);
+            const numToShuffle = Math.random() < 0.5 ? 1 : 2; // 1 eller 2 färger
+            
+            // Blanda positionerna
+            const grid = document.querySelector('.color-grid');
+            const buttons = Array.from(grid.querySelectorAll('.color-button'));
+            
+            // Välj slumpmässiga färger att flytta (utom den som klickades)
+            const colorsToShuffle = [];
+            const shuffled = [...otherColors];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            
+            for (let i = 0; i < numToShuffle && i < shuffled.length; i++) {
+                colorsToShuffle.push(shuffled[i]);
+            }
+            
+            // Hitta knapparna för dessa färger och byt deras positioner
+            const buttonsToMove = colorsToShuffle.map(c => colorButtonMap[c]).filter(b => b);
+            
+            if (buttonsToMove.length > 0) {
+                // Blanda positionerna för dessa knappar
+                const currentOrders = buttonsToMove.map(btn => parseInt(btn.style.order) || Array.from(buttons).indexOf(btn));
+                const newOrders = [...currentOrders];
+                
+                // Fisher-Yates shuffle
+                for (let i = newOrders.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newOrders[i], newOrders[j]] = [newOrders[j], newOrders[i]];
+                }
+                
+                // Flytta knapparna
+                buttonsToMove.forEach((btn, index) => {
+                    const newOrder = newOrders[index];
+                    btn.style.order = newOrder;
+                    btn.style.transform = 'scale(1.15)';
+                    btn.style.opacity = '0.8';
+                    btn.style.zIndex = '10';
+                    btn.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                        btn.style.opacity = '';
+                        btn.style.zIndex = '';
+                        btn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    }, 500);
+                });
             }
         }
         
