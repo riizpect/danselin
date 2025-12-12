@@ -2171,9 +2171,11 @@
         let giftBoxTrollInterval = null;
         let clickSequence = [];
         let sequenceStartTime = 0;
-        const CORRECT_GIFT_INDEX = 7; // Rätt paket är det 8:e (index 7)
+        let CORRECT_GIFT_INDEX = 7; // Rätt paket (slumpas varje gång)
         const EXPLODE_GIFT_INDEX = 3; // Paket som sprängs
         const MOVE_GIFTS_INDEX = 12; // Paket som får alla att röra sig
+        let wrongGiftClicks = 0; // Räkna fel klick
+        const MAX_WRONG_CLICKS = 10; // Börja om efter 10 fel
         
         function initGiftSelection() {
             const container = document.getElementById('giftSelectionContainer');
@@ -2198,6 +2200,13 @@
             playerSequence = [];
             colorPositions = [0, 1, 2, 3];
             stopColorEffects();
+            wrongGiftClicks = 0; // Reset felräknare
+            
+            // SLUMPA rätt paket varje gång!
+            CORRECT_GIFT_INDEX = Math.floor(Math.random() * 20);
+            
+            // Uppdatera felräknare
+            updateErrorCounter();
             
             // Stoppa eventuell rörelse
             if (giftBoxMovingInterval) {
@@ -2209,30 +2218,70 @@
                 giftBoxTrollInterval = null;
             }
             
-            // Skapa 20 paket i olika storlekar - alla ser likadana ut!
+            // Skapa 20 paket - SNYGGARE DESIGN!
+            const boxes = [];
             for (let i = 0; i < 20; i++) {
                 const box = document.createElement('div');
                 box.className = 'gift-box-small';
                 box.textContent = '🎁';
                 box.dataset.index = i;
+                box.dataset.originalIndex = i;
                 
-                // Olika storlekar - rätt paket ser ut som alla andra
-                const sizes = [70, 80, 90, 100, 110, 120];
-                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                // Alla paket samma storlek för snyggare layout
+                const size = 100;
                 box.style.width = size + 'px';
                 box.style.height = size + 'px';
-                box.style.fontSize = (size * 0.4) + 'px';
+                box.style.fontSize = (size * 0.5) + 'px';
                 
-                // Alla paket ser identiska ut - ingen visuell skillnad!
-                
-                box.onclick = () => selectGift(i);
+                boxes.push(box);
+            }
+            
+            // SLUMPA ORDNINGEN på paketen!
+            for (let i = boxes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [boxes[i], boxes[j]] = [boxes[j], boxes[i]];
+            }
+            
+            // Lägg till i container i slumpad ordning
+            boxes.forEach((box, displayIndex) => {
+                const originalIndex = parseInt(box.dataset.originalIndex);
+                box.onclick = () => selectGift(originalIndex);
                 container.appendChild(box);
+            });
+        }
+        
+        function updateErrorCounter() {
+            const counter = document.getElementById('giftErrorCounter');
+            if (counter) {
+                counter.textContent = `Fel klick: ${wrongGiftClicks} / ${MAX_WRONG_CLICKS}`;
+                if (wrongGiftClicks >= MAX_WRONG_CLICKS) {
+                    counter.textContent = 'För många fel! Börjar om...';
+                    counter.style.color = '#ff6b6b';
+                } else {
+                    counter.style.color = '#ffd700';
+                }
             }
         }
         
         function selectGift(index) {
+            // Hitta rätt box baserat på originalIndex (eftersom ordningen är slumpad)
+            const boxes = document.querySelectorAll('.gift-box-small');
+            let box = null;
+            for (let b of boxes) {
+                if (parseInt(b.dataset.originalIndex) === index) {
+                    box = b;
+                    break;
+                }
+            }
+            
             if (index === CORRECT_GIFT_INDEX) {
                 // Rätt paket! Visa stort paket
+                if (box) {
+                    box.classList.add('correct');
+                }
+                wrongGiftClicks = 0; // Reset felräknare
+                updateErrorCounter();
+                
                 setTimeout(() => {
                     document.getElementById('giftSelectionContainer').style.display = 'none';
                     document.getElementById('giftBoxLargeContainer').classList.add('show');
@@ -2242,7 +2291,7 @@
                     clickSequence = [];
                     sequenceStartTime = 0;
                     sequenceGameStarted = false;
-                    currentLevel = 1;
+                    sequenceLevel = 1;
                     sequence = [];
                     playerSequence = [];
                     updateOpenInstruction();
@@ -2254,8 +2303,21 @@
                     
                     // Starta kontinuerliga troll-effekter
                     startGiftBoxTrollEffects();
-                }, 300);
-            } else if (index === EXPLODE_GIFT_INDEX) {
+                }, 500);
+            } else {
+                // Fel paket!
+                wrongGiftClicks++;
+                updateErrorCounter();
+                
+                // Om för många fel - börja om!
+                if (wrongGiftClicks >= MAX_WRONG_CLICKS) {
+                    setTimeout(() => {
+                        initGiftSelection(); // Börja om från början
+                    }, 1500);
+                    return;
+                }
+                
+                if (index === EXPLODE_GIFT_INDEX) {
                 // Troll-paket: Sprängs!
                 const box = document.querySelectorAll('.gift-box-small')[index];
                 box.textContent = '💥';
