@@ -1079,6 +1079,22 @@
                     }
                 }
                 
+                // Reset hotspots - remove all found classes and clear container
+                const hotspotContainer = document.getElementById('hotspotContainer');
+                if (hotspotContainer) {
+                    hotspotContainer.innerHTML = '';
+                }
+                
+                // Reset logic puzzle selects
+                const people = ['anna', 'bengt', 'cecilia', 'david'];
+                const jobs = ['läkare', 'lärare', 'ingenjör', 'arkitekt'];
+                people.forEach(person => {
+                    jobs.forEach(job => {
+                        const select = document.getElementById(`logic-${person}-${job}`);
+                        if (select) select.value = '';
+                    });
+                });
+                
                 showView(0);
             }
         }
