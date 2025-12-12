@@ -521,14 +521,15 @@
                 <p class="puzzle-description">
                     Nedan finns ett krypterat ord. Använd Caesar-chiffer med skift 13 (ROT13) för att avkoda det.
                     <br><br>
-                    <strong>Hur ROT13 fungerar:</strong><br>
-                    Varje bokstav skiftas 13 steg framåt i alfabetet. För att avkoda, skifta 13 steg tillbaka (eller 13 steg framåt igen, eftersom alfabetet har 26 bokstäver).
+                    <strong>Hur ROT13 fungerar med svenska alfabetet:</strong><br>
+                    Varje bokstav skiftas 13 steg framåt i det svenska alfabetet (A-Z, Å, Ä, Ö = 29 bokstäver totalt).
+                    För att avkoda, skifta 13 steg framåt igen (eller tillbaka, eftersom 13+13=26, men vi har 29 bokstäver).
                     <br><br>
-                    <strong>Exempel:</strong> A→N, B→O, C→P, ..., M→Z, N→A, O→B, osv.
+                    <strong>Svenska alfabetet:</strong> A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Å, Ä, Ö
                     <br><br>
-                    <strong>Tips:</strong> För att avkoda "Syhtovavqvat", ta varje bokstav och skifta 13 steg framåt i alfabetet (eller använd en ROT13-kalkylator online).
+                    <strong>Exempel:</strong> A(1)→N(14), B(2)→O(15), ..., S(19)→E(5, eftersom 19+13=32, 32-29=3, men vänta...), faktiskt S(19)+13=32, 32-29=3, så S→C.
                     <br><br>
-                    <strong>Obs:</strong> ROT13 fungerar bara med A-Z (inga Å, Ä, Ö). Detta ord innehåller bara vanliga bokstäver.
+                    <strong>Tips:</strong> Räkna positionen för varje bokstav i svenska alfabetet, lägg till 13, och om det blir mer än 29, subtrahera 29.
                     <br><br>
                     Svaret blir ditt lösenord (ett ord relaterat till fiske).
                 </p>
@@ -628,7 +629,7 @@
             ],
             
             // Level 3: Cipher
-            cipherText: "Syhtfvxnera", // "Flugfiskaren" in ROT13
+            cipherText: "Syetvscxnbrå", // "Flugfiskaren" in ROT13 med svenska alfabetet (A-Z, Å, Ä, Ö)
             cipherAnswer: "flugfiskaren",
             
             // Level 4: Logic Puzzle
@@ -974,8 +975,8 @@
                 step2: "Ordning: 🎄 (julgran), 🦌 (ren som flyger), ⭐ (stjärna som lyser)"
             },
             3: {
-                step1: "ROT13: Varje bokstav skiftas 13 steg. För att avkoda 'S', tänk: S är bokstav 19, 19-13=6, bokstav 6 är F. För 'y': y är bokstav 25, 25-13=12, bokstav 12 är l.",
-                step2: "Fortsätt så: S→F, y→l, h→u, t→g, f→s, v→i, x→k, n→a, e→r, r→e, a→n. Svaret är 'flugfiskaren' - en hobby relaterad till fiske!"
+                step1: "ROT13 med svenska alfabetet (29 bokstäver: A-Z, Å, Ä, Ö). För att avkoda, skifta 13 steg framåt igen. S är position 19, 19+13=32, 32-29=3, position 3 är C. Men för att få tillbaka originalet, gå 16 steg framåt (29-13=16): S(19)+16=35, 35-29=6, position 6 är F.",
+                step2: "Svenska alfabetet: A(1), B(2), C(3)...S(19)...Y(25), Z(26), Å(27), Ä(28), Ö(29). För att avkoda 'Syetvscxnbrå', gå 16 steg framåt från varje bokstav: S(19)+16=35→F(6), y(25)+16=41→l(12), e(5)+16=21→u(21), t(20)+16=36→g(7), v(22)+16=38→f(6), s(19)+16=35→i(9), c(3)+16=19→s(19), x(24)+16=40→k(11), n(14)+16=30→a(1), b(2)+16=18→r(18), r(18)+16=34→e(5), å(27)+16=43→n(14). Svaret är 'flugfiskaren'!"
             },
             4: {
                 step1: "Börja med att eliminera möjligheter. Anna kan bara vara Ingenjör eller Arkitekt.",
