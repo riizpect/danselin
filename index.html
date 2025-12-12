@@ -2406,8 +2406,13 @@
                     const delay = Math.random() * 3; // 0-3 sekunder delay (sprid ut dem)
                     fish.style.animation = `swim ${speed}s linear ${delay}s forwards`; // forwards = ingen loop!
                     
-                    // När animationen är klar, räkna upp
+                    // När animationen är klar, räkna upp och stoppa animationen
                     fish.addEventListener('animationend', () => {
+                        // Stoppa animationen explicit
+                        fish.style.animation = 'none';
+                        fish.style.opacity = '0';
+                        fish.style.display = 'none';
+                        
                         fishFinished++;
                         // När alla fiskar har simmat förbi, starta räkningsfasen!
                         if (fishFinished === totalFish) {
