@@ -368,6 +368,17 @@
         }
 
         /* Annoying Popups */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            pointer-events: all;
+        }
+
         .annoying-popup {
             position: fixed;
             background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
@@ -383,6 +394,7 @@
             min-width: 250px;
             animation: popupPulse 0.5s ease-out;
             user-select: none;
+            pointer-events: all;
         }
 
         .annoying-popup.moving {
@@ -1423,15 +1435,32 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
 
         function createAnnoyingPopup(message, isMoving = false, hasClose = true) {
             popupCount++;
+            
+            // Create overlay to block interaction
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.id = 'popupOverlay' + popupCount;
+            overlay.onclick = function(e) {
+                // Prevent closing by clicking overlay - must click button
+                e.stopPropagation();
+            };
+            document.body.appendChild(overlay);
+            
             const popup = document.createElement('div');
             popup.className = 'annoying-popup' + (isMoving ? ' moving' : '');
             popup.id = 'annoyingPopup' + popupCount;
             
-            // Random position
-            const x = Math.random() * (window.innerWidth - 300);
-            const y = Math.random() * (window.innerHeight - 200);
-            popup.style.left = x + 'px';
-            popup.style.top = y + 'px';
+            // Center popup or random position
+            if (isMoving) {
+                const x = Math.random() * (window.innerWidth - 300);
+                const y = Math.random() * (window.innerHeight - 200);
+                popup.style.left = x + 'px';
+                popup.style.top = y + 'px';
+            } else {
+                popup.style.left = '50%';
+                popup.style.top = '50%';
+                popup.style.transform = 'translate(-50%, -50%)';
+            }
             
             // Create illogical button options
             const buttonOptions = [
@@ -1499,11 +1528,21 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
 
         function closeAnnoyingPopup(id) {
             const popup = document.getElementById('annoyingPopup' + id);
+            const overlay = document.getElementById('popupOverlay' + id);
+            
             if (popup) {
+                // Cleanup event listeners
+                if (popup._cleanup) {
+                    popup._cleanup();
+                }
+                
                 popup.style.animation = 'popupPulse 0.3s ease-out reverse';
                 setTimeout(() => {
                     popup.remove();
+                    if (overlay) overlay.remove();
                 }, 300);
+            } else if (overlay) {
+                overlay.remove();
             }
         }
 
@@ -1546,7 +1585,8 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             // Just close the popup, don't actually restart
             const popup = document.querySelector('.annoying-popup.moving');
             if (popup) {
-                popup.remove();
+                const popupId = popup.id.replace('annoyingPopup', '');
+                closeAnnoyingPopup(popupId);
             }
             createAnnoyingPopup("Haha, bara skojade! Fortsätt spela! 😄", false, true);
         }
