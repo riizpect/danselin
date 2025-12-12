@@ -498,16 +498,16 @@
             </div>
         </div>
 
-        <!-- View 2: Level 2 - Hotspots -->
+        <!-- View 2: Level 2 - Memory Game -->
         <div class="view" id="view2">
-            <h2>Nivå 2: Hitta Objekten</h2>
+            <h2>Nivå 2: Memory</h2>
             <div class="puzzle-container">
                 <p class="puzzle-description">
-                    I illustrationen nedan finns tre objekt dolda. Klicka på dem i rätt ordning för att fortsätta.
-                    <strong>Ordning:</strong> Först det som hör till julen, sedan det som flyger, sist det som lyser.
+                    Hitta alla par! Vänd upp två kort i taget och matcha dem. När alla par är hittade får du en kod.
                 </p>
-                <div class="hotspot-container" id="hotspotContainer">
-                    <!-- Hotspots will be added by JavaScript -->
+                <div class="memory-grid" id="memoryGrid"></div>
+                <div style="margin-top: 20px;">
+                    <strong>Hittade par:</strong> <span id="pairsFound">0</span> / <span id="totalPairs">0</span>
                 </div>
                 <button class="btn-secondary" onclick="showHint(2)">Ledtråd</button>
                 <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
@@ -621,12 +621,9 @@
             // Level 1: Word Puzzle
             wordAnswer: "lagerlöf",
             
-            // Level 2: Hotspots (positions as percentages: [x%, y%])
-            hotspots: [
-                { x: 20, y: 30, emoji: "🎄", order: 1 }, // Julgran
-                { x: 70, y: 50, emoji: "🦌", order: 2 }, // Ren
-                { x: 50, y: 75, emoji: "⭐", order: 3 }  // Stjärna
-            ],
+            // Level 2: Memory Game
+            memoryPairs: ["🎄", "🎅", "⭐", "🎁", "🦌", "🔔"], // 6 par = 12 kort
+            memoryCode: "2468", // Kod när alla par är hittade
             
             // Level 3: Cipher
             cipherText: "Syetvscxnbrå", // "Flugfiskaren" in ROT16 med svenska alfabetet (A-Z, Å, Ä, Ö)
@@ -713,7 +710,7 @@
             
             // Initialize level-specific features when switching views
             if (level === 2) {
-                setTimeout(() => initHotspots(), 100); // Small delay to ensure DOM is ready
+                setTimeout(() => initMemoryGame(), 100); // Small delay to ensure DOM is ready
             } else if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
             } else if (level === 4) {
@@ -752,75 +749,101 @@
         }
 
         // ============================================
-        // LEVEL 2: HOTSPOTS
+        // LEVEL 2: MEMORY GAME
         // ============================================
-        function initHotspots() {
-            const container = document.getElementById('hotspotContainer');
-            if (!container) return; // Safety check
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let canFlip = true;
+
+        function initMemoryGame() {
+            const grid = document.getElementById('memoryGrid');
+            if (!grid) return;
             
-            container.innerHTML = '';
-            hotspotSequence = [];
+            grid.innerHTML = '';
+            memoryCards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            canFlip = true;
             
-            // Create decorative background elements (non-clickable)
-            const decors = [
-                { x: 15, y: 20, emoji: "❄️" },
-                { x: 80, y: 25, emoji: "🎅" },
-                { x: 40, y: 40, emoji: "🎁" },
-                { x: 60, y: 60, emoji: "🔔" },
-                { x: 25, y: 70, emoji: "🕯️" },
-                { x: 75, y: 80, emoji: "🧦" }
-            ];
-            
-            // Add decorative elements (background, not clickable)
-            decors.forEach(dec => {
-                const elem = document.createElement('div');
-                elem.style.position = 'absolute';
-                elem.style.left = dec.x + '%';
-                elem.style.top = dec.y + '%';
-                elem.style.fontSize = '2em';
-                elem.style.opacity = '0.3';
-                elem.style.pointerEvents = 'none';
-                elem.style.zIndex = '1';
-                elem.textContent = dec.emoji;
-                container.appendChild(elem);
+            // Create pairs of cards
+            const cards = [];
+            CONFIG.memoryPairs.forEach((emoji, index) => {
+                cards.push({ emoji, id: index });
+                cards.push({ emoji, id: index }); // Add pair
             });
             
-            // Add actual clickable hotspots
-            CONFIG.hotspots.forEach((hotspot, index) => {
-                const elem = document.createElement('div');
-                elem.className = 'hotspot';
-                elem.style.left = hotspot.x + '%';
-                elem.style.top = hotspot.y + '%';
-                elem.textContent = hotspot.emoji;
-                elem.dataset.order = hotspot.order;
-                elem.onclick = () => handleHotspotClick(elem, hotspot.order);
-                container.appendChild(elem);
+            // Shuffle cards
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            
+            // Create card elements
+            cards.forEach((card, index) => {
+                const cardElem = document.createElement('div');
+                cardElem.className = 'memory-card';
+                cardElem.dataset.cardId = card.id;
+                cardElem.dataset.index = index;
+                
+                const back = document.createElement('div');
+                back.className = 'card-back';
+                back.textContent = '?';
+                
+                const front = document.createElement('div');
+                front.className = 'card-front';
+                front.textContent = card.emoji;
+                
+                cardElem.appendChild(back);
+                cardElem.appendChild(front);
+                cardElem.onclick = () => handleMemoryClick(cardElem);
+                
+                grid.appendChild(cardElem);
+                memoryCards.push(cardElem);
             });
+            
+            // Update total pairs display
+            document.getElementById('totalPairs').textContent = CONFIG.memoryPairs.length;
+            document.getElementById('pairsFound').textContent = '0';
         }
 
-        function handleHotspotClick(elem, order) {
-            if (elem.classList.contains('found')) return;
+        function handleMemoryClick(card) {
+            if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                return;
+            }
             
-            const expectedOrder = hotspotSequence.length + 1;
+            card.classList.add('flipped');
+            flippedCards.push(card);
             
-            if (order === expectedOrder) {
-                elem.classList.add('found');
-                hotspotSequence.push(order);
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                const [card1, card2] = flippedCards;
                 
-                if (hotspotSequence.length === 3) {
-                    showMessage('message2', 'Korrekt! Du kan gå vidare.', 'success');
-                    setTimeout(() => showView(3), 1500);
+                if (card1.dataset.cardId === card2.dataset.cardId) {
+                    // Match!
+                    setTimeout(() => {
+                        card1.classList.add('matched');
+                        card2.classList.add('matched');
+                        matchedPairs++;
+                        document.getElementById('pairsFound').textContent = matchedPairs;
+                        
+                        flippedCards = [];
+                        canFlip = true;
+                        
+                        if (matchedPairs === CONFIG.memoryPairs.length) {
+                            showMessage('message2', `Korrekt! Koden är: ${CONFIG.memoryCode}`, 'success');
+                            setTimeout(() => showView(3), 2000);
+                        }
+                    }, 500);
+                } else {
+                    // No match
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        flippedCards = [];
+                        canFlip = true;
+                    }, 1000);
                 }
-            } else {
-                elem.classList.add('wrong');
-                setTimeout(() => {
-                    elem.classList.remove('wrong');
-                    hotspotSequence = [];
-                    document.querySelectorAll('.hotspot.found').forEach(h => {
-                        h.classList.remove('found');
-                    });
-                }, 1000);
-                showMessage('message2', 'Fel ordning! Börja om.', 'error');
             }
         }
 
@@ -971,8 +994,8 @@
                 step2: "Hennes förnamn är Selma och efternamnet börjar på L. Hon skrev om Nils Holgersson. Svaret är efternamnet: lagerlöf"
             },
             2: {
-                step1: "Tänk på vad som är mest juligt, sedan något som kan flyga, och sist något som lyser...",
-                step2: "Ordning: 🎄 (julgran), 🦌 (ren som flyger), ⭐ (stjärna som lyser)"
+                step1: "Hitta alla par! Vänd upp två kort i taget och matcha dem. När alla par är hittade får du en kod.",
+                step2: "När du hittat alla 6 par kommer koden att visas: 2468"
             },
             3: {
                 step1: "ROT16 med svenska alfabetet (29 bokstäver: A-Z, Å, Ä, Ö). För att avkoda, skifta 16 steg framåt. S är position 19, 19+16=35, 35-29=6, position 6 är F.",
@@ -1079,10 +1102,13 @@
                     }
                 }
                 
-                // Reset hotspots - remove all found classes and clear container
-                const hotspotContainer = document.getElementById('hotspotContainer');
-                if (hotspotContainer) {
-                    hotspotContainer.innerHTML = '';
+                // Reset memory game
+                matchedPairs = 0;
+                flippedCards = [];
+                canFlip = true;
+                const memoryGrid = document.getElementById('memoryGrid');
+                if (memoryGrid) {
+                    memoryGrid.innerHTML = '';
                 }
                 
                 // Reset logic puzzle selects
@@ -1103,7 +1129,7 @@
             const answers = `
 FACIT:
 Nivå 1: ${CONFIG.wordAnswer}
-Nivå 2: Klicka i ordning: 🎄, 🦌, ⭐
+Nivå 2: Hitta alla par i memory-spelet. Koden är: 2468
 Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
 Nivå 4: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt (Kod: 1234)
 Nivå 5: Tryck A, B, C, D i ordning
