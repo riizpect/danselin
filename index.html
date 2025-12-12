@@ -2014,6 +2014,259 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
 
         // ============================================
+        // FAKE LOADING SCREEN
+        // ============================================
+        function showFakeLoadingScreen() {
+            const loadingScreen = document.getElementById('fakeLoadingScreen');
+            const loadingBar = document.getElementById('fakeLoadingBar');
+            const loadingText = document.getElementById('fakeLoadingText');
+            const loadingButton = document.getElementById('fakeLoadingButton');
+            
+            loadingScreen.style.display = 'flex';
+            
+            let progress = 0;
+            let goingWrong = false;
+            
+            const loadingInterval = setInterval(() => {
+                if (progress < 100) {
+                    if (Math.random() < 0.3 && progress > 30 && progress < 90) {
+                        // Go backwards sometimes
+                        progress = Math.max(0, progress - Math.random() * 20);
+                        goingWrong = true;
+                        loadingBar.classList.add('going-wrong');
+                        loadingText.textContent = 'Återställer...';
+                    } else {
+                        progress += Math.random() * 15;
+                        progress = Math.min(100, progress);
+                        goingWrong = false;
+                        loadingBar.classList.remove('going-wrong');
+                        
+                        const messages = [
+                            'Initierar system...',
+                            'Laddar komponenter...',
+                            'Verifierar data...',
+                            'Kontrollerar anslutning...',
+                            'Säkerhetskontroll...',
+                            'Nästan klar...',
+                            'Finaliserar...'
+                        ];
+                        loadingText.textContent = messages[Math.floor(Math.random() * messages.length)];
+                    }
+                    
+                    loadingBar.style.width = progress + '%';
+                } else {
+                    clearInterval(loadingInterval);
+                    loadingText.textContent = 'Laddning klar!';
+                    loadingButton.style.display = 'block';
+                }
+            }, 300);
+        }
+        
+        function skipFakeLoading() {
+            document.getElementById('fakeLoadingScreen').style.display = 'none';
+            
+            // Now do the real init
+            const savedLevel = localStorage.getItem('escapeRoomLevel');
+            if (savedLevel) {
+                currentLevel = parseInt(savedLevel);
+            }
+            
+            document.getElementById('title').addEventListener('click', handleTitleClick);
+            showView(currentLevel);
+            updateProgress();
+            
+            if (currentLevel === 2) initMemoryGame();
+            if (currentLevel === 4) initLogicPuzzle();
+            if (currentLevel === 5) initFishMath();
+            if (currentLevel === 3) {
+                document.getElementById('cipherText').textContent = CONFIG.cipherText;
+            }
+            
+            createSnowflakes();
+            startBackgroundMusic();
+            setupClickSounds();
+            startFakeCountdown();
+            startFakeSavingMessages();
+        }
+        
+        // ============================================
+        // FAKE COUNTDOWN
+        // ============================================
+        function startFakeCountdown() {
+            // Create countdown element
+            const countdown = document.createElement('div');
+            countdown.className = 'fake-countdown';
+            countdown.id = 'fakeCountdown';
+            countdown.textContent = 'Tid kvar: 5:00';
+            document.body.appendChild(countdown);
+            
+            let time = 300; // 5 minutes
+            fakeCountdownInterval = setInterval(() => {
+                time--;
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                countdown.textContent = `Tid kvar: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (time <= 0) {
+                    time = 300; // Reset
+                }
+            }, 1000);
+        }
+        
+        // ============================================
+        // FAKE SAVING MESSAGES
+        // ============================================
+        function startFakeSavingMessages() {
+            setInterval(() => {
+                if (currentLevel > 0 && currentLevel < 6 && Math.random() < 0.15) {
+                    showFakeSavingMessage();
+                }
+            }, 20000 + Math.random() * 30000); // Every 20-50 seconds
+        }
+        
+        function showFakeSavingMessage() {
+            const savingMsg = document.createElement('div');
+            savingMsg.className = 'fake-saving-message show';
+            savingMsg.textContent = 'Sparar... var god vänta';
+            document.body.appendChild(savingMsg);
+            
+            // Never actually save, just show the message
+            setTimeout(() => {
+                savingMsg.remove();
+            }, 5000);
+        }
+        
+        // ============================================
+        // AUDIO FUNCTIONS
+        // ============================================
+        function setupClickSounds() {
+            // Create audio context for generating sounds
+            try {
+                audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+                return;
+            }
+            
+            // Add click sounds to all buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.tagName === 'BUTTON' && Math.random() < 0.3) {
+                    playRandomClickSound();
+                }
+            });
+        }
+        
+        function playRandomClickSound() {
+            if (!audioContext) return;
+            
+            const sounds = ['beep', 'boop', 'plop', 'ping', 'pop'];
+            const sound = sounds[Math.floor(Math.random() * sounds.length)];
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Different frequencies for different sounds
+            const frequencies = {
+                'beep': 440,
+                'boop': 330,
+                'plop': 220,
+                'ping': 880,
+                'pop': 550
+            };
+            
+            oscillator.frequency.value = frequencies[sound] || 440;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        function startBackgroundMusic() {
+            if (backgroundMusicPlaying) return;
+            
+            try {
+                audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Generate a simple background melody
+                const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]; // C major scale
+                let noteIndex = 0;
+                
+                function playNote() {
+                    if (!backgroundMusicPlaying || !audioContext) return;
+                    
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = notes[noteIndex];
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                    
+                    noteIndex = (noteIndex + 1) % notes.length;
+                    
+                    setTimeout(playNote, 600);
+                }
+                
+                backgroundMusicPlaying = true;
+                playNote();
+            } catch (e) {
+                console.log('Background music not supported');
+            }
+        }
+        
+        // ============================================
+        // FAKE CAPTCHA
+        // ============================================
+        function showFakeCaptcha() {
+            const captcha = document.getElementById('fakeCaptcha');
+            const grid = document.getElementById('fakeCaptchaGrid');
+            grid.innerHTML = '';
+            
+            // Create 9 empty boxes (no images)
+            for (let i = 0; i < 9; i++) {
+                const box = document.createElement('div');
+                box.className = 'fake-captcha-image';
+                box.dataset.index = i;
+                box.textContent = '?';
+                box.onclick = function() {
+                    this.classList.toggle('selected');
+                };
+                grid.appendChild(box);
+            }
+            
+            captcha.style.display = 'flex';
+        }
+        
+        function checkFakeCaptcha() {
+            const selected = document.querySelectorAll('.fake-captcha-image.selected');
+            const message = document.getElementById('fakeCaptchaMessage');
+            
+            // Always fail, no matter what
+            message.textContent = 'Felaktig verifiering. Försök igen.';
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.fake-captcha-image').forEach(box => {
+                    box.classList.remove('selected');
+                });
+                message.textContent = '';
+            }, 2000);
+        }
+
+        // ============================================
         // START GAME
         // ============================================
         init();
