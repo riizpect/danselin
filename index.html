@@ -492,6 +492,7 @@
                 <input type="text" id="wordInput" placeholder="Skriv svaret här..." onkeypress="if(event.key==='Enter') checkWord()">
                 <button onclick="checkWord()">Kontrollera</button>
                 <button class="btn-secondary" onclick="showHint(1)">Ledtråd</button>
+                <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint1"></div>
                 <div id="message1"></div>
             </div>
@@ -509,6 +510,7 @@
                     <!-- Hotspots will be added by JavaScript -->
                 </div>
                 <button class="btn-secondary" onclick="showHint(2)">Ledtråd</button>
+                <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint2"></div>
                 <div id="message2"></div>
             </div>
@@ -527,6 +529,7 @@
                 <input type="text" id="cipherInput" placeholder="Skriv det avkodade lösenordet här..." onkeypress="if(event.key==='Enter') checkCipher()">
                 <button onclick="checkCipher()">Kontrollera</button>
                 <button class="btn-secondary" onclick="showHint(3)">Ledtråd</button>
+                <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint3"></div>
                 <div id="message3"></div>
             </div>
@@ -550,6 +553,7 @@
                 <div class="logic-grid" id="logicGrid"></div>
                 <button onclick="checkLogic()">Kontrollera</button>
                 <button class="btn-secondary" onclick="showHint(4)">Ledtråd</button>
+                <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint4"></div>
                 <div id="message4"></div>
             </div>
@@ -567,6 +571,7 @@
                 <div class="timing-buttons" id="timingButtons"></div>
                 <button onclick="resetTiming()">Återställ</button>
                 <button class="btn-secondary" onclick="showHint(5)">Ledtråd</button>
+                <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint5"></div>
                 <div id="message5"></div>
             </div>
@@ -1040,6 +1045,39 @@
             currentLevel = 0;
             showView(0);
             alert('Progress nollställd!');
+        }
+
+        function restartGame() {
+            if (confirm('Är du säker på att du vill börja om från början? All progress kommer att försvinna.')) {
+                localStorage.removeItem('escapeRoomLevel');
+                currentLevel = 0;
+                hotspotSequence = [];
+                timingInput = [];
+                hintStates = {};
+                
+                // Reset all inputs
+                const wordInput = document.getElementById('wordInput');
+                if (wordInput) wordInput.value = '';
+                
+                const cipherInput = document.getElementById('cipherInput');
+                if (cipherInput) cipherInput.value = '';
+                
+                // Reset all messages
+                for (let i = 1; i <= 5; i++) {
+                    showMessage('message' + i, '', '');
+                }
+                
+                // Reset hints
+                for (let i = 1; i <= 5; i++) {
+                    const hintDiv = document.getElementById('hint' + i);
+                    if (hintDiv) {
+                        hintDiv.classList.remove('show');
+                        hintDiv.textContent = '';
+                    }
+                }
+                
+                showView(0);
+            }
         }
 
         function showAnswers() {
