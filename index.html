@@ -1292,6 +1292,7 @@
         let flippedCards = [];
         let matchedPairs = 0;
         let canFlip = true;
+        let memorySwapInterval = null;
 
         function initMemoryGame() {
             const grid = document.getElementById('memoryGrid');
@@ -1342,6 +1343,103 @@
             // Update total pairs display
             document.getElementById('totalPairs').textContent = CONFIG.memoryPairs.length;
             document.getElementById('pairsFound').textContent = '0';
+            
+            // Start swapping cards every 10 seconds
+            startMemoryCardSwapping();
+        }
+        
+        function startMemoryCardSwapping() {
+            // Clear any existing interval
+            if (memorySwapInterval) {
+                clearInterval(memorySwapInterval);
+            }
+            
+            // Swap two unmatched cards every 10 seconds
+            memorySwapInterval = setInterval(() => {
+                swapTwoUnmatchedCards();
+            }, 10000); // 10 seconds
+        }
+        
+        function stopMemoryCardSwapping() {
+            if (memorySwapInterval) {
+                clearInterval(memorySwapInterval);
+                memorySwapInterval = null;
+            }
+        }
+        
+        function swapTwoUnmatchedCards() {
+            // Get all unmatched cards (not matched, not currently flipped)
+            const unmatchedCards = Array.from(memoryCards).filter(card => {
+                return !card.classList.contains('matched') && 
+                       !card.classList.contains('flipped');
+            });
+            
+            // Need at least 2 cards to swap
+            if (unmatchedCards.length < 2) {
+                return;
+            }
+            
+            // Pick two random unmatched cards
+            const index1 = Math.floor(Math.random() * unmatchedCards.length);
+            let index2 = Math.floor(Math.random() * unmatchedCards.length);
+            while (index2 === index1) {
+                index2 = Math.floor(Math.random() * unmatchedCards.length);
+            }
+            
+            const card1 = unmatchedCards[index1];
+            const card2 = unmatchedCards[index2];
+            
+            // Get their positions
+            const rect1 = card1.getBoundingClientRect();
+            const rect2 = card2.getBoundingClientRect();
+            
+            // Calculate the distance and direction
+            const deltaX = rect2.left - rect1.left;
+            const deltaY = rect2.top - rect1.top;
+            
+            // Temporarily disable pointer events during animation
+            card1.style.pointerEvents = 'none';
+            card2.style.pointerEvents = 'none';
+            
+            // Add transition for smooth animation
+            card1.style.transition = 'transform 1.5s ease-in-out';
+            card2.style.transition = 'transform 1.5s ease-in-out';
+            
+            // Move cards to swap positions
+            card1.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            card2.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
+            
+            // After animation completes, swap them in DOM and reset
+            setTimeout(() => {
+                // Swap the cards in the DOM
+                const parent = card1.parentNode;
+                const next1 = card1.nextSibling;
+                const next2 = card2.nextSibling;
+                
+                if (next1 === card2) {
+                    // card1 is right before card2
+                    parent.insertBefore(card2, card1);
+                } else if (next2 === card1) {
+                    // card2 is right before card1
+                    parent.insertBefore(card1, card2);
+                } else {
+                    // They're not adjacent
+                    parent.insertBefore(card1, next2);
+                    parent.insertBefore(card2, next1);
+                }
+                
+                // Reset transforms and transitions
+                card1.style.transform = '';
+                card2.style.transform = '';
+                card1.style.transition = '';
+                card2.style.transition = '';
+                
+                // Re-enable pointer events
+                setTimeout(() => {
+                    card1.style.pointerEvents = '';
+                    card2.style.pointerEvents = '';
+                }, 100);
+            }, 1500); // Wait for animation to complete
         }
 
         function handleMemoryClick(card) {
@@ -1368,6 +1466,7 @@
                         canFlip = true;
                         
                         if (matchedPairs === CONFIG.memoryPairs.length) {
+                            stopMemoryCardSwapping();
                             showMessage('message2', `Korrekt! Koden är: ${CONFIG.memoryCode}`, 'success');
                             setTimeout(() => showView(3), 2000);
                         }
