@@ -1403,6 +1403,17 @@
             
             hintDiv.classList.add('show');
         }
+        
+        function showFakeHint(level) {
+            const hintDiv = document.getElementById('hint' + level);
+            const fakeMessage = fakeHintMessages[Math.floor(Math.random() * fakeHintMessages.length)];
+            hintDiv.textContent = fakeMessage;
+            hintDiv.classList.add('show');
+            setTimeout(() => {
+                hintDiv.classList.remove('show');
+                hintDiv.textContent = '';
+            }, 3000);
+        }
 
         // ============================================
         // FINAL REVEAL
