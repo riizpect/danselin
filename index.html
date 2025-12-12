@@ -520,7 +520,14 @@
             <div class="puzzle-container">
                 <p class="puzzle-description">
                     Nedan finns ett krypterat ord. Använd Caesar-chiffer med skift 13 (ROT13) för att avkoda det.
-                    ROT13 betyder att varje bokstav skiftas 13 steg: A→N, B→O, C→P, osv.
+                    <br><br>
+                    <strong>Hur ROT13 fungerar:</strong><br>
+                    Varje bokstav skiftas 13 steg framåt i alfabetet. För att avkoda, skifta 13 steg tillbaka (eller 13 steg framåt igen, eftersom alfabetet har 26 bokstäver).
+                    <br><br>
+                    <strong>Exempel:</strong> A→N, B→O, C→P, ..., M→Z, N→A, O→B, osv.
+                    <br><br>
+                    <strong>Tips:</strong> För att avkoda "Syhtovavqvat", ta varje bokstav och skifta 13 steg framåt i alfabetet (eller använd en ROT13-kalkylator online).
+                    <br><br>
                     Svaret blir ditt lösenord (ett ord relaterat till fiske).
                 </p>
                 <div class="cipher-text" id="cipherText"></div>
@@ -965,8 +972,8 @@
                 step2: "Ordning: 🎄 (julgran), 🦌 (ren som flyger), ⭐ (stjärna som lyser)"
             },
             3: {
-                step1: "ROT13 betyder att varje bokstav skiftas 13 steg i alfabetet. A blir N, B blir O, osv.",
-                step2: "Avkoda texten med ROT13. Svaret är ett ord som beskriver en hobby relaterad till fiske."
+                step1: "ROT13: Varje bokstav skiftas 13 steg. För att avkoda 'S', tänk: S är bokstav 19, 19-13=6, bokstav 6 är F. För 'y': y är bokstav 25, 25-13=12, bokstav 12 är l.",
+                step2: "Fortsätt så: S→F, y→l, h→u, t→g, o→b, v→i, a→n, v→i, q→d, v→i, a→n, t→g. Svaret är 'flugbindning' - en hobby relaterad till fiske!"
             },
             4: {
                 step1: "Börja med att eliminera möjligheter. Anna kan bara vara Ingenjör eller Arkitekt.",
