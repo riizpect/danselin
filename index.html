@@ -489,8 +489,13 @@
             }
 
             .logic-grid {
-                grid-template-columns: repeat(3, 1fr);
-                font-size: 0.9em;
+                grid-template-columns: 80px repeat(2, 1fr) 80px repeat(2, 1fr);
+                font-size: 0.75em;
+                gap: 6px;
+            }
+            
+            .logic-section-header {
+                grid-column: span 2;
             }
 
             .memory-grid {
