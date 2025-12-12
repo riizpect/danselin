@@ -1211,11 +1211,8 @@
                 
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
-                    <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick()" onmouseenter="handleGiftBoxHover()" onmouseleave="handleGiftBoxLeave()">🎁</div>
-                    <div class="open-instruction" id="openInstruction">Klicka på paketet 5 gånger för att öppna det!</div>
-                    <div class="open-progress" id="openProgress">
-                        <div class="open-progress-bar" id="openProgressBar"></div>
-                    </div>
+                    <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick(event)">🎁</div>
+                    <div class="open-instruction" id="openInstruction">Håll Shift-tangenten och klicka på paketet!</div>
                 </div>
                 
                 <!-- Presentkort (visas efter öppning) -->
@@ -2034,9 +2031,14 @@
         // FINAL REVEAL - Paketväljare och öppning
         // ============================================
         let giftBoxClickCount = 0;
-        let giftBoxHoverTime = 0;
-        let giftBoxHoverInterval = null;
+        let giftBoxOpenSequence = [];
+        let giftBoxOpenStep = 0;
+        let isShiftPressed = false;
+        let lastClickTime = 0;
+        let giftBoxMovingInterval = null;
         const CORRECT_GIFT_INDEX = 7; // Rätt paket är det 8:e (index 7)
+        const EXPLODE_GIFT_INDEX = 3; // Paket som sprängs
+        const MOVE_GIFTS_INDEX = 12; // Paket som får alla att röra sig
         
         function initGiftSelection() {
             const container = document.getElementById('giftSelectionContainer');
@@ -2049,54 +2051,90 @@
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Skapa 20 paket i olika storlekar
+            // Reset state
+            giftBoxClickCount = 0;
+            giftBoxOpenSequence = [];
+            giftBoxOpenStep = 0;
+            isShiftPressed = false;
+            
+            // Stoppa eventuell rörelse
+            if (giftBoxMovingInterval) {
+                clearInterval(giftBoxMovingInterval);
+                giftBoxMovingInterval = null;
+            }
+            
+            // Skapa 20 paket i olika storlekar - alla ser likadana ut!
             for (let i = 0; i < 20; i++) {
                 const box = document.createElement('div');
                 box.className = 'gift-box-small';
                 box.textContent = '🎁';
                 box.dataset.index = i;
                 
-                // Olika storlekar
-                const sizes = [60, 70, 80, 90, 100, 110, 120, 130];
+                // Olika storlekar - rätt paket ser ut som alla andra
+                const sizes = [70, 80, 90, 100, 110, 120];
                 const size = sizes[Math.floor(Math.random() * sizes.length)];
                 box.style.width = size + 'px';
                 box.style.height = size + 'px';
                 box.style.fontSize = (size * 0.4) + 'px';
                 
-                // Rätt paket ska vara större och ha en speciell färg
-                if (i === CORRECT_GIFT_INDEX) {
-                    box.style.width = '140px';
-                    box.style.height = '140px';
-                    box.style.fontSize = '70px';
-                    box.style.background = 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700)';
-                    box.style.borderColor = '#fff';
-                    box.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
-                }
+                // Alla paket ser identiska ut - ingen visuell skillnad!
                 
                 box.onclick = () => selectGift(i);
                 container.appendChild(box);
             }
-            
-            // Reset state
-            giftBoxClickCount = 0;
-            giftBoxHoverTime = 0;
         }
         
         function selectGift(index) {
             if (index === CORRECT_GIFT_INDEX) {
-                // Markera rätt paket
-                const boxes = document.querySelectorAll('.gift-box-small');
-                boxes[index].classList.add('correct');
-                
-                // Visa stort paket efter kort delay
+                // Rätt paket! Visa stort paket
                 setTimeout(() => {
                     document.getElementById('giftSelectionContainer').style.display = 'none';
                     document.getElementById('giftBoxLargeContainer').classList.add('show');
                     giftBoxClickCount = 0;
+                    giftBoxOpenStep = 0;
+                    giftBoxOpenSequence = [];
                     updateOpenInstruction();
+                }, 300);
+            } else if (index === EXPLODE_GIFT_INDEX) {
+                // Troll-paket: Sprängs!
+                const box = document.querySelectorAll('.gift-box-small')[index];
+                box.textContent = '💥';
+                box.style.background = 'linear-gradient(135deg, #ff0000, #ff6600)';
+                box.style.transform = 'scale(1.5) rotate(360deg)';
+                box.style.transition = 'all 0.5s';
+                
+                setTimeout(() => {
+                    box.style.opacity = '0';
+                    setTimeout(() => {
+                        box.textContent = '🎁';
+                        box.style.background = '';
+                        box.style.transform = '';
+                        box.style.opacity = '1';
+                        box.style.transition = '';
+                    }, 500);
                 }, 500);
+            } else if (index === MOVE_GIFTS_INDEX) {
+                // Troll-paket: Får alla paket att röra sig!
+                const boxes = document.querySelectorAll('.gift-box-small');
+                boxes.forEach((b, i) => {
+                    if (i !== index) {
+                        const randomX = (Math.random() - 0.5) * 50;
+                        const randomY = (Math.random() - 0.5) * 50;
+                        b.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                        b.style.transition = 'transform 0.3s';
+                    }
+                });
+                
+                // Stoppa rörelse efter 2 sekunder
+                setTimeout(() => {
+                    boxes.forEach((b, i) => {
+                        if (i !== index) {
+                            b.style.transform = '';
+                        }
+                    });
+                }, 2000);
             } else {
-                // Fel paket - lite animation
+                // Vanligt fel paket - lite animation
                 const box = document.querySelectorAll('.gift-box-small')[index];
                 box.style.transform = 'scale(0.9)';
                 box.style.opacity = '0.7';
@@ -2107,57 +2145,104 @@
             }
         }
         
-        function handleGiftBoxClick() {
-            giftBoxClickCount++;
-            updateOpenInstruction();
+        // Öppningssekvens: 1) Håll Shift och klicka, 2) Dubbelklicka, 3) Klicka på hörnen i ordning
+        function handleGiftBoxClick(e) {
+            const now = Date.now();
+            const isDoubleClick = (now - lastClickTime) < 300;
+            lastClickTime = now;
             
-            if (giftBoxClickCount >= 5) {
-                openGiftBox();
+            if (giftBoxOpenStep === 0) {
+                // Steg 1: Håll Shift och klicka
+                if (e.shiftKey) {
+                    giftBoxOpenStep = 1;
+                    updateOpenInstruction();
+                } else {
+                    // Fel - börja om
+                    giftBoxOpenStep = 0;
+                    updateOpenInstruction();
+                }
+            } else if (giftBoxOpenStep === 1) {
+                // Steg 2: Dubbelklicka
+                if (isDoubleClick) {
+                    giftBoxOpenStep = 2;
+                    updateOpenInstruction();
+                    // Skapa hörn-markörer
+                    createCornerMarkers();
+                } else {
+                    // Fel - börja om
+                    giftBoxOpenStep = 0;
+                    updateOpenInstruction();
+                }
             }
+        }
+        
+        function createCornerMarkers() {
+            const largeBox = document.getElementById('giftBoxLarge');
+            const corners = [
+                { position: 'top-left', x: 0, y: 0 },
+                { position: 'top-right', x: 100, y: 0 },
+                { position: 'bottom-right', x: 100, y: 100 },
+                { position: 'bottom-left', x: 0, y: 100 }
+            ];
+            
+            // Rätt ordning: top-left, bottom-right, top-right, bottom-left
+            const correctOrder = [0, 2, 1, 3];
+            let currentCornerIndex = 0;
+            
+            corners.forEach((corner, index) => {
+                const marker = document.createElement('div');
+                marker.className = 'corner-marker';
+                marker.style.position = 'absolute';
+                marker.style.left = corner.x + '%';
+                marker.style.top = corner.y + '%';
+                marker.style.width = '30px';
+                marker.style.height = '30px';
+                marker.style.border = '2px solid #ffd700';
+                marker.style.borderRadius = '50%';
+                marker.style.background = 'rgba(255, 215, 0, 0.3)';
+                marker.style.cursor = 'pointer';
+                marker.style.transform = 'translate(-50%, -50%)';
+                marker.dataset.cornerIndex = index;
+                marker.onclick = (e) => {
+                    e.stopPropagation();
+                    if (parseInt(marker.dataset.cornerIndex) === correctOrder[currentCornerIndex]) {
+                        // Rätt hörn!
+                        marker.style.background = 'rgba(76, 175, 80, 0.5)';
+                        currentCornerIndex++;
+                        if (currentCornerIndex === 4) {
+                            // Alla hörn klickade i rätt ordning!
+                            setTimeout(() => {
+                                openGiftBox();
+                            }, 500);
+                        }
+                    } else {
+                        // Fel hörn - börja om
+                        currentCornerIndex = 0;
+                        document.querySelectorAll('.corner-marker').forEach(m => {
+                            m.style.background = 'rgba(255, 215, 0, 0.3)';
+                        });
+                    }
+                };
+                largeBox.appendChild(marker);
+            });
         }
         
         function handleGiftBoxHover() {
-            const progressBar = document.getElementById('openProgress');
-            const progressBarFill = document.getElementById('openProgressBar');
-            progressBar.classList.add('show');
-            
-            giftBoxHoverTime = 0;
-            if (giftBoxHoverInterval) {
-                clearInterval(giftBoxHoverInterval);
-            }
-            giftBoxHoverInterval = setInterval(() => {
-                giftBoxHoverTime += 0.1;
-                const progress = (giftBoxHoverTime / 3) * 100; // 3 sekunder
-                progressBarFill.style.width = Math.min(progress, 100) + '%';
-                
-                if (giftBoxHoverTime >= 3) {
-                    clearInterval(giftBoxHoverInterval);
-                    giftBoxHoverInterval = null;
-                    openGiftBox();
-                }
-            }, 100);
+            // Ingen hover-funktion längre
         }
         
         function handleGiftBoxLeave() {
-            if (giftBoxHoverInterval) {
-                clearInterval(giftBoxHoverInterval);
-                giftBoxHoverInterval = null;
-            }
-            const progressBar = document.getElementById('openProgress');
-            const progressBarFill = document.getElementById('openProgressBar');
-            progressBar.classList.remove('show');
-            progressBarFill.style.width = '0%';
-            giftBoxHoverTime = 0;
+            // Ingen leave-funktion längre
         }
         
         function updateOpenInstruction() {
             const instruction = document.getElementById('openInstruction');
-            if (giftBoxClickCount === 0) {
-                instruction.textContent = 'Klicka på paketet 5 gånger för att öppna det!';
-            } else if (giftBoxClickCount < 5) {
-                instruction.textContent = `Klicka ${5 - giftBoxClickCount} gånger till! (Eller håll musen över paketet i 3 sekunder)`;
-            } else {
-                instruction.textContent = 'Öppnar paketet...';
+            if (giftBoxOpenStep === 0) {
+                instruction.textContent = 'Håll Shift-tangenten och klicka på paketet!';
+            } else if (giftBoxOpenStep === 1) {
+                instruction.textContent = 'Bra! Nu dubbelklicka på paketet!';
+            } else if (giftBoxOpenStep === 2) {
+                instruction.textContent = 'Perfekt! Klicka på hörnen i rätt ordning: Övre vänster → Nedre höger → Övre höger → Nedre vänster';
             }
         }
         
