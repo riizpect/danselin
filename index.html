@@ -1386,6 +1386,177 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
 
         // ============================================
+        // ANNOYING POPUPS SYSTEM
+        // ============================================
+        let popupInterval = null;
+        let hasShownRestartTroll = false;
+        let popupCount = 0;
+
+        const annoyingMessages = [
+            "Har du kollat under sängen?",
+            "Vet du vad klockan är?",
+            "Tänk om allt är en dröm?",
+            "Har du glömt något?",
+            "Vad är meningen med livet?",
+            "Klicka här för gratis pengar!",
+            "Systemfel: Kontakta support",
+            "Din session har gått ut. Logga in igen.",
+            "Varning: Virus upptäckt!",
+            "Uppdatering krävs. Starta om nu?",
+            "Fel 404: Hjärnan hittades inte",
+            "Har du sett mina nycklar?",
+            "Vad är 2+2? (Svara snabbt!)",
+            "Du har vunnit en bil! Klicka här!",
+            "Systemet har upptäckt misstänkt aktivitet.",
+            "Vill du spara dina ändringar?",
+            "Din dator kommer att stängas av om 5 sekunder...",
+            "Någon försöker hacka ditt konto!",
+            "Grattis! Du är användare #1,000,000!",
+            "Varning: Batteriet är lågt (0%)"
+        ];
+
+        function createAnnoyingPopup(message, isMoving = false, hasClose = true) {
+            popupCount++;
+            const popup = document.createElement('div');
+            popup.className = 'annoying-popup' + (isMoving ? ' moving' : '');
+            popup.id = 'annoyingPopup' + popupCount;
+            
+            // Random position
+            const x = Math.random() * (window.innerWidth - 300);
+            const y = Math.random() * (window.innerHeight - 200);
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            
+            popup.innerHTML = `
+                ${hasClose ? '<button class="close-btn" onclick="closeAnnoyingPopup(' + popupCount + ')">×</button>' : ''}
+                <div style="margin-bottom: 15px;">${message}</div>
+                <button onclick="closeAnnoyingPopup(${popupCount})">OK</button>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Make it move if isMoving
+            if (isMoving) {
+                let moveInterval = setInterval(() => {
+                    if (!document.getElementById('annoyingPopup' + popupCount)) {
+                        clearInterval(moveInterval);
+                        return;
+                    }
+                    const newX = Math.random() * (window.innerWidth - 300);
+                    const newY = Math.random() * (window.innerHeight - 200);
+                    popup.style.left = newX + 'px';
+                    popup.style.top = newY + 'px';
+                }, 1000);
+                
+                // Stop moving after 10 seconds
+                setTimeout(() => {
+                    clearInterval(moveInterval);
+                    popup.classList.remove('moving');
+                }, 10000);
+            }
+            
+            // Auto-close after 20 seconds if not closed
+            setTimeout(() => {
+                if (document.getElementById('annoyingPopup' + popupCount)) {
+                    closeAnnoyingPopup(popupCount);
+                }
+            }, 20000);
+        }
+
+        function closeAnnoyingPopup(id) {
+            const popup = document.getElementById('annoyingPopup' + id);
+            if (popup) {
+                popup.style.animation = 'popupPulse 0.3s ease-out reverse';
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }
+        }
+
+        function showRestartTrollPopup() {
+            if (hasShownRestartTroll) return;
+            hasShownRestartTroll = true;
+            
+            const popup = document.createElement('div');
+            popup.className = 'annoying-popup moving';
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+            popup.style.transform = 'translate(-50%, -50%)';
+            popup.style.zIndex = '20000';
+            
+            popup.innerHTML = `
+                <div style="margin-bottom: 15px; font-size: 1.2em;">
+                    <strong>Vill du börja om från början?</strong>
+                </div>
+                <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Make it move around
+            let moveCount = 0;
+            const moveInterval = setInterval(() => {
+                moveCount++;
+                const newX = 50 + (Math.random() - 0.5) * 20; // 40-60%
+                const newY = 50 + (Math.random() - 0.5) * 20; // 40-60%
+                popup.style.left = newX + '%';
+                popup.style.top = newY + '%';
+                
+                if (moveCount > 20) {
+                    clearInterval(moveInterval);
+                }
+            }, 500);
+        }
+
+        function handleTrollRestart() {
+            // Just close the popup, don't actually restart
+            const popup = document.querySelector('.annoying-popup.moving');
+            if (popup) {
+                popup.remove();
+            }
+            createAnnoyingPopup("Haha, bara skojade! Fortsätt spela! 😄", false, true);
+        }
+
+        function startAnnoyingPopups() {
+            // Stop any existing interval
+            if (popupInterval) {
+                clearInterval(popupInterval);
+            }
+            
+            // Show first popup immediately
+            if (currentLevel > 0 && currentLevel < 6) {
+                const isMoving = Math.random() > 0.7; // 30% chance of moving popup
+                const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
+                createAnnoyingPopup(message, isMoving, true);
+            }
+            
+            // Show popups every 10 seconds
+            popupInterval = setInterval(() => {
+                if (currentLevel > 0 && currentLevel < 6) {
+                    const isMoving = Math.random() > 0.7; // 30% chance of moving popup
+                    const message = annoyingMessages[Math.floor(Math.random() * annoyingMessages.length)];
+                    createAnnoyingPopup(message, isMoving, true);
+                }
+            }, 10000); // 10 seconds
+            
+            // Show troll restart popup once, after 2-3 minutes
+            setTimeout(() => {
+                if (currentLevel > 0 && currentLevel < 6 && !hasShownRestartTroll) {
+                    showRestartTrollPopup();
+                }
+            }, 120000 + Math.random() * 60000);
+        }
+
+        function stopAnnoyingPopups() {
+            if (popupInterval) {
+                clearInterval(popupInterval);
+                popupInterval = null;
+            }
+            // Close all existing popups
+            document.querySelectorAll('.annoying-popup').forEach(popup => popup.remove());
+        }
+
+        // ============================================
         // UTILITY FUNCTIONS
         // ============================================
         function showMessage(elementId, message, type) {
