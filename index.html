@@ -1203,60 +1203,79 @@
         <!-- View 6: Final -->
         <div class="view" id="view6">
             <div class="final-container">
-                <div class="gift-card">
-                    <div class="gift-card-header">
-                        <h1 class="gift-card-title">🎉 Grattis! 🎉</h1>
-                        <p class="gift-card-subtitle">Du har löst alla utmaningar!</p>
-                    </div>
-                    
-                    <div class="gift-card-content">
-                        <div class="gift-info-row">
-                            <div class="gift-info-icon">🎣</div>
-                            <div class="gift-info-text">
-                                <span class="gift-info-label">Present</span>
-                                Flugbindning för nybörjare
-                            </div>
-                        </div>
-                        
-                        <div class="gift-info-row">
-                            <div class="gift-info-icon">📅</div>
-                            <div class="gift-info-text">
-                                <span class="gift-info-label">Datum</span>
-                                20 januari 2026
-                            </div>
-                        </div>
-                        
-                        <div class="gift-info-row">
-                            <div class="gift-info-icon">🕐</div>
-                            <div class="gift-info-text">
-                                <span class="gift-info-label">Tid</span>
-                                18:00 - 20:30
-                            </div>
-                        </div>
-                        
-                        <div class="gift-info-row">
-                            <div class="gift-info-icon">📍</div>
-                            <div class="gift-info-text">
-                                <span class="gift-info-label">Plats</span>
-                                Residensgatan 7, Vänersborg
-                            </div>
-                        </div>
-                        
-                        <div class="gift-info-row">
-                            <div class="gift-info-icon">✨</div>
-                            <div class="gift-info-text">
-                                <span class="gift-info-label">Antal tillfällen</span>
-                                10 tillfällen
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="gift-card-footer">
-                        <div class="gift-message">God Jul Dan! ❤️</div>
+                <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
+                <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Hitta rätt paket!</p>
+                
+                <!-- Paketväljare -->
+                <div class="gift-selection-container" id="giftSelectionContainer"></div>
+                
+                <!-- Stort paket (visas när rätt paket hittats) -->
+                <div class="gift-box-large-container" id="giftBoxLargeContainer">
+                    <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick()" onmouseenter="handleGiftBoxHover()" onmouseleave="handleGiftBoxLeave()">🎁</div>
+                    <div class="open-instruction" id="openInstruction">Klicka på paketet 5 gånger för att öppna det!</div>
+                    <div class="open-progress" id="openProgress">
+                        <div class="open-progress-bar" id="openProgressBar"></div>
                     </div>
                 </div>
                 
-                <button onclick="restartGame()" style="background: #666; margin-top: 30px; position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">Börja om från början</button>
+                <!-- Presentkort (visas efter öppning) -->
+                <div class="gift-card-container" id="giftCardContainer">
+                    <div class="gift-card">
+                        <div class="gift-card-header">
+                            <h1 class="gift-card-title">🎉 Grattis! 🎉</h1>
+                            <p class="gift-card-subtitle">Du har löst alla utmaningar!</p>
+                        </div>
+                        
+                        <div class="gift-card-content">
+                            <div class="gift-info-row">
+                                <div class="gift-info-icon">🎣</div>
+                                <div class="gift-info-text">
+                                    <span class="gift-info-label">Present</span>
+                                    Flugbindning för nybörjare
+                                </div>
+                            </div>
+                            
+                            <div class="gift-info-row">
+                                <div class="gift-info-icon">📅</div>
+                                <div class="gift-info-text">
+                                    <span class="gift-info-label">Datum</span>
+                                    20 januari 2026
+                                </div>
+                            </div>
+                            
+                            <div class="gift-info-row">
+                                <div class="gift-info-icon">🕐</div>
+                                <div class="gift-info-text">
+                                    <span class="gift-info-label">Tid</span>
+                                    18:00 - 20:30
+                                </div>
+                            </div>
+                            
+                            <div class="gift-info-row">
+                                <div class="gift-info-icon">📍</div>
+                                <div class="gift-info-text">
+                                    <span class="gift-info-label">Plats</span>
+                                    Residensgatan 7, Vänersborg
+                                </div>
+                            </div>
+                            
+                            <div class="gift-info-row">
+                                <div class="gift-info-icon">✨</div>
+                                <div class="gift-info-text">
+                                    <span class="gift-info-label">Antal tillfällen</span>
+                                    10 tillfällen
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="gift-card-footer">
+                            <div class="gift-message">God Jul Dan! ❤️</div>
+                            <p style="color: #fff; margin-top: 15px; opacity: 0.8;">Från Monica</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="restartGame()" style="background: #666; margin-top: 30px;">Börja om från början</button>
             </div>
         </div>
     </div>
