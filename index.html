@@ -215,6 +215,67 @@
             75% { transform: translateX(10px); }
         }
 
+        /* Level 2: Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        .memory-card.flipped {
+            background: linear-gradient(135deg, #3a3a4e, #2a2a3e);
+            border-color: rgba(255, 215, 0, 0.8);
+        }
+
+        .memory-card.matched {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .memory-card .card-back {
+            font-size: 1.5em;
+            color: rgba(255, 215, 0, 0.5);
+        }
+
+        .memory-card .card-front {
+            display: none;
+        }
+
+        .memory-card.flipped .card-back {
+            display: none;
+        }
+
+        .memory-card.flipped .card-front {
+            display: block;
+        }
+
         /* Level 3: Cipher */
         .cipher-text {
             background: rgba(0, 0, 0, 0.3);
