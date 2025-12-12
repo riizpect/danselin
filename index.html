@@ -2437,6 +2437,12 @@
             // Rensa gamla fiskar
             arena.innerHTML = '';
             
+            // Skapa loop-linje (visas när fiskar loopar)
+            const loopLine = document.createElement('div');
+            loopLine.className = 'loop-line';
+            loopLine.id = 'loopLine';
+            arena.appendChild(loopLine);
+            
             const arenaRect = arena.getBoundingClientRect();
             
             for (let i = 0; i < count; i++) {
@@ -2462,9 +2468,11 @@
                     const delay = Math.random() * 2; // 0-2 sekunder delay
                     fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
                     
-                    // När animationen loopar, byt till looping-animation (tydlig markering)
+                    // När animationen loopar, DRAG EN LINJE och byt till looping-animation
                     fish.addEventListener('animationiteration', () => {
-                        // Detta händer när fiskarna loopar
+                        // Detta händer när fiskarna loopar - DRAG EN LINJE!
+                        showLoopLine(startY);
+                        
                         fish.classList.remove('visible');
                         fish.classList.add('looping');
                         fish.style.animation = `swimLoop ${speed}s linear 0s infinite`;
@@ -2473,6 +2481,20 @@
                 
                 arena.appendChild(fish);
             }
+        }
+        
+        function showLoopLine(fishY) {
+            const loopLine = document.getElementById('loopLine');
+            if (!loopLine) return;
+            
+            // Placera linjen på samma höjd som fisken
+            loopLine.style.top = fishY + 'px';
+            
+            // Visa linjen med animation
+            loopLine.classList.remove('active');
+            setTimeout(() => {
+                loopLine.classList.add('active');
+            }, 10);
         }
         
         function startFishTimer() {
