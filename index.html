@@ -2351,10 +2351,16 @@
             if (arena) {
                 const allFish = arena.querySelectorAll('.swimming-fish');
                 allFish.forEach(fish => {
+                    // Stoppa animationen helt
                     fish.style.animation = 'none';
+                    fish.style.animationName = 'none';
+                    fish.style.animationPlayState = 'paused';
                     fish.style.opacity = '0';
                     fish.style.display = 'none';
+                    fish.style.visibility = 'hidden';
                 });
+                // Rensa arenan helt
+                arena.innerHTML = '';
             }
             
             if (phaseEl) phaseEl.textContent = 'Räkna fiskarna nu!';
