@@ -657,6 +657,29 @@
                 <button onclick="startGame()" style="display: block; margin: 30px auto;">Starta äventyret</button>
             </div>
         </div>
+        
+        <!-- Fake Loading Screen -->
+        <div id="fakeLoadingScreen" class="fake-loading-screen">
+            <h2>Laddar...</h2>
+            <div class="fake-loading-bar-container">
+                <div class="fake-loading-bar" id="fakeLoadingBar"></div>
+            </div>
+            <p id="fakeLoadingText">Initierar system...</p>
+            <button id="fakeLoadingButton" onclick="skipFakeLoading()" style="display: none; margin-top: 20px;">Fortsätt</button>
+        </div>
+        
+        <!-- Fake Captcha -->
+        <div id="fakeCaptcha" class="fake-captcha-overlay" style="display: none;">
+            <div class="fake-captcha-box">
+                <h3>Verifiera att du är människa</h3>
+                <p>Välj alla bilder med trafikljus:</p>
+                <div class="fake-captcha-grid" id="fakeCaptchaGrid">
+                    <!-- Images will be added by JavaScript -->
+                </div>
+                <p id="fakeCaptchaMessage" style="color: #ff6b6b; margin-top: 10px;"></p>
+                <button onclick="checkFakeCaptcha()" style="margin-top: 15px;">Verifiera</button>
+            </div>
+        </div>
 
         <!-- View 1: Level 1 - Word Puzzle -->
         <div class="view" id="view1">
@@ -935,6 +958,13 @@
             setTimeout(() => {
                 setupTrollFeatures(level);
             }, 500);
+            
+            // Random fake captcha (10% chance)
+            if (level > 0 && level < 6 && Math.random() < 0.1) {
+                setTimeout(() => {
+                    showFakeCaptcha();
+                }, 5000 + Math.random() * 10000);
+            }
         }
         
         function setupTrollFeatures(level) {
@@ -1623,6 +1653,10 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         
         let buttonSwapInterval = null;
         let fakeLevelCompleteShown = {};
+        let fakeCountdownInterval = null;
+        let fakeCountdownTime = 300; // 5 minutes
+        let backgroundMusicPlaying = false;
+        let audioContext = null;
 
         const annoyingMessages = [
             "Har du kollat under sängen?",
@@ -1980,4 +2014,5 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
     </script>
 </body>
 </html>
+
 
