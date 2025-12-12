@@ -2031,9 +2031,145 @@
         }
 
         // ============================================
-        // FINAL REVEAL
+        // FINAL REVEAL - Paketväljare och öppning
         // ============================================
-        // Gift card is now always visible, no need for reveal function
+        let giftBoxClickCount = 0;
+        let giftBoxHoverTime = 0;
+        let giftBoxHoverInterval = null;
+        const CORRECT_GIFT_INDEX = 7; // Rätt paket är det 8:e (index 7)
+        
+        function initGiftSelection() {
+            const container = document.getElementById('giftSelectionContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            container.style.display = 'grid';
+            
+            // Dölj stort paket och presentkort
+            document.getElementById('giftBoxLargeContainer').classList.remove('show');
+            document.getElementById('giftCardContainer').classList.remove('show');
+            
+            // Skapa 20 paket i olika storlekar
+            for (let i = 0; i < 20; i++) {
+                const box = document.createElement('div');
+                box.className = 'gift-box-small';
+                box.textContent = '🎁';
+                box.dataset.index = i;
+                
+                // Olika storlekar
+                const sizes = [60, 70, 80, 90, 100, 110, 120, 130];
+                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                box.style.width = size + 'px';
+                box.style.height = size + 'px';
+                box.style.fontSize = (size * 0.4) + 'px';
+                
+                // Rätt paket ska vara större och ha en speciell färg
+                if (i === CORRECT_GIFT_INDEX) {
+                    box.style.width = '140px';
+                    box.style.height = '140px';
+                    box.style.fontSize = '70px';
+                    box.style.background = 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700)';
+                    box.style.borderColor = '#fff';
+                    box.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
+                }
+                
+                box.onclick = () => selectGift(i);
+                container.appendChild(box);
+            }
+            
+            // Reset state
+            giftBoxClickCount = 0;
+            giftBoxHoverTime = 0;
+        }
+        
+        function selectGift(index) {
+            if (index === CORRECT_GIFT_INDEX) {
+                // Markera rätt paket
+                const boxes = document.querySelectorAll('.gift-box-small');
+                boxes[index].classList.add('correct');
+                
+                // Visa stort paket efter kort delay
+                setTimeout(() => {
+                    document.getElementById('giftSelectionContainer').style.display = 'none';
+                    document.getElementById('giftBoxLargeContainer').classList.add('show');
+                    giftBoxClickCount = 0;
+                    updateOpenInstruction();
+                }, 500);
+            } else {
+                // Fel paket - lite animation
+                const box = document.querySelectorAll('.gift-box-small')[index];
+                box.style.transform = 'scale(0.9)';
+                box.style.opacity = '0.7';
+                setTimeout(() => {
+                    box.style.transform = '';
+                    box.style.opacity = '';
+                }, 300);
+            }
+        }
+        
+        function handleGiftBoxClick() {
+            giftBoxClickCount++;
+            updateOpenInstruction();
+            
+            if (giftBoxClickCount >= 5) {
+                openGiftBox();
+            }
+        }
+        
+        function handleGiftBoxHover() {
+            const progressBar = document.getElementById('openProgress');
+            const progressBarFill = document.getElementById('openProgressBar');
+            progressBar.classList.add('show');
+            
+            giftBoxHoverTime = 0;
+            if (giftBoxHoverInterval) {
+                clearInterval(giftBoxHoverInterval);
+            }
+            giftBoxHoverInterval = setInterval(() => {
+                giftBoxHoverTime += 0.1;
+                const progress = (giftBoxHoverTime / 3) * 100; // 3 sekunder
+                progressBarFill.style.width = Math.min(progress, 100) + '%';
+                
+                if (giftBoxHoverTime >= 3) {
+                    clearInterval(giftBoxHoverInterval);
+                    giftBoxHoverInterval = null;
+                    openGiftBox();
+                }
+            }, 100);
+        }
+        
+        function handleGiftBoxLeave() {
+            if (giftBoxHoverInterval) {
+                clearInterval(giftBoxHoverInterval);
+                giftBoxHoverInterval = null;
+            }
+            const progressBar = document.getElementById('openProgress');
+            const progressBarFill = document.getElementById('openProgressBar');
+            progressBar.classList.remove('show');
+            progressBarFill.style.width = '0%';
+            giftBoxHoverTime = 0;
+        }
+        
+        function updateOpenInstruction() {
+            const instruction = document.getElementById('openInstruction');
+            if (giftBoxClickCount === 0) {
+                instruction.textContent = 'Klicka på paketet 5 gånger för att öppna det!';
+            } else if (giftBoxClickCount < 5) {
+                instruction.textContent = `Klicka ${5 - giftBoxClickCount} gånger till! (Eller håll musen över paketet i 3 sekunder)`;
+            } else {
+                instruction.textContent = 'Öppnar paketet...';
+            }
+        }
+        
+        function openGiftBox() {
+            const largeBox = document.getElementById('giftBoxLarge');
+            largeBox.classList.add('opening');
+            
+            setTimeout(() => {
+                document.getElementById('giftBoxLargeContainer').classList.remove('show');
+                document.getElementById('giftCardContainer').classList.add('show');
+            }, 1000);
+        }
 
         // ============================================
         // ADMIN PANEL
