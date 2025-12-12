@@ -292,18 +292,12 @@
         /* Level 4: Logic Puzzle */
         .logic-grid {
             display: grid;
-            grid-template-columns: 120px repeat(4, 1fr) 120px repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .logic-section-header {
-            grid-column: span 4;
-            font-weight: bold;
-            padding: 10px;
-            background: rgba(255, 215, 0, 0.2);
-            text-align: center;
-            border-radius: 5px;
+            grid-template-columns: 150px 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .logic-header {
@@ -489,13 +483,9 @@
             }
 
             .logic-grid {
-                grid-template-columns: 80px repeat(2, 1fr) 80px repeat(2, 1fr);
-                font-size: 0.75em;
-                gap: 6px;
-            }
-            
-            .logic-section-header {
-                grid-column: span 2;
+                grid-template-columns: 100px 1fr 1fr;
+                font-size: 0.9em;
+                gap: 10px;
             }
 
             .memory-grid {
@@ -960,33 +950,12 @@
             const fishes = ['Lax', 'Abborre', 'Gädda', 'Ruda'];
             const methods = ['Flugfiske', 'Spinnfiske', 'Grundfiske', 'Isfiske'];
             
-            // Header row: Fiskare | Fisk section | Metod section
-            const fisherHeader = document.createElement('div');
-            fisherHeader.className = 'logic-header';
-            fisherHeader.textContent = 'Fiskare';
-            grid.appendChild(fisherHeader);
-            
-            const fishSectionHeader = document.createElement('div');
-            fishSectionHeader.className = 'logic-section-header';
-            fishSectionHeader.textContent = 'Fisk';
-            grid.appendChild(fishSectionHeader);
-            
-            fishes.forEach(fish => {
+            // Header row
+            const headers = ['Fiskare', 'Fisk', 'Metod'];
+            headers.forEach(header => {
                 const cell = document.createElement('div');
                 cell.className = 'logic-header';
-                cell.textContent = fish;
-                grid.appendChild(cell);
-            });
-            
-            const methodSectionHeader = document.createElement('div');
-            methodSectionHeader.className = 'logic-section-header';
-            methodSectionHeader.textContent = 'Metod';
-            grid.appendChild(methodSectionHeader);
-            
-            methods.forEach(method => {
-                const cell = document.createElement('div');
-                cell.className = 'logic-header';
-                cell.textContent = method;
+                cell.textContent = header;
                 grid.appendChild(cell);
             });
             
@@ -998,80 +967,64 @@
                 fisherCell.textContent = fisher;
                 grid.appendChild(fisherCell);
                 
-                // Empty cell for section header alignment
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'logic-cell';
-                grid.appendChild(emptyCell);
-                
-                // Fish selects
+                // Fish select
+                const fishCell = document.createElement('div');
+                fishCell.className = 'logic-cell';
+                const fishSelect = document.createElement('select');
+                fishSelect.id = `logic-${fisher.toLowerCase()}-fish`;
+                fishSelect.innerHTML = '<option value="">Välj fisk...</option>';
                 fishes.forEach(fish => {
-                    const cell = document.createElement('div');
-                    cell.className = 'logic-cell';
-                    const select = document.createElement('select');
-                    select.id = `logic-${fisher.toLowerCase()}-fish-${fish.toLowerCase()}`;
-                    select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
-                    cell.appendChild(select);
-                    grid.appendChild(cell);
+                    fishSelect.innerHTML += `<option value="${fish.toLowerCase()}">${fish}</option>`;
                 });
+                fishCell.appendChild(fishSelect);
+                grid.appendChild(fishCell);
                 
-                // Empty cell for section header alignment
-                const emptyCell2 = document.createElement('div');
-                emptyCell2.className = 'logic-cell';
-                grid.appendChild(emptyCell2);
-                
-                // Method selects
+                // Method select
+                const methodCell = document.createElement('div');
+                methodCell.className = 'logic-cell';
+                const methodSelect = document.createElement('select');
+                methodSelect.id = `logic-${fisher.toLowerCase()}-method`;
+                methodSelect.innerHTML = '<option value="">Välj metod...</option>';
                 methods.forEach(method => {
-                    const cell = document.createElement('div');
-                    cell.className = 'logic-cell';
-                    const select = document.createElement('select');
-                    select.id = `logic-${fisher.toLowerCase()}-method-${method.toLowerCase()}`;
-                    select.innerHTML = '<option value="">-</option><option value="yes">✓</option>';
-                    cell.appendChild(select);
-                    grid.appendChild(cell);
+                    methodSelect.innerHTML += `<option value="${method.toLowerCase()}">${method}</option>`;
                 });
+                methodCell.appendChild(methodSelect);
+                grid.appendChild(methodCell);
             });
         }
 
         function checkLogic() {
             const fishers = ['erik', 'lisa', 'olle', 'sara'];
-            const fishes = ['lax', 'abborre', 'gädda', 'ruda'];
-            const methods = ['flugfiske', 'spinnfiske', 'grundfiske', 'isfiske'];
             let allCorrect = true;
+            let allFilled = true;
             
             // Verify all answers are correct
             fishers.forEach(fisher => {
                 const correct = CONFIG.logicAnswer[fisher];
-                let foundFish = false;
-                let foundMethod = false;
+                const fishSelect = document.getElementById(`logic-${fisher}-fish`);
+                const methodSelect = document.getElementById(`logic-${fisher}-method`);
                 
-                // Check fish
-                fishes.forEach(fish => {
-                    const select = document.getElementById(`logic-${fisher}-fish-${fish}`);
-                    if (select && select.value === 'yes') {
-                        if (fish === correct.fish) {
-                            foundFish = true;
-                        } else {
-                            allCorrect = false;
-                        }
-                    }
-                });
+                if (!fishSelect || !methodSelect) {
+                    allFilled = false;
+                    return;
+                }
                 
-                // Check method
-                methods.forEach(method => {
-                    const select = document.getElementById(`logic-${fisher}-method-${method}`);
-                    if (select && select.value === 'yes') {
-                        if (method === correct.method) {
-                            foundMethod = true;
-                        } else {
-                            allCorrect = false;
-                        }
-                    }
-                });
+                const selectedFish = fishSelect.value;
+                const selectedMethod = methodSelect.value;
                 
-                if (!foundFish || !foundMethod) allCorrect = false;
+                if (!selectedFish || !selectedMethod) {
+                    allFilled = false;
+                    return;
+                }
+                
+                if (selectedFish !== correct.fish || selectedMethod !== correct.method) {
+                    allCorrect = false;
+                }
             });
             
-            if (allCorrect) {
+            if (!allFilled) {
+                showMessage('message4', 'Välj både fisk och metod för alla fiskare!', 'error');
+            } else if (allCorrect) {
                 // Use the code from CONFIG
                 const code = CONFIG.logicCode;
                 showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
@@ -1258,17 +1211,11 @@
                 
                 // Reset logic puzzle selects
                 const fishers = ['erik', 'lisa', 'olle', 'sara'];
-                const fishes = ['lax', 'abborre', 'gädda', 'ruda'];
-                const methods = ['flugfiske', 'spinnfiske', 'grundfiske', 'isfiske'];
                 fishers.forEach(fisher => {
-                    fishes.forEach(fish => {
-                        const select = document.getElementById(`logic-${fisher}-fish-${fish}`);
-                        if (select) select.value = '';
-                    });
-                    methods.forEach(method => {
-                        const select = document.getElementById(`logic-${fisher}-method-${method}`);
-                        if (select) select.value = '';
-                    });
+                    const fishSelect = document.getElementById(`logic-${fisher}-fish`);
+                    const methodSelect = document.getElementById(`logic-${fisher}-method`);
+                    if (fishSelect) fishSelect.value = '';
+                    if (methodSelect) methodSelect.value = '';
                 });
                 
                 showView(0);
