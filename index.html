@@ -1009,15 +1009,21 @@
                     return;
                 }
                 
-                const selectedFish = fishSelect.value;
-                const selectedMethod = methodSelect.value;
+                const selectedFish = fishSelect.value.trim().toLowerCase();
+                const selectedMethod = methodSelect.value.trim().toLowerCase();
                 
                 if (!selectedFish || !selectedMethod) {
                     allFilled = false;
                     return;
                 }
                 
-                if (selectedFish !== correct.fish || selectedMethod !== correct.method) {
+                // Normalize for comparison (handle Swedish characters)
+                const normalizedSelectedFish = normalizeSwedish(selectedFish);
+                const normalizedCorrectFish = normalizeSwedish(correct.fish);
+                const normalizedSelectedMethod = normalizeSwedish(selectedMethod);
+                const normalizedCorrectMethod = normalizeSwedish(correct.method);
+                
+                if (normalizedSelectedFish !== normalizedCorrectFish || normalizedSelectedMethod !== normalizedCorrectMethod) {
                     allCorrect = false;
                 }
             });
