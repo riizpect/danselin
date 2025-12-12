@@ -1388,7 +1388,6 @@
                 });
                 
                 stopAnnoyingPopups();
-                hasShownRestartTroll = false;
                 popupCount = 0;
                 showView(0);
             }
@@ -1610,7 +1609,6 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             localStorage.removeItem('escapeRoomLevel');
             currentLevel = 0;
             hintStates = {};
-            hasShownRestartTroll = false;
             popupCount = 0;
             
             // Reset all inputs
@@ -1684,12 +1682,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 }
             }, 10000); // 10 seconds
             
-            // Show troll restart popup once, after 2-3 minutes
-            setTimeout(() => {
-                if (currentLevel > 0 && currentLevel < 6 && !hasShownRestartTroll) {
-                    showRestartTrollPopup();
-                }
-            }, 120000 + Math.random() * 60000);
+            // Troll popup is now shown after completing level 4, not here
         }
 
         function stopAnnoyingPopups() {
