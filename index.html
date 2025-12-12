@@ -1394,11 +1394,13 @@
                 hintStates[level] = 2;
             }
             
-            const hint = hints[level];
+            // Always show fake/troll hints instead of real ones
             if (hintStates[level] === 1) {
-                hintDiv.textContent = hint.step1;
+                const fakeMessage = fakeHintMessages[Math.floor(Math.random() * fakeHintMessages.length)];
+                hintDiv.textContent = fakeMessage;
             } else {
-                hintDiv.textContent = hint.step2;
+                const fakeMessage2 = fakeHintMessagesStep2[Math.floor(Math.random() * fakeHintMessagesStep2.length)];
+                hintDiv.textContent = fakeMessage2;
             }
             
             hintDiv.classList.add('show');
@@ -1588,7 +1590,35 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             "Använd kraften, Luke!",
             "Koden är alltid 0000!",
             "Titta i spegeln!",
-            "Svaret är i luften!"
+            "Svaret är i luften!",
+            "Prova att blinka tre gånger!",
+            "Svaret är baklänges!",
+            "Tänk på en siffra mellan 1 och 10!",
+            "Klicka på alla knappar samtidigt!",
+            "Svaret är i konsolen (F12)!",
+            "Prova att sjunga svaret!",
+            "Tänk positivt!",
+            "Svaret är alltid 'test'!",
+            "Klicka snabbt 100 gånger!",
+            "Svaret finns i URL:en!",
+            "Prova att vända på tangentbordet!",
+            "Tänk på din favoritfärg!",
+            "Svaret är samma som frågan!",
+            "Klicka med vänster hand om du är högerhänt!",
+            "Svaret är det första du tänker på!"
+        ];
+        
+        const fakeHintMessagesStep2 = [
+            "Hmm, det hjälpte inte? Prova igen!",
+            "Oj, det var fel ledtråd. Försök ändå!",
+            "Bara skojade! Du får klura själv!",
+            "Haha, trodde du att jag skulle hjälpa dig?",
+            "Nä, den ledtråden var inte så bra. Fortsätt gissa!",
+            "Oj, det var en distraktion. Ignorera det!",
+            "Haha, bara testade om du lyssnade!",
+            "Nä, den hjälper inte. Du får tänka själv!",
+            "Bara skojade igen! Ingen hjälp här!",
+            "Hmm, det var inte rätt ledtråd. Försök ändå!"
         ];
         
         let buttonSwapInterval = null;
