@@ -538,8 +538,17 @@
 
     <div class="container">
         <!-- Progress Bar -->
-        <div class="progress-bar">
+        <div class="progress-bar" ondblclick="showSecretInput()" title="Dubbelklicka för test-läge">
             <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+        
+        <!-- Secret Test Input (hidden) -->
+        <div id="secretInput" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 20px; border: 2px solid #ffd700; border-radius: 10px; z-index: 2000;">
+            <h3 style="color: #ffd700; margin-bottom: 15px;">Test-läge</h3>
+            <input type="text" id="secretCodeInput" placeholder="Skriv kod: test123" style="width: 200px; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid #ffd700; border-radius: 5px; color: #fff;">
+            <br>
+            <button onclick="checkSecretCode()" style="margin-right: 10px; padding: 10px 20px; background: #ffd700; color: #000; border: none; border-radius: 5px; cursor: pointer;">Hoppa till nivå</button>
+            <button onclick="hideSecretInput()" style="padding: 10px 20px; background: #666; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Stäng</button>
         </div>
 
         <!-- View 0: Start -->
@@ -1227,13 +1236,17 @@
         });
 
         function goToLevel(level) {
+            // Set current level to bypass puzzle checks
+            currentLevel = level;
             showView(level);
-            if (level === 2) initHotspots();
+            if (level === 2) initMemoryGame();
             if (level === 4) initLogicPuzzle();
             if (level === 5) initTimingPuzzle();
             if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
             }
+            // Update progress
+            updateProgress();
         }
 
         function resetProgress() {
