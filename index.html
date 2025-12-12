@@ -492,7 +492,7 @@
             font-size: 0.9em;
         }
 
-        /* Final Reveal - Paketväljare */
+        /* Final Reveal - Negationstest */
         .final-container {
             display: flex;
             flex-direction: column;
@@ -502,55 +502,131 @@
             padding: 40px 20px;
         }
 
-        .gift-selection-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 20px;
-            max-width: 900px;
+        .negation-test-container {
+            max-width: 700px;
             width: 100%;
-            margin: 30px 0;
+            margin: 20px auto;
         }
 
-        .gift-box-small {
-            aspect-ratio: 1;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f, #ff8c8c);
+        .negation-question {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9));
             border: 3px solid #ffd700;
-            border-radius: 10px;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .negation-question-number {
+            color: #ffd700;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .negation-question-text {
+            color: #fff;
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin: 20px 0;
+            min-height: 80px;
+        }
+
+        .negation-package {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: 4px solid #ffd700;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 4em;
+            cursor: pointer;
+            margin: 30px auto;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .negation-package:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
+        }
+
+        .negation-package.opening {
+            animation: packageOpen 0.8s ease-out forwards;
+        }
+
+        @keyframes packageOpen {
+            0% { transform: scale(1) rotateY(0deg); }
+            50% { transform: scale(1.2) rotateY(90deg); }
+            100% { transform: scale(1) rotateY(0deg); opacity: 0.3; }
+        }
+
+        .negation-package-content {
+            position: absolute;
+            font-size: 3em;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s;
+        }
+
+        .negation-package-content.revealed {
+            opacity: 1;
+            transform: scale(1);
+            animation: contentReveal 0.6s ease-out;
+        }
+
+        @keyframes contentReveal {
+            0% { transform: scale(0) rotate(-180deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .negation-answer-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .negation-button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: 3px solid #ffd700;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffd700;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            position: relative;
-            animation: boxFloat 3s ease-in-out infinite;
+            font-weight: bold;
         }
 
-        .gift-box-small:nth-child(odd) {
-            animation-delay: 0.5s;
+        .negation-button:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
         }
 
-        @keyframes boxFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .negation-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .gift-box-small:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-            border-color: #fff;
+        .negation-feedback {
+            text-align: center;
+            margin: 20px 0;
+            min-height: 40px;
+            font-size: 1.2em;
         }
 
-        .gift-box-small.correct {
-            border-color: #4caf50;
-            box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
-            animation: correctPulse 1s ease-in-out;
+        .negation-feedback.correct {
+            color: #4caf50;
         }
 
-        @keyframes correctPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        .negation-feedback.wrong {
+            color: #ff6b6b;
         }
 
         .gift-box-large-container {
@@ -1325,11 +1401,10 @@
         <div class="view" id="view6">
             <div class="final-container">
                 <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
-                <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Hitta rätt paket!</p>
+                <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
-                <!-- Paketväljare -->
-                <div class="gift-error-counter" id="giftErrorCounter"></div>
-                <div class="gift-selection-container" id="giftSelectionContainer"></div>
+                <!-- Negationstest -->
+                <div class="negation-test-container" id="negationTestContainer"></div>
                 
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
@@ -1543,7 +1618,7 @@
             // Stop popups on final view
             if (level === 6) {
                 stopAnnoyingPopups();
-                setTimeout(() => initGiftSelection(), 100);
+                setTimeout(() => initNegationTest(), 100);
             } else if (level > 0 && !popupInterval) {
                 // Start popups if game is active
                 startAnnoyingPopups();
@@ -2162,218 +2237,149 @@
         }
 
         // ============================================
-        // FINAL REVEAL - Paketväljare och öppning
+        // FINAL REVEAL - Negationstest
         // ============================================
-        let giftBoxClickCount = 0;
-        let giftBoxOpenSequence = [];
-        let giftBoxOpenStep = 0;
-        let lastClickTime = 0;
-        let giftBoxMovingInterval = null;
-        let giftBoxTrollInterval = null;
-        let clickSequence = [];
-        let sequenceStartTime = 0;
-        let CORRECT_GIFT_INDEX = 7; // Rätt paket (slumpas varje gång)
-        const EXPLODE_GIFT_INDEX = 3; // Paket som sprängs
-        const MOVE_GIFTS_INDEX = 12; // Paket som får alla att röra sig
-        let wrongGiftClicks = 0; // Räkna fel klick
-        const MAX_WRONG_CLICKS = 10; // Börja om efter 10 fel
+        let currentNegationQuestion = 0;
+        let negationAnswers = [];
         
-        function initGiftSelection() {
-            const container = document.getElementById('giftSelectionContainer');
+        // 5 frågor med negationer
+        const negationQuestions = [
+            {
+                text: "I detta paket ligger det inte en icke-existerande hund",
+                hasContent: true, // "inte en icke-existerande" = dubbel negation = finns
+                content: "🐕",
+                explanation: "Inte + icke-existerande = dubbel negation = det finns en hund!"
+            },
+            {
+                text: "Detta paket innehåller inte något som inte är tomt",
+                hasContent: true, // "inte något som inte är tomt" = dubbel negation = finns något
+                content: "🎁",
+                explanation: "Inte + inte tomt = dubbel negation = det finns något!"
+            },
+            {
+                text: "Här finns det ingen sak som inte saknas",
+                hasContent: true, // "ingen sak som inte saknas" = trippel negation = finns något
+                content: "⭐",
+                explanation: "Ingen + inte saknas = trippel negation = det finns något!"
+            },
+            {
+                text: "Detta paket är inte tomt på saker som inte finns",
+                hasContent: true, // "inte tomt på saker som inte finns" = trippel negation = finns något
+                content: "💎",
+                explanation: "Inte tomt + inte finns = trippel negation = det finns något!"
+            },
+            {
+                text: "I detta paket ligger det inte något som inte är frånvarande",
+                hasContent: true, // "inte något som inte är frånvarande" = trippel negation = finns något
+                content: "🎣",
+                explanation: "Inte + inte frånvarande = trippel negation = det finns något!"
+            }
+        ];
+        
+        function initNegationTest() {
+            const container = document.getElementById('negationTestContainer');
             if (!container) return;
             
-            container.innerHTML = '';
-            container.style.display = 'grid';
+            currentNegationQuestion = 0;
+            negationAnswers = [];
             
             // Dölj stort paket och presentkort
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Reset state
-            giftBoxClickCount = 0;
-            giftBoxOpenSequence = [];
-            giftBoxOpenStep = 0;
-            clickSequence = [];
-            sequenceStartTime = 0;
+            // Visa första frågan
+            showNegationQuestion(0);
+        }
+        
+        function showNegationQuestion(questionIndex) {
+            const container = document.getElementById('negationTestContainer');
+            if (!container || questionIndex >= negationQuestions.length) {
+                // Alla frågor besvarade - visa stort paket!
+                showFinalGiftBox();
+                return;
+            }
+            
+            const question = negationQuestions[questionIndex];
+            currentNegationQuestion = questionIndex;
+            
+            container.innerHTML = `
+                <div class="negation-question">
+                    <div class="negation-question-number">Fråga ${questionIndex + 1} av ${negationQuestions.length}</div>
+                    <div class="negation-question-text">${question.text}</div>
+                    
+                    <div class="negation-package" id="negationPackage${questionIndex}">
+                        <span>🎁</span>
+                        <div class="negation-package-content" id="negationContent${questionIndex}">${question.content}</div>
+                    </div>
+                    
+                    <div class="negation-answer-buttons">
+                        <button class="negation-button" onclick="answerNegationQuestion(true)">Det finns något i paketet</button>
+                        <button class="negation-button" onclick="answerNegationQuestion(false)">Paketet är tomt</button>
+                    </div>
+                    
+                    <div class="negation-feedback" id="negationFeedback${questionIndex}"></div>
+                </div>
+            `;
+        }
+        
+        function answerNegationQuestion(hasContent) {
+            const question = negationQuestions[currentNegationQuestion];
+            const packageEl = document.getElementById(`negationPackage${currentNegationQuestion}`);
+            const contentEl = document.getElementById(`negationContent${currentNegationQuestion}`);
+            const feedbackEl = document.getElementById(`negationFeedback${currentNegationQuestion}`);
+            const buttons = document.querySelectorAll('.negation-button');
+            
+            // Disable buttons
+            buttons.forEach(btn => btn.disabled = true);
+            
+            // Spara svaret
+            negationAnswers.push(hasContent);
+            
+            // Öppna paketet
+            packageEl.classList.add('opening');
+            
+            setTimeout(() => {
+                // Visa innehållet
+                contentEl.classList.add('revealed');
+                
+                // Kolla om svaret var rätt
+                const isCorrect = hasContent === question.hasContent;
+                
+                if (isCorrect) {
+                    feedbackEl.textContent = `✅ Rätt! ${question.explanation}`;
+                    feedbackEl.className = 'negation-feedback correct';
+                } else {
+                    feedbackEl.textContent = `❌ Fel! ${question.explanation}`;
+                    feedbackEl.className = 'negation-feedback wrong';
+                }
+                
+                // Gå vidare till nästa fråga efter 3 sekunder
+                setTimeout(() => {
+                    showNegationQuestion(currentNegationQuestion + 1);
+                }, 3000);
+            }, 800);
+        }
+        
+        function showFinalGiftBox() {
+            // Alla frågor besvarade - visa stort paket för öppning!
+            const container = document.getElementById('negationTestContainer');
+            container.innerHTML = '';
+            container.style.display = 'none';
+            
+            document.getElementById('giftBoxLargeContainer').classList.add('show');
+            document.getElementById('giftBoxLarge').style.display = 'block';
+            document.getElementById('openInstruction').style.display = 'block';
+            document.getElementById('openInstruction').textContent = 'Dubbelklicka på paketet för att öppna!';
+            
+            // Reset state för färgsekvens-spel
             sequenceGameStarted = false;
             sequenceLevel = 1;
             sequence = [];
             playerSequence = [];
             colorPositions = [0, 1, 2, 3];
             stopColorEffects();
-            wrongGiftClicks = 0; // Reset felräknare
-            
-            // SLUMPA rätt paket varje gång!
-            CORRECT_GIFT_INDEX = Math.floor(Math.random() * 20);
-            
-            // Uppdatera felräknare
-            updateErrorCounter();
-            
-            // Stoppa eventuell rörelse
-            if (giftBoxMovingInterval) {
-                clearInterval(giftBoxMovingInterval);
-                giftBoxMovingInterval = null;
-            }
-            if (giftBoxTrollInterval) {
-                clearInterval(giftBoxTrollInterval);
-                giftBoxTrollInterval = null;
-            }
-            
-            // Skapa 20 paket - SNYGGARE DESIGN!
-            const boxes = [];
-            for (let i = 0; i < 20; i++) {
-                const box = document.createElement('div');
-                box.className = 'gift-box-small';
-                box.textContent = '🎁';
-                box.dataset.index = i;
-                box.dataset.originalIndex = i;
-                
-                // Alla paket samma storlek för snyggare layout
-                const size = 100;
-                box.style.width = size + 'px';
-                box.style.height = size + 'px';
-                box.style.fontSize = (size * 0.5) + 'px';
-                
-                boxes.push(box);
-            }
-            
-            // SLUMPA ORDNINGEN på paketen!
-            for (let i = boxes.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [boxes[i], boxes[j]] = [boxes[j], boxes[i]];
-            }
-            
-            // Lägg till i container i slumpad ordning
-            boxes.forEach((box, displayIndex) => {
-                const originalIndex = parseInt(box.dataset.originalIndex);
-                box.onclick = () => selectGift(originalIndex);
-                container.appendChild(box);
-            });
         }
         
-        function updateErrorCounter() {
-            const counter = document.getElementById('giftErrorCounter');
-            if (counter) {
-                counter.textContent = `Fel klick: ${wrongGiftClicks} / ${MAX_WRONG_CLICKS}`;
-                if (wrongGiftClicks >= MAX_WRONG_CLICKS) {
-                    counter.textContent = 'För många fel! Börjar om...';
-                    counter.style.color = '#ff6b6b';
-                } else {
-                    counter.style.color = '#ffd700';
-                }
-            }
-        }
-        
-        function selectGift(index) {
-            // Hitta rätt box baserat på originalIndex (eftersom ordningen är slumpad)
-            const boxes = document.querySelectorAll('.gift-box-small');
-            let box = null;
-            for (let b of boxes) {
-                if (parseInt(b.dataset.originalIndex) === index) {
-                    box = b;
-                    break;
-                }
-            }
-            
-            if (index === CORRECT_GIFT_INDEX) {
-                // Rätt paket! Visa stort paket
-                if (box) {
-                    box.classList.add('correct');
-                }
-                wrongGiftClicks = 0; // Reset felräknare
-                updateErrorCounter();
-                
-                setTimeout(() => {
-                    document.getElementById('giftSelectionContainer').style.display = 'none';
-                    document.getElementById('giftBoxLargeContainer').classList.add('show');
-                    giftBoxClickCount = 0;
-                    giftBoxOpenStep = 0;
-                    giftBoxOpenSequence = [];
-                    clickSequence = [];
-                    sequenceStartTime = 0;
-                    sequenceGameStarted = false;
-                    sequenceLevel = 1;
-                    sequence = [];
-                    playerSequence = [];
-                    updateOpenInstruction();
-                    
-                    // Visa paketet igen
-                    document.getElementById('giftBoxLarge').style.display = 'block';
-                    document.getElementById('openInstruction').style.display = 'block';
-                    document.getElementById('colorSequenceContainer').classList.remove('active');
-                    
-                    // Starta kontinuerliga troll-effekter
-                    startGiftBoxTrollEffects();
-                }, 500);
-            } else {
-                // Fel paket!
-                wrongGiftClicks++;
-                updateErrorCounter();
-                
-                // Om för många fel - börja om!
-                if (wrongGiftClicks >= MAX_WRONG_CLICKS) {
-                    setTimeout(() => {
-                        initGiftSelection(); // Börja om från början
-                    }, 1500);
-                    return;
-                }
-                
-                if (index === EXPLODE_GIFT_INDEX) {
-                    // Troll-paket: Sprängs!
-                    if (box) {
-                        box.textContent = '💥';
-                        box.style.background = 'linear-gradient(135deg, #ff0000, #ff6600)';
-                        box.style.transform = 'scale(1.5) rotate(360deg)';
-                        box.style.transition = 'all 0.5s';
-                        
-                        setTimeout(() => {
-                            box.style.opacity = '0';
-                            setTimeout(() => {
-                                box.textContent = '🎁';
-                                box.style.background = '';
-                                box.style.transform = '';
-                                box.style.opacity = '1';
-                                box.style.transition = '';
-                            }, 500);
-                        }, 500);
-                    }
-                } else if (index === MOVE_GIFTS_INDEX) {
-                    // Troll-paket: Får alla paket att röra sig!
-                    const allBoxes = document.querySelectorAll('.gift-box-small');
-                    allBoxes.forEach((b) => {
-                        const originalIdx = parseInt(b.dataset.originalIndex);
-                        if (originalIdx !== index) {
-                            const randomX = (Math.random() - 0.5) * 50;
-                            const randomY = (Math.random() - 0.5) * 50;
-                            b.style.transform = `translate(${randomX}px, ${randomY}px)`;
-                            b.style.transition = 'transform 0.3s';
-                        }
-                    });
-                    
-                    // Stoppa rörelse efter 2 sekunder
-                    setTimeout(() => {
-                        allBoxes.forEach((b) => {
-                            const originalIdx = parseInt(b.dataset.originalIndex);
-                            if (originalIdx !== index) {
-                                b.style.transform = '';
-                            }
-                        });
-                    }, 2000);
-                } else {
-                    // Vanligt fel paket - lite animation
-                    if (box) {
-                        box.style.transform = 'scale(0.85)';
-                        box.style.opacity = '0.6';
-                        box.style.filter = 'grayscale(50%)';
-                        setTimeout(() => {
-                            box.style.transform = '';
-                            box.style.opacity = '';
-                            box.style.filter = '';
-                        }, 400);
-                    }
-                }
-            }
-        }
         
         // Öppningssekvens: Färgsekvens-spel (Simon Says) - MYCKET SVÅRARE!
         let sequenceGameStarted = false;
