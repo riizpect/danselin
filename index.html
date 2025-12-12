@@ -2330,8 +2330,8 @@
                 </div>
             `;
             
-            // Skapa fiskar (alla synliga, inte rör sig ännu)
-            createSwimmingFish(round.count, false);
+            // Skapa fiskar som rör sig direkt
+            createSwimmingFish(round.count, true);
             
             // Efter 3 sekunder, visa input och starta timer
             setTimeout(() => {
@@ -2355,11 +2355,7 @@
             }
             if (inputContainer) inputContainer.style.display = 'flex';
             
-            // Få fiskarna att röra sig lite (men de ska fortfarande vara synliga)
-            const fishes = arena.querySelectorAll('.swimming-fish');
-            fishes.forEach(fish => {
-                fish.classList.add('visible');
-            });
+            // Fiskarna rör sig redan, inget att göra här
             
             // Starta timer
             startFishTimer();
@@ -2378,7 +2374,7 @@
             }, 100);
         }
         
-        function createSwimmingFish(count, shouldSwim = false) {
+        function createSwimmingFish(count, shouldSwim = true) {
             const arena = document.getElementById('fishArena');
             if (!arena) return;
             
@@ -2392,24 +2388,20 @@
                 fish.className = 'swimming-fish';
                 fish.textContent = fishEmojis[Math.floor(Math.random() * fishEmojis.length)];
                 
-                // Slumpmässig position (sprid ut dem)
-                const startX = Math.random() * (arenaRect.width - 80);
+                // Slumpmässig startposition (vertikal)
                 const startY = Math.random() * (arenaRect.height - 60);
-                fish.style.left = startX + 'px';
                 fish.style.top = startY + 'px';
                 
                 // Olika storlekar
                 const size = 0.8 + Math.random() * 0.4; // 0.8-1.2x
                 fish.style.transform = `scale(${size})`;
                 
-                // Om de ska simma, lägg till animation
-                if (shouldSwim) {
-                    fish.classList.add('visible');
-                    // Olika hastigheter och animation-delays
-                    const speed = 3 + Math.random() * 2; // 3-5 sekunder
-                    const delay = Math.random() * 1; // 0-1 sekunder delay
-                    fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
-                }
+                // Fiskarna rör sig alltid
+                fish.classList.add('visible');
+                // Olika hastigheter och animation-delays
+                const speed = 3 + Math.random() * 2; // 3-5 sekunder
+                const delay = Math.random() * 1; // 0-1 sekunder delay
+                fish.style.animation = `swim ${speed}s linear ${delay}s infinite`;
                 
                 arena.appendChild(fish);
             }
