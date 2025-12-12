@@ -2369,7 +2369,7 @@
         }
         
         function shuffleColorPositions() {
-            // Blanda positionerna
+            // Blanda positionerna - TYDLIG VISUELL ANIMATION!
             const grid = document.querySelector('.color-grid');
             const buttons = Array.from(grid.querySelectorAll('.color-button'));
             
@@ -2382,36 +2382,67 @@
             
             colorPositions = positions;
             
-            // Flytta knapparna till nya positioner med animation
+            // TYDLIG VISUELL FLYTT - knapparna flyttas med stor animation!
             buttons.forEach((btn, index) => {
                 const newIndex = colorPositions[index];
-                btn.style.order = newIndex;
-                btn.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-                btn.classList.add('moving');
                 
+                // Först: gör knappen större och lite transparent (visar att den flyttas)
+                btn.style.transform = 'scale(1.2)';
+                btn.style.opacity = '0.7';
+                btn.style.zIndex = '10';
+                btn.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // Flytta position
+                btn.style.order = newIndex;
+                
+                // Efter animation: återställ
                 setTimeout(() => {
-                    btn.classList.remove('moving');
+                    btn.style.transform = '';
+                    btn.style.opacity = '';
+                    btn.style.zIndex = '';
                     btn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                }, 500);
+                }, 600);
             });
         }
         
         function startDistractionBlinks() {
-            // Distraktionsblinkningar - falska färger som blinkar
+            // Distraktionsblinkningar - INTE under sekvensen, bara innan och efter!
             distractionInterval = setInterval(() => {
-                if (isShowingSequence || isPlayerTurn) {
+                // Bara när det INTE är sekvensen som visas
+                if (!isShowingSequence) {
                     const buttons = document.querySelectorAll('.color-button');
                     const randomButton = buttons[Math.floor(Math.random() * buttons.length)];
                     
-                    // Blinka en slumpmässig knapp (som inte är i sekvensen just nu)
-                    if (!randomButton.classList.contains('flash')) {
-                        randomButton.classList.add('distraction');
-                        setTimeout(() => {
-                            randomButton.classList.remove('distraction');
-                        }, 300);
-                    }
+                    // Glitch/blink effekt
+                    randomButton.classList.add('distraction');
+                    setTimeout(() => {
+                        randomButton.classList.remove('distraction');
+                    }, 200);
                 }
-            }, 800 + Math.random() * 1200); // Var 0.8-2 sekunder
+            }, 600 + Math.random() * 800); // Var 0.6-1.4 sekunder
+        }
+        
+        function doGlitchEffect() {
+            // Glitch-effekt innan sekvensen börjar
+            const buttons = document.querySelectorAll('.color-button');
+            let glitchCount = 0;
+            const maxGlitches = 3;
+            
+            const glitchInterval = setInterval(() => {
+                buttons.forEach(btn => {
+                    if (Math.random() < 0.4) {
+                        btn.classList.add('distraction');
+                        setTimeout(() => {
+                            btn.classList.remove('distraction');
+                        }, 150);
+                    }
+                });
+                
+                glitchCount++;
+                if (glitchCount >= maxGlitches) {
+                    clearInterval(glitchInterval);
+                }
+            }, 200);
         }
         
         function stopColorEffects() {
@@ -2430,34 +2461,47 @@
             const levelDisplay = document.getElementById('sequenceLevel');
             
             levelDisplay.textContent = `Nivå ${sequenceLevel} av ${MAX_SEQUENCE_LEVEL}`;
-            instruction.textContent = 'Titta N O G A på sekvensen!';
+            instruction.textContent = 'Förbereder...';
             
             // Lägg till en ny färg till sekvensen
             sequence.push(colors[Math.floor(Math.random() * colors.length)]);
             
-            // BYT POSITION PÅ FÄRGERNA INNAN VARJE NIVÅ!
-            shuffleColorPositions();
+            // GLITCH-EFFEKT INNAN!
+            doGlitchEffect();
             
-            // Visa sekvensen
-            isShowingSequence = true;
-            isPlayerTurn = false;
-            disableAllButtons();
-            
+            // BYT POSITION PÅ FÄRGERNA INNAN VARJE NIVÅ! (efter glitch)
             setTimeout(() => {
-                showSequence(0);
-            }, 1500);
+                shuffleColorPositions();
+                
+                // Efter positionbytet, visa sekvensen
+                setTimeout(() => {
+                    instruction.textContent = 'Titta N O G A på sekvensen!';
+                    isShowingSequence = true;
+                    isPlayerTurn = false;
+                    disableAllButtons();
+                    
+                    setTimeout(() => {
+                        showSequence(0);
+                    }, 500);
+                }, 700);
+            }, 600);
         }
         
         function showSequence(index) {
             if (index >= sequence.length) {
-                // Sekvensen är klar, nu är det spelarens tur
-                isShowingSequence = false;
-                isPlayerTurn = true;
-                playerSequence = [];
-                enableAllButtons();
+                // Sekvensen är klar - GLITCH EFFEKT EFTER!
+                doGlitchEffect();
                 
-                const instruction = document.getElementById('sequenceInstruction');
-                instruction.textContent = 'Upprepa sekvensen! (Färgerna kan ha flyttat sig!)';
+                // Efter glitch, nu är det spelarens tur
+                setTimeout(() => {
+                    isShowingSequence = false;
+                    isPlayerTurn = true;
+                    playerSequence = [];
+                    enableAllButtons();
+                    
+                    const instruction = document.getElementById('sequenceInstruction');
+                    instruction.textContent = 'Upprepa sekvensen! (Färgerna kan ha flyttat sig!)';
+                }, 600);
                 return;
             }
             
