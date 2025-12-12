@@ -521,7 +521,7 @@
             <h2>Nivå 3: Avkodning</h2>
             <div class="puzzle-container">
                 <p class="puzzle-description">
-                    Nedan finns ett krypterat ord. Avkoda det med ROT13 (Caesar-chiffer med skift 13).
+                    Nedan finns ett krypterat ord. Avkoda det med ROT16 (Caesar-chiffer med skift 16).
                     <br><br>
                     Svaret blir ditt lösenord (ett ord relaterat till fiske).
                 </p>
@@ -627,7 +627,7 @@
             ],
             
             // Level 3: Cipher
-            cipherText: "Syetvscxnbrå", // "Flugfiskaren" in ROT13 med svenska alfabetet (A-Z, Å, Ä, Ö)
+            cipherText: "Syetvscxnbrå", // "Flugfiskaren" in ROT16 med svenska alfabetet (A-Z, Å, Ä, Ö)
             cipherAnswer: "flugfiskaren",
             
             // Level 4: Logic Puzzle
@@ -973,7 +973,7 @@
                 step2: "Ordning: 🎄 (julgran), 🦌 (ren som flyger), ⭐ (stjärna som lyser)"
             },
             3: {
-                step1: "ROT13 med svenska alfabetet (29 bokstäver: A-Z, Å, Ä, Ö). För att avkoda, skifta 13 steg framåt igen. S är position 19, 19+13=32, 32-29=3, position 3 är C. Men för att få tillbaka originalet, gå 16 steg framåt (29-13=16): S(19)+16=35, 35-29=6, position 6 är F.",
+                step1: "ROT16 med svenska alfabetet (29 bokstäver: A-Z, Å, Ä, Ö). För att avkoda, skifta 16 steg framåt. S är position 19, 19+16=35, 35-29=6, position 6 är F.",
                 step2: "Svenska alfabetet: A(1), B(2), C(3)...S(19)...Y(25), Z(26), Å(27), Ä(28), Ö(29). För att avkoda 'Syetvscxnbrå', gå 16 steg framåt från varje bokstav: S(19)+16=35→F(6), y(25)+16=41→l(12), e(5)+16=21→u(21), t(20)+16=36→g(7), v(22)+16=38→f(6), s(19)+16=35→i(9), c(3)+16=19→s(19), x(24)+16=40→k(11), n(14)+16=30→a(1), b(2)+16=18→r(18), r(18)+16=34→e(5), å(27)+16=43→n(14). Svaret är 'flugfiskaren'!"
             },
             4: {
@@ -1086,7 +1086,7 @@
 FACIT:
 Nivå 1: ${CONFIG.wordAnswer}
 Nivå 2: Klicka i ordning: 🎄, 🦌, ⭐
-Nivå 3: ${CONFIG.cipherAnswer} (ROT13 av "${CONFIG.cipherText}")
+Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
 Nivå 4: Anna=Ingenjör, Bengt=Lärare, Cecilia=Läkare, David=Arkitekt (Kod: 1234)
 Nivå 5: Tryck A, B, C, D i ordning
             `;
