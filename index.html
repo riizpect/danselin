@@ -324,34 +324,46 @@
             color: #fff;
         }
 
-        /* Level 5: Timing Puzzle */
-        .timing-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 30px 0;
+        /* Level 5: Fish Math Puzzle */
+        .fish-math-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px auto;
+            max-width: 600px;
         }
 
-        .timing-btn {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+        .fish-equation {
             font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .timing-btn.active {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            transform: scale(1.1);
-        }
-
-        .timing-sequence {
             margin: 20px 0;
-            text-align: center;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            border-radius: 5px;
+        }
+
+        .fish-name {
+            color: #ffd700;
+            font-weight: bold;
             font-size: 1.2em;
-            min-height: 50px;
+        }
+
+        .fish-code-input {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .fish-code-input input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .fish-code-input input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         /* Hints */
@@ -654,17 +666,36 @@
             </div>
         </div>
 
-        <!-- View 5: Level 5 - Timing Puzzle -->
+        <!-- View 5: Level 5 - Fish Math Puzzle -->
         <div class="view" id="view5">
-            <h2>Nivå 5: Timing & Sekvens</h2>
+            <h2>Nivå 5: Fiskmatematik</h2>
             <div class="puzzle-container">
                 <p class="puzzle-description">
-                    Tryck på knapparna i rätt ordning. Ledtråden finns i sekvensen nedan.
-                    <strong>Tips:</strong> Tänk på ordningen i alfabetet och siffrorna.
+                    Varje fisk representerar en siffra (0-9). Lös ekvationerna nedan för att ta reda på vilken siffra varje fisk representerar.
+                    När du vet alla siffror, ange koden i rätt ordning.
                 </p>
-                <div class="timing-sequence" id="timingSequence"></div>
-                <div class="timing-buttons" id="timingButtons"></div>
-                <button onclick="resetTiming()">Återställ</button>
+                <div class="fish-math-container" id="fishMathContainer">
+                    <div class="fish-equation">
+                        <span class="fish-name">Lax</span> + <span class="fish-name">Abborre</span> = 12
+                    </div>
+                    <div class="fish-equation">
+                        <span class="fish-name">Gädda</span> - <span class="fish-name">Ruda</span> = 3
+                    </div>
+                    <div class="fish-equation">
+                        <span class="fish-name">Lax</span> × 2 = <span class="fish-name">Gädda</span>
+                    </div>
+                    <div class="fish-equation">
+                        <span class="fish-name">Abborre</span> + <span class="fish-name">Ruda</span> = 15
+                    </div>
+                    <div class="fish-equation">
+                        <span class="fish-name">Lax</span> + <span class="fish-name">Gädda</span> = 18
+                    </div>
+                </div>
+                <div class="fish-code-input">
+                    <p><strong>Koden är summan av alla fyra fiskar:</strong></p>
+                    <input type="text" id="fishCodeInput" placeholder="Ange 4-siffrig kod" maxlength="4" style="font-size: 1.5em; padding: 10px; text-align: center; width: 200px;">
+                </div>
+                <button onclick="checkFishMath()">Kontrollera</button>
                 <button class="btn-secondary" onclick="showHint(5)">Ledtråd</button>
                 <button onclick="restartGame()" style="background: #666; margin-top: 10px;">Börja om från början</button>
                 <div class="hint-container" id="hint5"></div>
@@ -732,10 +763,10 @@
             },
             logicCode: "2468", // Will be generated from correct answers
             
-            // Level 5: Timing Puzzle
-            // Sequence: A(1), B(2), C(3), D(4) -> Button order: 1, 2, 3, 4
-            timingSequence: [1, 2, 3, 4],
-            timingButtons: ["A", "B", "C", "D"]
+            // Level 5: Fish Math Puzzle
+            // Lax = 6, Abborre = 6, Gädda = 12, Ruda = 9
+            // Summa: 6 + 6 + 12 + 9 = 33
+            fishMathAnswer: "33"
         };
 
         // ============================================
@@ -744,7 +775,6 @@
         let currentLevel = 0;
         let titleClickCount = 0;
         let adminMode = false;
-        let timingInput = [];
 
         // ============================================
         // INITIALIZATION
@@ -808,7 +838,7 @@
             } else if (level === 4) {
                 setTimeout(() => initLogicPuzzle(), 100);
             } else if (level === 5) {
-                setTimeout(() => initTimingPuzzle(), 100);
+                setTimeout(() => initFishMath(), 100);
             }
         }
 
@@ -1057,53 +1087,31 @@
         }
 
         // ============================================
-        // LEVEL 5: TIMING PUZZLE
+        // LEVEL 5: FISH MATH PUZZLE
         // ============================================
-        function initTimingPuzzle() {
-            const buttonsDiv = document.getElementById('timingButtons');
-            const sequenceDiv = document.getElementById('timingSequence');
-            buttonsDiv.innerHTML = '';
-            timingInput = [];
-            
-            // Show sequence hint: A=1, B=2, C=3, D=4
-            sequenceDiv.innerHTML = '<strong>Ledtråd:</strong> A=1, B=2, C=3, D=4. Tryck i ordning: 1, 2, 3, 4';
-            
-            CONFIG.timingButtons.forEach((btn, index) => {
-                const button = document.createElement('button');
-                button.className = 'timing-btn';
-                button.textContent = btn;
-                button.onclick = () => handleTimingClick(index + 1);
-                buttonsDiv.appendChild(button);
-            });
-        }
-
-        function handleTimingClick(value) {
-            timingInput.push(value);
-            
-            // Highlight button
-            const buttons = document.querySelectorAll('.timing-btn');
-            buttons[value - 1].classList.add('active');
-            setTimeout(() => {
-                buttons[value - 1].classList.remove('active');
-            }, 300);
-            
-            // Check if sequence is complete
-            if (timingInput.length === CONFIG.timingSequence.length) {
-                const correct = timingInput.every((val, idx) => val === CONFIG.timingSequence[idx]);
-                
-                if (correct) {
-                    showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
-                    setTimeout(() => showView(6), 2000);
-                } else {
-                    showMessage('message5', 'Fel sekvens! Försök igen.', 'error');
-                    resetTiming();
-                }
+        function initFishMath() {
+            // Clear any previous input
+            const input = document.getElementById('fishCodeInput');
+            if (input) {
+                input.value = '';
             }
+            showMessage('message5', '', '');
         }
 
-        function resetTiming() {
-            timingInput = [];
-            showMessage('message5', '', '');
+        function checkFishMath() {
+            const input = document.getElementById('fishCodeInput').value.trim();
+            
+            if (!input) {
+                showMessage('message5', 'Ange en kod!', 'error');
+                return;
+            }
+            
+            if (input === CONFIG.fishMathAnswer) {
+                showMessage('message5', 'Korrekt! Du har klarat alla nivåer!', 'success');
+                setTimeout(() => showView(6), 2000);
+            } else {
+                showMessage('message5', 'Fel kod! Kontrollera dina beräkningar.', 'error');
+            }
         }
 
         // ============================================
@@ -1127,8 +1135,8 @@
                 step2: "Från ledtråd 12: Isfiske fiskar lax eller ruda. Från ledtråd 3: Olle fiskar inte lax eller ruda, så Olle kan inte använda isfiske. Därför använder Olle grundfiske och fiskar gädda. Från ledtråd 15: Erik använder flugfiske eller spinnfiske. Från ledtråd 10: Spinnfiske fiskar inte lax/ruda, så Erik använder flugfiske. Från ledtråd 9: Flugfiske fiskar lax eller ruda. Från ledtråd 17: Flugfiske fiskar inte ruda, så Erik fiskar lax med flugfiske. Från ledtråd 10: Spinnfiske fiskar abborre eller gädda. Gädda är taget, så spinnfiske fiskar abborre. Från ledtråd 2: Lisa använder spinnfiske eller isfiske. Från ledtråd 6: Abborre använder inte isfiske, så Lisa använder spinnfiske och fiskar abborre. Från ledtråd 4: Sara använder grundfiske eller isfiske. Grundfiske är taget, så Sara använder isfiske. Från ledtråd 12: Isfiske fiskar lax eller ruda. Lax är taget, så Sara fiskar ruda. Slutsats: Erik=Lax+Flugfiske, Lisa=Abborre+Spinnfiske, Olle=Gädda+Grundfiske, Sara=Ruda+Isfiske. Koden: 2468"
             },
             5: {
-                step1: "A=1, B=2, C=3, D=4. Tryck på knapparna i stigande ordning.",
-                step2: "Tryck på knapparna i ordning: A (1), B (2), C (3), D (4)"
+                step1: "Från ekvation 3: Lax × 2 = Gädda, så Gädda är dubbelt så stor som Lax. Från ekvation 5: Lax + Gädda = 18. Om Gädda = 2×Lax, då Lax + 2×Lax = 18, alltså 3×Lax = 18. Vad är Lax?",
+                step2: "Lax = 6 (från 3×Lax = 18). Gädda = 12 (från Lax × 2). Från ekvation 1: Lax + Abborre = 12, så Abborre = 6. Från ekvation 4: Abborre + Ruda = 15, så Ruda = 9. Kontroll: Gädda - Ruda = 12 - 9 = 3 ✓. Summan: Lax(6) + Abborre(6) + Gädda(12) + Ruda(9) = 33. Koden är 33."
             }
         };
 
@@ -1222,7 +1230,7 @@
             showView(level);
             if (level === 2) initMemoryGame();
             if (level === 4) initLogicPuzzle();
-            if (level === 5) initTimingPuzzle();
+            if (level === 5) initFishMath();
             if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
             }
@@ -1241,7 +1249,6 @@
             if (confirm('Är du säker på att du vill börja om från början? All progress kommer att försvinna.')) {
                 localStorage.removeItem('escapeRoomLevel');
                 currentLevel = 0;
-                timingInput = [];
                 hintStates = {};
                 
                 // Reset all inputs
@@ -1294,7 +1301,7 @@ Nivå 1: ${CONFIG.wordAnswer}
 Nivå 2: Hitta alla par i memory-spelet. Koden är: 2468
 Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
 Nivå 4: Erik=Lax+Flugfiske, Lisa=Abborre+Spinnfiske, Olle=Gädda+Grundfiske, Sara=Ruda+Isfiske (Kod: 2468)
-Nivå 5: Tryck A, B, C, D i ordning
+Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             `;
             alert(answers);
         }
