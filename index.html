@@ -1743,6 +1743,7 @@
                 });
                 
                 stopAnnoyingPopups();
+                stopCaptchaInterval();
                 popupCount = 0;
                 fakeLevelCompleteShown = {}; // Reset fake level complete
                 if (fakeCountdownInterval) {
