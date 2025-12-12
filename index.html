@@ -1550,8 +1550,20 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             if (hasShownRestartTroll) return;
             hasShownRestartTroll = true;
             
+            popupCount++;
+            
+            // Create overlay to block interaction
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.id = 'popupOverlayTroll';
+            overlay.onclick = function(e) {
+                e.stopPropagation();
+            };
+            document.body.appendChild(overlay);
+            
             const popup = document.createElement('div');
             popup.className = 'annoying-popup moving';
+            popup.id = 'annoyingPopupTroll';
             popup.style.left = '50%';
             popup.style.top = '50%';
             popup.style.transform = 'translate(-50%, -50%)';
@@ -1583,10 +1595,16 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
 
         function handleTrollRestart() {
             // Just close the popup, don't actually restart
-            const popup = document.querySelector('.annoying-popup.moving');
+            const popup = document.getElementById('annoyingPopupTroll');
+            const overlay = document.getElementById('popupOverlayTroll');
             if (popup) {
-                const popupId = popup.id.replace('annoyingPopup', '');
-                closeAnnoyingPopup(popupId);
+                popup.style.animation = 'popupPulse 0.3s ease-out reverse';
+                setTimeout(() => {
+                    popup.remove();
+                    if (overlay) overlay.remove();
+                }, 300);
+            } else if (overlay) {
+                overlay.remove();
             }
             createAnnoyingPopup("Haha, bara skojade! Fortsätt spela! 😄", false, true);
         }
