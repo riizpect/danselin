@@ -912,6 +912,40 @@
             min-height: 30px;
         }
 
+        .open-package-btn {
+            margin-top: 20px;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: #fff;
+            border: 4px solid #ffd700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+
+        .open-package-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+            background: linear-gradient(135deg, #ff8c8c, #ff6b6b);
+        }
+
+        .open-package-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+            }
+        }
+
         /* Färgsekvens-spel */
         .color-sequence-container {
             width: 100%;
@@ -1640,8 +1674,9 @@
                 
                 <!-- Stort paket (visas när rätt paket hittats) -->
                 <div class="gift-box-large-container" id="giftBoxLargeContainer">
-                    <div class="gift-box-large" id="giftBoxLarge" onclick="handleGiftBoxClick(event)">🎁</div>
-                    <div class="open-instruction" id="openInstruction">Dubbelklicka på paketet för att börja!</div>
+                    <div class="gift-box-large" id="giftBoxLarge">🎁</div>
+                    <div class="open-instruction" id="openInstruction">Klicka på knappen för att öppna paketet!</div>
+                    <button class="open-package-btn" id="openPackageBtn" onclick="handleOpenPackage()">Öppna Paketet 🎁</button>
                     
                     <!-- Färgsekvens-spel (visas efter dubbelklick) -->
                     <div class="color-sequence-container" id="colorSequenceContainer">
@@ -2608,23 +2643,24 @@
                     }, 2000);
                 }
                 
-                // Bugg 6: Error-meddelanden dyker upp
-                if (container && Math.random() < 0.1) {
+                // Bugg 6: Error-meddelanden dyker upp (FLER!)
+                if (container && Math.random() < 0.15) {
                     const errorMsg = document.createElement('div');
                     errorMsg.style.cssText = `
                         position: absolute;
-                        top: ${Math.random() * 300}px;
-                        left: ${Math.random() * 400}px;
+                        top: ${Math.random() * 400}px;
+                        left: ${Math.random() * 600}px;
                         color: #ff0000;
-                        font-size: 1.2em;
+                        font-size: 1.3em;
                         font-weight: bold;
-                        background: rgba(0, 0, 0, 0.8);
-                        padding: 10px 20px;
-                        border: 2px solid #ff0000;
-                        border-radius: 5px;
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 12px 24px;
+                        border: 3px solid #ff0000;
+                        border-radius: 8px;
                         z-index: 1000;
                         animation: errorFlash 0.5s;
                         pointer-events: none;
+                        text-shadow: 0 0 10px #ff0000;
                     `;
                     errorMsg.textContent = errorMessages[errorMessageCount % errorMessages.length];
                     errorMessageCount++;
@@ -2632,51 +2668,140 @@
                     
                     setTimeout(() => {
                         errorMsg.style.opacity = '0';
-                        errorMsg.style.transition = 'opacity 0.5s';
+                        errorMsg.style.transition = 'opacity 0.8s';
                         setTimeout(() => {
                             if (errorMsg.parentNode) {
                                 errorMsg.parentNode.removeChild(errorMsg);
                             }
-                        }, 500);
-                    }, 1500);
+                        }, 800);
+                    }, 2000);
                 }
                 
-                // Bugg 7: Text glitchar
+                // Bugg 7: Text glitchar (MER!)
                 const phaseEl = document.getElementById('fishPhase');
-                if (phaseEl && Math.random() < 0.1) {
+                if (phaseEl && Math.random() < 0.15) {
                     const originalText = phaseEl.textContent;
-                    phaseEl.textContent = 'ERROR...';
+                    const glitchTexts = ['ERROR...', 'FEL...', 'SYSTEMFEL', 'KRASCHAR...', '404'];
+                    phaseEl.textContent = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
                     phaseEl.style.color = '#ff0000';
+                    phaseEl.style.textShadow = '0 0 10px #ff0000';
                     setTimeout(() => {
                         if (phaseEl) {
                             phaseEl.textContent = originalText;
                             phaseEl.style.color = '';
+                            phaseEl.style.textShadow = '';
                         }
-                    }, 300);
+                    }, 400);
                 }
                 
-                // Bugg 8: Fiskar roterar konstigt
+                // Bugg 8: Fiskar roterar konstigt (MER!)
                 if (arena) {
                     const fish = arena.querySelectorAll('.swimming-fish');
-                    if (fish.length > 0 && Math.random() < 0.2) {
+                    if (fish.length > 0 && Math.random() < 0.3) {
                         const randomFish = fish[Math.floor(Math.random() * fish.length)];
-                        const rotation = Math.random() * 360;
+                        const rotation = Math.random() * 720 - 360; // -360 till 360 grader
                         randomFish.style.transform += ` rotate(${rotation}deg)`;
                     }
                 }
                 
-                // Bugg 9: Input-fältet försvinner/visas
-                if (inputEl && fishPhase === 'counting' && Math.random() < 0.08) {
+                // Bugg 9: Input-fältet försvinner/visas (MER!)
+                if (inputEl && fishPhase === 'counting' && Math.random() < 0.12) {
                     inputEl.style.opacity = '0';
                     inputEl.style.pointerEvents = 'none';
+                    inputEl.style.transform = 'scale(0.8)';
                     setTimeout(() => {
                         if (inputEl) {
                             inputEl.style.opacity = '1';
                             inputEl.style.pointerEvents = 'auto';
+                            inputEl.style.transform = 'scale(1)';
+                        }
+                    }, 600);
+                }
+                
+                // Bugg 10: Fiskar simmar ur bild (NY!)
+                if (arena && fishPhase === 'showing') {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.2) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        // Få fiskar att simma snabbt ut ur bild
+                        randomFish.style.animation = 'none';
+                        randomFish.style.transition = 'transform 1s linear';
+                        randomFish.style.transform = `translateX(calc(100vw + 200px)) translateY(${Math.random() * 200 - 100}px)`;
+                        setTimeout(() => {
+                            if (randomFish.parentNode) {
+                                randomFish.style.opacity = '0';
+                            }
+                        }, 1000);
+                    }
+                }
+                
+                // Bugg 11: Arena glitchar (NY!)
+                if (arena && Math.random() < 0.1) {
+                    arena.style.filter = 'hue-rotate(180deg)';
+                    arena.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        if (arena) {
+                            arena.style.filter = '';
+                            arena.style.transform = '';
+                        }
+                    }, 300);
+                }
+                
+                // Bugg 12: Timer blinkar rött (NY!)
+                if (timerEl && fishPhase === 'counting' && Math.random() < 0.2) {
+                    timerEl.style.animation = 'none';
+                    timerEl.style.backgroundColor = '#ff0000';
+                    timerEl.style.padding = '10px 20px';
+                    timerEl.style.borderRadius = '10px';
+                    setTimeout(() => {
+                        if (timerEl) {
+                            timerEl.style.backgroundColor = '';
+                            timerEl.style.padding = '';
+                            timerEl.style.borderRadius = '';
+                            timerEl.style.animation = 'timerPulse 1s infinite';
+                        }
+                    }, 400);
+                }
+                
+                // Bugg 13: Fiskar dubbleras (NY!)
+                if (arena && fishPhase === 'showing' && Math.random() < 0.08) {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        const clone = randomFish.cloneNode(true);
+                        clone.style.opacity = '0.5';
+                        clone.style.transform += ' scale(0.8)';
+                        arena.appendChild(clone);
+                        setTimeout(() => {
+                            if (clone.parentNode) {
+                                clone.parentNode.removeChild(clone);
+                            }
+                        }, 2000);
+                    }
+                }
+                
+                // Bugg 14: Text ändrar färg (NY!)
+                const textEl = document.querySelector('.fish-count-text');
+                if (textEl && Math.random() < 0.12) {
+                    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+                    textEl.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    setTimeout(() => {
+                        if (textEl) {
+                            textEl.style.color = '';
                         }
                     }, 500);
                 }
-            }, 1500); // Varje 1.5 sekunder för mer kaos
+                
+                // Bugg 15: Hela containern skakar (NY!)
+                if (container && Math.random() < 0.08) {
+                    container.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        if (container) {
+                            container.style.animation = '';
+                        }
+                    }, 500);
+                }
+            }, 1000); // Varje sekund för MASSOR av kaos!
         }
 
         function showErrorOverlay() {
@@ -3027,11 +3152,13 @@
             const giftBox = document.getElementById('giftBoxLarge');
             if (giftBox) {
                 giftBox.style.display = 'flex';
-                giftBox.style.pointerEvents = 'auto';
-                giftBox.style.cursor = 'pointer';
             }
             document.getElementById('openInstruction').style.display = 'block';
-            document.getElementById('openInstruction').textContent = 'Dubbelklicka på paketet för att öppna!';
+            document.getElementById('openInstruction').textContent = 'Klicka på knappen för att öppna paketet!';
+            const openBtn = document.getElementById('openPackageBtn');
+            if (openBtn) {
+                openBtn.style.display = 'block';
+            }
             
             // Reset state för färgsekvens-spel
             sequenceGameStarted = false;
@@ -3057,6 +3184,16 @@
         let distractionInterval = null;
         let colorButtonMap = {}; // Mappar färg -> knapp element
         
+        function handleOpenPackage() {
+            if (!sequenceGameStarted) {
+                // Troll-effekter!
+                applyTrollEffects();
+                
+                // Starta färgsekvens-spelet!
+                startSequenceGame();
+            }
+        }
+
         function handleGiftBoxClick(e) {
             const now = Date.now();
             const timeSinceLastClick = now - lastClickTime;
@@ -3080,6 +3217,10 @@
             
             document.getElementById('giftBoxLarge').style.display = 'none';
             document.getElementById('openInstruction').style.display = 'none';
+            const openBtn = document.getElementById('openPackageBtn');
+            if (openBtn) {
+                openBtn.style.display = 'none';
+            }
             document.getElementById('colorSequenceContainer').classList.add('active');
             
             // Sätt upp färgknapp-mappning
