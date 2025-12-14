@@ -3014,8 +3014,20 @@
                 container.style.display = 'none';
             }
             
+            // Dölj fiskräkningsspelet
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            // Visa paketet
             document.getElementById('giftBoxLargeContainer').classList.add('show');
-            document.getElementById('giftBoxLarge').style.display = 'block';
+            const giftBox = document.getElementById('giftBoxLarge');
+            if (giftBox) {
+                giftBox.style.display = 'flex';
+                giftBox.style.pointerEvents = 'auto';
+                giftBox.style.cursor = 'pointer';
+            }
             document.getElementById('openInstruction').style.display = 'block';
             document.getElementById('openInstruction').textContent = 'Dubbelklicka på paketet för att öppna!';
             
