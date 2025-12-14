@@ -664,10 +664,11 @@
 
         .fish-count-text {
             color: #fff;
-            font-size: 1.5em;
+            font-size: 2.5em;
             line-height: 1.6;
             margin: 20px 0;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .fish-count-timer {
@@ -2643,8 +2644,10 @@
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Starta buggar som gör spelet olösbart
-            startFishBugs();
+            // Starta buggar EFTER 10 sekunder (så spelet ser normalt ut först)
+            setTimeout(() => {
+                startFishBugs();
+            }, 10000);
             
             // Efter 40 sekunder, visa error overlay
             if (errorOverlayTimeout) clearTimeout(errorOverlayTimeout);
