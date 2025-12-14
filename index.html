@@ -3943,15 +3943,40 @@
             stopColorEffects();
             
             // Ta bort färgsekvens-spel
-            document.getElementById('colorSequenceContainer').classList.remove('active');
+            const colorContainer = document.getElementById('colorSequenceContainer');
+            if (colorContainer) {
+                colorContainer.classList.remove('active');
+            }
             
+            // Se till att paketet är synligt
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
             const largeBox = document.getElementById('giftBoxLarge');
-            largeBox.style.display = 'block';
-            largeBox.classList.add('opening');
+            const openBtn = document.getElementById('openPackageBtn');
+            const openInstruction = document.getElementById('openInstruction');
             
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.add('show');
+            }
+            if (largeBox) {
+                largeBox.style.display = 'flex';
+                largeBox.classList.add('opening');
+            }
+            if (openBtn) {
+                openBtn.style.display = 'none';
+            }
+            if (openInstruction) {
+                openInstruction.style.display = 'none';
+            }
+            
+            // Efter animation, visa presentkortet
             setTimeout(() => {
-                document.getElementById('giftBoxLargeContainer').classList.remove('show');
-                document.getElementById('giftCardContainer').classList.add('show');
+                if (largeBoxContainer) {
+                    largeBoxContainer.classList.remove('show');
+                }
+                const giftCardContainer = document.getElementById('giftCardContainer');
+                if (giftCardContainer) {
+                    giftCardContainer.classList.add('show');
+                }
             }, 1000);
         }
 
