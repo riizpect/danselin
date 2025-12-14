@@ -718,6 +718,94 @@
             }
         }
 
+        @keyframes swimRight {
+            0% {
+                transform: translateX(-100px) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(100vw + 100px)) translateY(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimLeft {
+            0% {
+                transform: translateX(calc(100vw + 100px)) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100px) translateY(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimUp {
+            0% {
+                transform: translateX(0) translateY(calc(100vh + 100px));
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(0) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimDown {
+            0% {
+                transform: translateX(0) translateY(-100px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(0) translateY(calc(100vh + 100px));
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimDiagonal1 {
+            0% {
+                transform: translateX(-100px) translateY(calc(100vh + 100px));
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(100vw + 100px)) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimDiagonal2 {
+            0% {
+                transform: translateX(calc(100vw + 100px)) translateY(-100px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100px) translateY(calc(100vh + 100px));
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimDiagonal3 {
+            0% {
+                transform: translateX(-100px) translateY(-100px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(100vw + 100px)) translateY(calc(100vh + 100px));
+                opacity: 0;
+            }
+        }
+
+        @keyframes swimDiagonal4 {
+            0% {
+                transform: translateX(calc(100vw + 100px)) translateY(calc(100vh + 100px));
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100px) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
         .fish-count-phase {
             color: #ffd700;
             font-size: 1.1em;
@@ -2584,13 +2672,26 @@
                 const container = document.getElementById('fishCountContainer');
                 const arena = document.getElementById('fishArena');
                 
-                // Bugg 1: Fiskar försvinner slumpmässigt
+                // Bugg 1: Fiskar försvinner slumpmässigt (MER!)
                 if (arena) {
                     const fish = arena.querySelectorAll('.swimming-fish');
-                    if (fish.length > 0 && Math.random() < 0.3) {
+                    if (fish.length > 0 && Math.random() < 0.4) {
                         const randomFish = fish[Math.floor(Math.random() * fish.length)];
                         randomFish.style.opacity = '0';
                         randomFish.style.display = 'none';
+                    }
+                }
+                
+                // Bugg 1b: Fiskar dyker upp igen (NY!)
+                if (arena && fishPhase === 'showing') {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.2) {
+                        const hiddenFish = Array.from(fish).filter(f => f.style.opacity === '0' || f.style.display === 'none');
+                        if (hiddenFish.length > 0) {
+                            const randomFish = hiddenFish[Math.floor(Math.random() * hiddenFish.length)];
+                            randomFish.style.opacity = '1';
+                            randomFish.style.display = 'block';
+                        }
                     }
                 }
                 
@@ -2718,20 +2819,38 @@
                     }, 600);
                 }
                 
-                // Bugg 10: Fiskar simmar ur bild (NY!)
+                // Bugg 10: Fiskar simmar ur bild i alla riktningar (MER KAOS!)
                 if (arena && fishPhase === 'showing') {
                     const fish = arena.querySelectorAll('.swimming-fish');
-                    if (fish.length > 0 && Math.random() < 0.2) {
+                    if (fish.length > 0 && Math.random() < 0.3) {
                         const randomFish = fish[Math.floor(Math.random() * fish.length)];
-                        // Få fiskar att simma snabbt ut ur bild
+                        // Få fiskar att simma snabbt ut ur bild i slumpmässig riktning
                         randomFish.style.animation = 'none';
-                        randomFish.style.transition = 'transform 1s linear';
-                        randomFish.style.transform = `translateX(calc(100vw + 200px)) translateY(${Math.random() * 200 - 100}px)`;
+                        randomFish.style.transition = 'transform 0.8s linear';
+                        const directions = [
+                            `translateX(calc(100vw + 200px)) translateY(${Math.random() * 200 - 100}px)`, // Höger
+                            `translateX(calc(-100vw - 200px)) translateY(${Math.random() * 200 - 100}px)`, // Vänster
+                            `translateX(${Math.random() * 200 - 100}px) translateY(calc(100vh + 200px))`, // Ner
+                            `translateX(${Math.random() * 200 - 100}px) translateY(calc(-100vh - 200px))`, // Upp
+                        ];
+                        randomFish.style.transform = directions[Math.floor(Math.random() * directions.length)];
                         setTimeout(() => {
                             if (randomFish.parentNode) {
                                 randomFish.style.opacity = '0';
                             }
-                        }, 1000);
+                        }, 800);
+                    }
+                }
+                
+                // Bugg 10b: Fiskar byter riktning mitt i simningen (NY!)
+                if (arena && fishPhase === 'showing') {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.25) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        const directions = ['swimRight', 'swimLeft', 'swimUp', 'swimDown', 
+                                          'swimDiagonal1', 'swimDiagonal2', 'swimDiagonal3', 'swimDiagonal4'];
+                        const newDirection = directions[Math.floor(Math.random() * directions.length)];
+                        randomFish.style.animationName = newDirection;
                     }
                 }
                 
@@ -2801,7 +2920,7 @@
                         }
                     }, 500);
                 }
-            }, 1000); // Varje sekund för MASSOR av kaos!
+            }, 800); // Varje 0.8 sekunder för EXTREMT kaos!
         }
 
         function showErrorOverlay() {
@@ -2927,7 +3046,7 @@
                     <div class="fish-arena" id="fishArena"></div>
                     
                     <div class="fish-count-input-container" id="fishInputContainer" style="display: none;">
-                        <input type="number" class="fish-count-input" id="fishInput" placeholder="?" min="0" max="50" autofocus>
+                        <input type="number" class="fish-count-input" id="fishInput" placeholder="Hur många fiskar?" min="0" max="50" autofocus>
                         <button class="fish-count-submit" onclick="submitFishAnswer()">Svara</button>
                     </div>
                     
@@ -3013,14 +3132,25 @@
                 const size = 0.8 + Math.random() * 0.4; // 0.8-1.2x
                 fish.style.transform = `scale(${size})`;
                 
-                // Fiskarna simmar från vänster till höger - BARA EN GÅNG!
+                // Fiskarna simmar i ALLA riktningar - K A O S!
                 if (shouldSwim) {
+                    // Slumpmässig startposition (kan vara var som helst)
+                    const startX = Math.random() * arenaRect.width;
+                    const startY = Math.random() * arenaRect.height;
+                    fish.style.left = startX + 'px';
+                    fish.style.top = startY + 'px';
+                    
+                    // Välj slumpmässig riktning
+                    const directions = ['swimRight', 'swimLeft', 'swimUp', 'swimDown', 
+                                      'swimDiagonal1', 'swimDiagonal2', 'swimDiagonal3', 'swimDiagonal4'];
+                    const direction = directions[Math.floor(Math.random() * directions.length)];
+                    
                     // Olika hastigheter och animation-delays
-                    const speed = 3 + Math.random() * 2; // 3-5 sekunder
-                    const delay = Math.random() * 3; // 0-3 sekunder delay (sprid ut dem)
+                    const speed = 2 + Math.random() * 3; // 2-5 sekunder (snabbare = mer kaos!)
+                    const delay = Math.random() * 2; // 0-2 sekunder delay
                     
                     // Sätt animation-egenskaperna SEPARAT för att säkerställa att det inte loopar
-                    fish.style.animationName = 'swim';
+                    fish.style.animationName = direction;
                     fish.style.animationDuration = `${speed}s`;
                     fish.style.animationTimingFunction = 'linear';
                     fish.style.animationDelay = `${delay}s`;
