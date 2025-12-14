@@ -4335,24 +4335,19 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
 
         function showRestartTrollPopup() {
-            // Check if troll popup has already been shown (first time only)
-            const hasShownTroll = localStorage.getItem('hasShownTrollPopup');
-            if (hasShownTroll === 'true') {
-                // Skip troll popup, go directly to level 5
-                setTimeout(() => showView(5), 500);
-                return;
-            }
-            
             // Don't create if another popup is already open
             if (isPopupOpen) {
                 return;
             }
             
-            // Mark as shown
-            localStorage.setItem('hasShownTrollPopup', 'true');
+            // Check how many times popup has been shown
+            const popupCount = parseInt(localStorage.getItem('restartTrollPopupCount') || '0');
+            const isFirstTime = popupCount === 0;
+            
+            // Increment counter
+            localStorage.setItem('restartTrollPopupCount', (popupCount + 1).toString());
             
             isPopupOpen = true;
-            popupCount++;
             
             // Create overlay to block interaction
             const overlay = document.createElement('div');
@@ -4371,13 +4366,29 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             popup.style.transform = 'translate(-50%, -50%)';
             popup.style.zIndex = '20000';
             
+            // Första gången: två "Ja"-knappar (troll)
+            // Andra gången: "Ja" och "Nej" (riktig valmöjlighet)
+            let buttonsHTML = '';
+            if (isFirstTime) {
+                // Första gången: två "Ja"
+                buttonsHTML = `
+                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                `;
+            } else {
+                // Andra gången: "Ja" och "Nej"
+                buttonsHTML = `
+                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                    <button onclick="handleTrollRestartCancel()" style="font-size: 1.1em; padding: 15px 30px;">Nej</button>
+                `;
+            }
+            
             popup.innerHTML = `
                 <div style="margin-bottom: 15px; font-size: 1.2em;">
                     <strong>Vill du börja om från början?</strong>
                 </div>
                 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
-                    <button onclick="handleTrollRestart()" style="font-size: 1.1em; padding: 15px 30px;">Ja</button>
+                    ${buttonsHTML}
                 </div>
             `;
             
@@ -4413,7 +4424,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             
             // Reset everything and restart
             localStorage.removeItem('escapeRoomLevel');
-            localStorage.removeItem('hasShownTrollPopup'); // Reset so it shows again next time
+            localStorage.removeItem('restartTrollPopupCount'); // Reset counter
             currentLevel = 0;
             hintStates = {};
             popupCount = 0;
