@@ -1587,12 +1587,46 @@
         </div>
         
         <!-- Secret Test Input (hidden) -->
-        <div id="secretInput" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 20px; border: 2px solid #ffd700; border-radius: 10px; z-index: 2000;">
-            <h3 style="color: #ffd700; margin-bottom: 15px;">Test-läge</h3>
-            <input type="text" id="secretCodeInput" placeholder="Skriv kod: test123" style="width: 200px; padding: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.5); border: 1px solid #ffd700; border-radius: 5px; color: #fff;">
-            <br>
-            <button onclick="checkSecretCode()" style="margin-right: 10px; padding: 10px 20px; background: #ffd700; color: #000; border: none; border-radius: 5px; cursor: pointer;">Hoppa till nivå</button>
-            <button onclick="hideSecretInput()" style="padding: 10px 20px; background: #666; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Stäng</button>
+        <div id="secretInput" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); padding: 30px; border: 3px solid #ffd700; border-radius: 15px; z-index: 2000; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h3 style="color: #ffd700; margin-bottom: 20px; font-size: 1.5em; text-align: center;">🔧 Test-läge 🔧</h3>
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="secretCodeInput" placeholder="Skriv kod: test123" style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.5); border: 2px solid #ffd700; border-radius: 8px; color: #fff; font-size: 1em; box-sizing: border-box;">
+                <button onclick="checkSecretCode()" style="width: 100%; padding: 12px; background: #ffd700; color: #000; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold; margin-bottom: 10px;">Verifiera kod</button>
+            </div>
+            <div id="levelSelection" style="display: none;">
+                <h4 style="color: #ffd700; margin-bottom: 15px; font-size: 1.2em;">Välj nivå att hoppa till:</h4>
+                <div style="display: grid; gap: 10px;">
+                    <button onclick="goToLevel(0)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 0: Start</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Startsidan</span>
+                    </button>
+                    <button onclick="goToLevel(1)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 1: Ordgåta</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Gissa ordet med ledtrådar</span>
+                    </button>
+                    <button onclick="goToLevel(2)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 2: Memory</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Hitta alla par i memory-spelet</span>
+                    </button>
+                    <button onclick="goToLevel(3)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 3: Avkodning</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Dekryptera texten (ROT16)</span>
+                    </button>
+                    <button onclick="goToLevel(4)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 4: Fiskelogik</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Matcha fiskare med fisk och metod</span>
+                    </button>
+                    <button onclick="goToLevel(5)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 5: Fiskmatematik</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Lös ekvationer för att hitta siffror</span>
+                    </button>
+                    <button onclick="goToLevel(6)" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Nivå 6: Final</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Räkna fiskar och öppna paketet</span>
+                    </button>
+                </div>
+            </div>
+            <button onclick="hideSecretInput()" style="width: 100%; margin-top: 15px; padding: 12px; background: #666; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1em;">Stäng</button>
         </div>
 
         <!-- View 0: Start -->
@@ -4013,12 +4047,10 @@
         function checkSecretCode() {
             const input = document.getElementById('secretCodeInput').value;
             if (input === SECRET_KEY) {
-                const level = prompt('Vilken nivå? (0=Start, 1-5=Nivåer, 6=Final):');
-                const levelNum = parseInt(level);
-                if (!isNaN(levelNum) && levelNum >= 0 && levelNum <= 6) {
-                    goToLevel(levelNum);
-                    hideSecretInput();
-                }
+                // Visa nivåval-menyn
+                document.getElementById('levelSelection').style.display = 'block';
+                document.getElementById('secretCodeInput').style.display = 'none';
+                document.querySelector('#secretInput button[onclick="checkSecretCode()"]').style.display = 'none';
             } else {
                 alert('Fel kod!');
             }
@@ -4042,6 +4074,9 @@
             showView(level);
             if (level === 2) initMemoryGame();
             if (level === 4) initLogicPuzzle();
+            if (level === 5) initFishMath();
+            // Stäng secret input om den är öppen
+            hideSecretInput();
             if (level === 5) initFishMath();
             if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
