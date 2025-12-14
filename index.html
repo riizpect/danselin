@@ -4478,6 +4478,21 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             showView(0);
         }
 
+        function handleTrollRestartCancel() {
+            // Stäng popupen utan att starta om - låt användaren fortsätta
+            const popup = document.getElementById('annoyingPopupTroll');
+            const overlay = document.getElementById('popupOverlayTroll');
+            if (popup) {
+                popup.remove();
+            }
+            if (overlay) {
+                overlay.remove();
+            }
+            
+            isPopupOpen = false;
+            // Fortsätt med spelet - gör ingenting mer
+        }
+
         function startAnnoyingPopups() {
             // Stop any existing interval
             if (popupInterval) {
