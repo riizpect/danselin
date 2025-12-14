@@ -4083,14 +4083,52 @@
             if (level === 2) initMemoryGame();
             if (level === 4) initLogicPuzzle();
             if (level === 5) initFishMath();
-            // Stäng secret input om den är öppen
-            hideSecretInput();
-            if (level === 5) initFishMath();
             if (level === 3) {
                 document.getElementById('cipherText').textContent = CONFIG.cipherText;
             }
+            if (level === 6) {
+                // Se till att paketet är synligt
+                setTimeout(() => {
+                    showFinalGiftBox();
+                }, 100);
+            }
             // Update progress
             updateProgress();
+            // Stäng secret input om den är öppen
+            hideSecretInput();
+        }
+
+        function goToSimonSays() {
+            // Gå till nivå 6 först för att visa paketet
+            goToLevel(6);
+            // Vänta lite och starta sedan Simon Says-spelet
+            setTimeout(() => {
+                const openBtn = document.getElementById('openPackageBtn');
+                if (openBtn) {
+                    // Simulera klick på "Öppna Paketet"-knappen
+                    handleOpenPackage();
+                }
+            }, 500);
+        }
+
+        function goToGiftCard() {
+            // Gå till nivå 6 först
+            goToLevel(6);
+            // Dölj fiskräkningsspelet och paketet, visa presentkortet direkt
+            setTimeout(() => {
+                const fishContainer = document.getElementById('fishCountContainer');
+                if (fishContainer) {
+                    fishContainer.style.display = 'none';
+                }
+                const giftBoxContainer = document.getElementById('giftBoxLargeContainer');
+                if (giftBoxContainer) {
+                    giftBoxContainer.classList.remove('show');
+                }
+                const giftCardContainer = document.getElementById('giftCardContainer');
+                if (giftCardContainer) {
+                    giftCardContainer.classList.add('show');
+                }
+            }, 500);
         }
 
         function resetProgress() {
