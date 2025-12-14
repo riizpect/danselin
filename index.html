@@ -821,26 +821,60 @@
         }
 
         .gift-box-large {
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f, #ff8c8c);
-            border: 5px solid #ffd700;
-            border-radius: 15px;
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 25%, #ff8c8c 50%, #ff6b6b 75%, #ee5a6f 100%);
+            border: 8px solid #ffd700;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 6em;
+            font-size: 8em;
             cursor: pointer;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6),
-                        0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.8),
+                0 0 100px rgba(255, 107, 107, 0.4),
+                0 25px 80px rgba(0, 0, 0, 0.6),
+                inset 0 0 30px rgba(255, 255, 255, 0.2);
             position: relative;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             animation: largeBoxPulse 2s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        .gift-box-large::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         @keyframes largeBoxPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), 0 20px 60px rgba(0, 0, 0, 0.5); }
-            50% { transform: scale(1.05); box-shadow: 0 0 70px rgba(255, 215, 0, 0.8), 0 25px 70px rgba(0, 0, 0, 0.6); }
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 
+                    0 0 60px rgba(255, 215, 0, 0.8),
+                    0 0 100px rgba(255, 107, 107, 0.4),
+                    0 25px 80px rgba(0, 0, 0, 0.6),
+                    inset 0 0 30px rgba(255, 255, 255, 0.2);
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 
+                    0 0 80px rgba(255, 215, 0, 1),
+                    0 0 120px rgba(255, 107, 107, 0.6),
+                    0 30px 100px rgba(0, 0, 0, 0.7),
+                    inset 0 0 40px rgba(255, 255, 255, 0.3);
+            }
         }
 
         .gift-box-large:hover {
@@ -861,6 +895,11 @@
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
+        }
+
+        @keyframes errorFlash {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
         }
 
         .open-instruction {
@@ -2493,9 +2532,22 @@
             // Stoppa tidigare buggar
             if (bugInterval) clearInterval(bugInterval);
             
+            let errorMessageCount = 0;
+            const errorMessages = [
+                'ERROR: Systemfel!',
+                'FEL: Fiskar saknas!',
+                'VARNING: Timer fel!',
+                'KRITISKT: Räkning misslyckad!',
+                'FEL: Ogiltig input!',
+                'ERROR 404: Fiskar hittades inte!',
+                'SYSTEMFEL: Försök igen!'
+            ];
+            
             bugInterval = setInterval(() => {
-                // Bugg 1: Fiskar försvinner slumpmässigt
+                const container = document.getElementById('fishCountContainer');
                 const arena = document.getElementById('fishArena');
+                
+                // Bugg 1: Fiskar försvinner slumpmässigt
                 if (arena) {
                     const fish = arena.querySelectorAll('.swimming-fish');
                     if (fish.length > 0 && Math.random() < 0.3) {
@@ -2508,29 +2560,121 @@
                 // Bugg 2: Timer hoppar
                 const timerEl = document.getElementById('fishTimer');
                 if (timerEl && fishPhase === 'counting') {
-                    if (Math.random() < 0.2) {
-                        fishTimeLeft = Math.max(0, fishTimeLeft - Math.floor(Math.random() * 3));
+                    if (Math.random() < 0.25) {
+                        fishTimeLeft = Math.max(0, fishTimeLeft - Math.floor(Math.random() * 4));
                         timerEl.textContent = fishTimeLeft;
+                        timerEl.style.color = '#ff0000';
+                        setTimeout(() => {
+                            if (timerEl) timerEl.style.color = '';
+                        }, 500);
                     }
                 }
                 
                 // Bugg 3: Input-fältet ändrar värde
                 const inputEl = document.getElementById('fishInput');
-                if (inputEl && fishPhase === 'counting' && Math.random() < 0.15) {
+                if (inputEl && fishPhase === 'counting' && Math.random() < 0.2) {
                     const currentValue = parseInt(inputEl.value) || 0;
-                    inputEl.value = currentValue + Math.floor(Math.random() * 5) - 2;
+                    inputEl.value = Math.max(0, currentValue + Math.floor(Math.random() * 7) - 3);
+                    inputEl.style.borderColor = '#ff0000';
+                    setTimeout(() => {
+                        if (inputEl) inputEl.style.borderColor = '';
+                    }, 300);
                 }
                 
                 // Bugg 4: Fiskar ändrar position
                 if (arena) {
                     const fish = arena.querySelectorAll('.swimming-fish');
-                    if (fish.length > 0 && Math.random() < 0.25) {
+                    if (fish.length > 0 && Math.random() < 0.3) {
                         const randomFish = fish[Math.floor(Math.random() * fish.length)];
                         const newTop = Math.random() * 300;
                         randomFish.style.top = newTop + 'px';
+                        randomFish.style.transform += ` translateX(${Math.random() * 50 - 25}px)`;
                     }
                 }
-            }, 2000); // Varje 2 sekunder
+                
+                // Bugg 5: Knappar flyttar sig!
+                const submitBtn = document.querySelector('.fish-count-submit');
+                if (submitBtn && fishPhase === 'counting' && Math.random() < 0.15) {
+                    const randomX = Math.random() * 200 - 100;
+                    const randomY = Math.random() * 100 - 50;
+                    submitBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                    submitBtn.style.transition = 'transform 0.3s';
+                    setTimeout(() => {
+                        if (submitBtn) {
+                            submitBtn.style.transform = '';
+                        }
+                    }, 2000);
+                }
+                
+                // Bugg 6: Error-meddelanden dyker upp
+                if (container && Math.random() < 0.1) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.cssText = `
+                        position: absolute;
+                        top: ${Math.random() * 300}px;
+                        left: ${Math.random() * 400}px;
+                        color: #ff0000;
+                        font-size: 1.2em;
+                        font-weight: bold;
+                        background: rgba(0, 0, 0, 0.8);
+                        padding: 10px 20px;
+                        border: 2px solid #ff0000;
+                        border-radius: 5px;
+                        z-index: 1000;
+                        animation: errorFlash 0.5s;
+                        pointer-events: none;
+                    `;
+                    errorMsg.textContent = errorMessages[errorMessageCount % errorMessages.length];
+                    errorMessageCount++;
+                    container.appendChild(errorMsg);
+                    
+                    setTimeout(() => {
+                        errorMsg.style.opacity = '0';
+                        errorMsg.style.transition = 'opacity 0.5s';
+                        setTimeout(() => {
+                            if (errorMsg.parentNode) {
+                                errorMsg.parentNode.removeChild(errorMsg);
+                            }
+                        }, 500);
+                    }, 1500);
+                }
+                
+                // Bugg 7: Text glitchar
+                const phaseEl = document.getElementById('fishPhase');
+                if (phaseEl && Math.random() < 0.1) {
+                    const originalText = phaseEl.textContent;
+                    phaseEl.textContent = 'ERROR...';
+                    phaseEl.style.color = '#ff0000';
+                    setTimeout(() => {
+                        if (phaseEl) {
+                            phaseEl.textContent = originalText;
+                            phaseEl.style.color = '';
+                        }
+                    }, 300);
+                }
+                
+                // Bugg 8: Fiskar roterar konstigt
+                if (arena) {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.2) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        const rotation = Math.random() * 360;
+                        randomFish.style.transform += ` rotate(${rotation}deg)`;
+                    }
+                }
+                
+                // Bugg 9: Input-fältet försvinner/visas
+                if (inputEl && fishPhase === 'counting' && Math.random() < 0.08) {
+                    inputEl.style.opacity = '0';
+                    inputEl.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        if (inputEl) {
+                            inputEl.style.opacity = '1';
+                            inputEl.style.pointerEvents = 'auto';
+                        }
+                    }, 500);
+                }
+            }, 1500); // Varje 1.5 sekunder för mer kaos
         }
 
         function showErrorOverlay() {
