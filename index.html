@@ -506,11 +506,37 @@
             max-width: 900px;
             width: 100%;
             margin: 20px auto;
-            opacity: 0.1;
-            pointer-events: none;
             position: relative;
             z-index: 1;
             min-height: 600px;
+        }
+
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(22, 33, 62, 0.98));
+            border: 4px solid #ff0000;
+            padding: 40px;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: errorPulse 1s ease-in-out infinite;
+        }
+
+        .error-overlay.show {
+            display: flex;
+        }
+
+        @keyframes errorPulse {
+            0%, 100% { border-color: #ff0000; }
+            50% { border-color: #ff6666; }
         }
 
         .under-construction-overlay {
@@ -526,7 +552,7 @@
             text-align: center;
             z-index: 10;
             box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
-            display: flex;
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -1548,22 +1574,26 @@
                 <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
                 <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
-                <!-- Räkna fiskar (i bakgrunden) -->
-                <div class="fish-count-container" id="fishCountContainer" style="position: relative;">
-                    <!-- Under uppbyggnad overlay -->
-                    <div class="under-construction-overlay" id="constructionOverlay">
-                        <div class="construction-title">🔧 Under Uppbyggnad 🔧</div>
-                        <div class="construction-subtitle">Detta område håller på att byggas...</div>
-                        
-                        <div class="construction-game">
-                            <div class="construction-instruction" id="constructionInstruction">
-                                Klicka på knapparna i rätt ordning: 1 → 2 → 3 → 4
-                            </div>
-                            <div class="construction-buttons-grid" id="constructionButtons">
-                                <!-- Knappar skapas dynamiskt -->
-                            </div>
-                            <div class="construction-feedback" id="constructionFeedback"></div>
+                <!-- Räkna fiskar (buggigt) -->
+                <div class="fish-count-container" id="fishCountContainer"></div>
+                
+                <!-- Error overlay (fullskärm) -->
+                <div class="error-overlay" id="errorOverlay">
+                    <div class="construction-title" style="color: #ff0000; font-size: 3em; margin-bottom: 20px;">
+                        ⚠️ UNDER UPPBYGGNAD ⚠️
+                    </div>
+                    <div class="construction-subtitle" style="color: #ff6666; font-size: 2em; margin-bottom: 30px;">
+                        ERROR. FEL.
+                    </div>
+                    
+                    <div class="construction-game">
+                        <div class="construction-instruction" id="errorInstruction">
+                            Klicka på knapparna i rätt ordning: 1 → 2 → 3 → 4
                         </div>
+                        <div class="construction-buttons-grid" id="errorButtons">
+                            <!-- Knappar skapas dynamiskt -->
+                        </div>
+                        <div class="construction-feedback" id="errorFeedback"></div>
                     </div>
                 </div>
                 
@@ -2426,34 +2456,104 @@
         let constructionCurrentStep = 0;
         let constructionButtons = [];
 
+        let errorOverlayTimeout = null;
+        let bugInterval = null;
+
         function initFishCountTest() {
             const container = document.getElementById('fishCountContainer');
             if (!container) return;
             
-            // Starta fiskräkningsspelet i bakgrunden (osynligt)
+            // Dölj error overlay
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+            }
+            
+            // Starta fiskräkningsspelet (synligt, men buggigt)
             currentFishRound = 0;
             fishAnswered = false;
             correctFishCount = 0;
-            showFishRound(0); // Kör i bakgrunden
+            showFishRound(0);
             
             // Dölj stort paket och presentkort
             document.getElementById('giftBoxLargeContainer').classList.remove('show');
             document.getElementById('giftCardContainer').classList.remove('show');
             
-            // Visa "Under uppbyggnad"-skylten med spel
-            initConstructionGame();
+            // Starta buggar som gör spelet olösbart
+            startFishBugs();
+            
+            // Efter 40 sekunder, visa error overlay
+            if (errorOverlayTimeout) clearTimeout(errorOverlayTimeout);
+            errorOverlayTimeout = setTimeout(() => {
+                showErrorOverlay();
+            }, 40000);
         }
 
-        function initConstructionGame() {
-            const overlay = document.getElementById('constructionOverlay');
-            const buttonsContainer = document.getElementById('constructionButtons');
-            const instruction = document.getElementById('constructionInstruction');
-            const feedback = document.getElementById('constructionFeedback');
+        function startFishBugs() {
+            // Stoppa tidigare buggar
+            if (bugInterval) clearInterval(bugInterval);
             
-            if (!overlay || !buttonsContainer) return;
+            bugInterval = setInterval(() => {
+                // Bugg 1: Fiskar försvinner slumpmässigt
+                const arena = document.getElementById('fishArena');
+                if (arena) {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.3) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        randomFish.style.opacity = '0';
+                        randomFish.style.display = 'none';
+                    }
+                }
+                
+                // Bugg 2: Timer hoppar
+                const timerEl = document.getElementById('fishTimer');
+                if (timerEl && fishPhase === 'counting') {
+                    if (Math.random() < 0.2) {
+                        fishTimeLeft = Math.max(0, fishTimeLeft - Math.floor(Math.random() * 3));
+                        timerEl.textContent = fishTimeLeft;
+                    }
+                }
+                
+                // Bugg 3: Input-fältet ändrar värde
+                const inputEl = document.getElementById('fishInput');
+                if (inputEl && fishPhase === 'counting' && Math.random() < 0.15) {
+                    const currentValue = parseInt(inputEl.value) || 0;
+                    inputEl.value = currentValue + Math.floor(Math.random() * 5) - 2;
+                }
+                
+                // Bugg 4: Fiskar ändrar position
+                if (arena) {
+                    const fish = arena.querySelectorAll('.swimming-fish');
+                    if (fish.length > 0 && Math.random() < 0.25) {
+                        const randomFish = fish[Math.floor(Math.random() * fish.length)];
+                        const newTop = Math.random() * 300;
+                        randomFish.style.top = newTop + 'px';
+                    }
+                }
+            }, 2000); // Varje 2 sekunder
+        }
+
+        function showErrorOverlay() {
+            // Stoppa buggar
+            if (bugInterval) {
+                clearInterval(bugInterval);
+                bugInterval = null;
+            }
             
-            // Visa overlay
-            overlay.style.display = 'flex';
+            // Visa error overlay
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.add('show');
+                initErrorGame();
+            }
+        }
+
+        function initErrorGame() {
+            const buttonsContainer = document.getElementById('errorButtons');
+            const instruction = document.getElementById('errorInstruction');
+            const feedback = document.getElementById('errorFeedback');
+            
+            if (!buttonsContainer) return;
             
             // Återställ spel
             constructionSequence = [1, 2, 3, 4];
@@ -2477,7 +2577,7 @@
                 btn.className = 'construction-btn';
                 btn.textContent = num;
                 btn.dataset.number = num;
-                btn.onclick = () => handleConstructionClick(num, btn);
+                btn.onclick = () => handleErrorClick(num, btn);
                 buttonsContainer.appendChild(btn);
                 constructionButtons.push(btn);
             });
@@ -2485,9 +2585,9 @@
             instruction.textContent = 'Klicka på knapparna i rätt ordning: 1 → 2 → 3 → 4';
         }
 
-        function handleConstructionClick(number, buttonElement) {
+        function handleErrorClick(number, buttonElement) {
             const expectedNumber = constructionSequence[constructionCurrentStep];
-            const feedback = document.getElementById('constructionFeedback');
+            const feedback = document.getElementById('errorFeedback');
             
             if (number === expectedNumber) {
                 // Rätt!
@@ -2498,14 +2598,14 @@
                 
                 if (constructionCurrentStep === constructionSequence.length) {
                     // Alla steg klara!
-                    feedback.textContent = 'Perfekt! Området är nu klart! 🎉';
+                    feedback.textContent = 'Perfekt! Systemet är återställt! 🎉';
                     feedback.className = 'construction-feedback correct';
                     
                     // Dölj overlay efter 1.5 sekunder och gå vidare
                     setTimeout(() => {
-                        const overlay = document.getElementById('constructionOverlay');
-                        if (overlay) {
-                            overlay.style.display = 'none';
+                        const errorOverlay = document.getElementById('errorOverlay');
+                        if (errorOverlay) {
+                            errorOverlay.classList.remove('show');
                         }
                         showFinalGiftBox();
                     }, 1500);
@@ -2753,10 +2853,22 @@
         }
         
         function showFinalGiftBox() {
+            // Stoppa buggar
+            if (bugInterval) {
+                clearInterval(bugInterval);
+                bugInterval = null;
+            }
+            if (errorOverlayTimeout) {
+                clearTimeout(errorOverlayTimeout);
+                errorOverlayTimeout = null;
+            }
+            
             // Alla frågor besvarade - visa stort paket för öppning!
             const container = document.getElementById('negationTestContainer');
-            container.innerHTML = '';
-            container.style.display = 'none';
+            if (container) {
+                container.innerHTML = '';
+                container.style.display = 'none';
+            }
             
             document.getElementById('giftBoxLargeContainer').classList.add('show');
             document.getElementById('giftBoxLarge').style.display = 'block';
