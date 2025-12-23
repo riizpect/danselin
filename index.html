@@ -4271,6 +4271,17 @@
                         giftCardContainer.classList.remove('show');
                     }
                     
+                    // Stoppa popups och reset popup-variabler
+                    stopAnnoyingPopups();
+                    popupCount = 0;
+                    fakeLevelCompleteShown = {}; // Reset fake level complete
+                    if (fakeCountdownInterval) {
+                        clearInterval(fakeCountdownInterval);
+                        const countdown = document.getElementById('fakeCountdown');
+                        if (countdown) countdown.remove();
+                    }
+                    backgroundMusicPlaying = false;
+                    
                     // Gå tillbaka till start (view0)
                     showView(0);
                 }
