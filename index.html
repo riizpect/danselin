@@ -1919,15 +1919,13 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- "Vill du börja om?" fråga -->
+                <div class="restart-question-container" id="restartQuestionContainer" style="display: none; text-align: center; padding: 50px 20px; margin-top: 40px;">
+                    <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Vill du börja om?</h1>
+                    <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- View 7: "Vill du börja om?" -->
-        <div class="view" id="view7" style="background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-            <div class="puzzle-container" style="text-align: center; padding: 50px 20px; width: 100%; max-width: 800px;">
-                <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Vill du börja om?</h1>
-                <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
+                </div>
             </div>
         </div>
 
@@ -4071,12 +4069,10 @@
             // Stoppa popups först
             stopAnnoyingPopups();
             
-            // Dölj view6 explicit (där colorSequenceContainer ligger)
-            const view6 = document.getElementById('view6');
-            if (view6) {
-                view6.classList.remove('active');
-                view6.style.display = 'none';
-            }
+            // Gå till view6 (där presentkortet ligger)
+            currentLevel = 6;
+            localStorage.setItem('escapeRoomLevel', 6);
+            updateProgress();
             
             // Hide all views
             document.querySelectorAll('.view').forEach(view => {
@@ -4084,19 +4080,42 @@
                 view.style.display = 'none';
             });
             
-            // Gå direkt till view7 ("Vill du börja om?")
-            currentLevel = 7;
-            localStorage.setItem('escapeRoomLevel', 7);
-            updateProgress();
+            // Show view6
+            const view6 = document.getElementById('view6');
+            if (view6) {
+                view6.classList.add('active');
+                view6.style.display = 'block';
+            }
             
-            // Show view7
-            const view7 = document.getElementById('view7');
-            if (view7) {
-                view7.classList.add('active');
-                view7.style.display = 'block';
-                console.log('View7 should now be visible');
-            } else {
-                console.error('View7 not found!');
+            // Dölj fiskräkningsspelet och paketet
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+                errorOverlay.style.display = 'none';
+            }
+            
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.remove('show');
+                largeBoxContainer.style.display = 'none';
+            }
+            
+            // Visa presentkortet
+            const giftCardContainer = document.getElementById('giftCardContainer');
+            if (giftCardContainer) {
+                giftCardContainer.classList.add('show');
+                giftCardContainer.style.display = 'block';
+            }
+            
+            // Visa "Vill du börja om?"-frågan
+            const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+            if (restartQuestionContainer) {
+                restartQuestionContainer.style.display = 'block';
             }
             
             // Sätt knappen till "Ja" först
@@ -4105,8 +4124,6 @@
                 restartButton.textContent = 'Ja';
                 restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
                 restartButton.onclick = handleRestartQuestionClick;
-            } else {
-                console.error('restartQuestionButton not found!');
             }
             
             // Efter 5 sekunder, ändra knappen till "Nej"
@@ -4124,60 +4141,12 @@
                 const buttonText = restartButton.textContent.trim();
                 
                 if (buttonText === 'Nej') {
-                    // Gå tillbaka till view6 och visa presentkortet
-                    currentLevel = 6;
-                    localStorage.setItem('escapeRoomLevel', 6);
-                    updateProgress();
-                    
-                    // Hide all views
-                    document.querySelectorAll('.view').forEach(view => {
-                        view.classList.remove('active');
-                    });
-                    
-                    // Show view6
-                    const view6 = document.getElementById('view6');
-                    if (view6) {
-                        view6.classList.add('active');
+                    // Dölj "Vill du börja om?"-frågan, presentkortet är redan synligt
+                    const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+                    if (restartQuestionContainer) {
+                        restartQuestionContainer.style.display = 'none';
                     }
-                    
-                    // Dölj allt annat
-                    const fishContainer = document.getElementById('fishCountContainer');
-                    if (fishContainer) {
-                        fishContainer.style.display = 'none';
-                    }
-                    
-                    const errorOverlay = document.getElementById('errorOverlay');
-                    if (errorOverlay) {
-                        errorOverlay.classList.remove('show');
-                        errorOverlay.style.display = 'none';
-                    }
-                    
-                    const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
-                    if (largeBoxContainer) {
-                        largeBoxContainer.classList.remove('show');
-                        largeBoxContainer.style.display = 'none';
-                    }
-                    
-                    // Visa presentkortet direkt
-                    setTimeout(() => {
-                        const giftCardContainer = document.getElementById('giftCardContainer');
-                        if (giftCardContainer) {
-                            giftCardContainer.classList.add('show');
-                            giftCardContainer.style.display = 'block';
-                            giftCardContainer.style.visibility = 'visible';
-                            giftCardContainer.style.opacity = '1';
-                            giftCardContainer.style.position = 'relative';
-                            giftCardContainer.style.zIndex = '1000';
-                            giftCardContainer.style.margin = '50px auto';
-                            giftCardContainer.style.width = '100%';
-                            giftCardContainer.style.maxWidth = '600px';
-                            
-                            // Scrolla till presentkortet
-                            setTimeout(() => {
-                                giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }, 100);
-                        }
-                    }, 100);
+                    // Presentkortet är redan synligt, så vi behöver inte göra något mer
                 } else {
                     // Om det är "Ja", gör ingenting (eller starta om spelet om du vill)
                     // För nu gör vi ingenting
@@ -4400,24 +4369,57 @@
         }
         
         function goToGiftCard() {
-            // Gå direkt till view7 ("Vill du börja om?")
-            currentLevel = 7;
-            localStorage.setItem('escapeRoomLevel', 7);
+            // Gå direkt till view6 (presentkortet + "Vill du börja om?")
+            currentLevel = 6;
+            localStorage.setItem('escapeRoomLevel', 6);
             updateProgress();
             
             // Hide all views
             document.querySelectorAll('.view').forEach(view => {
                 view.classList.remove('active');
+                view.style.display = 'none';
             });
             
-            // Show view7
-            const view7 = document.getElementById('view7');
-            if (view7) {
-                view7.classList.add('active');
+            // Show view6
+            const view6 = document.getElementById('view6');
+            if (view6) {
+                view6.classList.add('active');
+                view6.style.display = 'block';
             }
             
             // Stoppa popups
             stopAnnoyingPopups();
+            
+            // Dölj fiskräkningsspelet och paketet
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+                errorOverlay.style.display = 'none';
+            }
+            
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.remove('show');
+                largeBoxContainer.style.display = 'none';
+            }
+            
+            // Visa presentkortet
+            const giftCardContainer = document.getElementById('giftCardContainer');
+            if (giftCardContainer) {
+                giftCardContainer.classList.add('show');
+                giftCardContainer.style.display = 'block';
+            }
+            
+            // Visa "Vill du börja om?"-frågan
+            const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+            if (restartQuestionContainer) {
+                restartQuestionContainer.style.display = 'block';
+            }
             
             // Sätt knappen till "Ja" först
             const restartButton = document.getElementById('restartQuestionButton');
