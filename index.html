@@ -4927,6 +4927,8 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         // ============================================
         // FAKE CAPTCHA
         // ============================================
+        let correctCaptchaBoxIndex = -1; // Spara vilken ruta som är korrekt
+        
         function showFakeCaptcha() {
             const captcha = document.getElementById('fakeCaptcha');
             const grid = document.getElementById('fakeCaptchaGrid');
@@ -4934,11 +4936,18 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             
             // Create 9 boxes with emoji "images" (no actual traffic lights)
             const emojis = ['🚗', '🌳', '🏠', '☁️', '⭐', '🌙', '🎄', '❄️', '🎁'];
+            
+            // Blanda emojis slumpmässigt
+            const shuffledEmojis = [...emojis].sort(() => Math.random() - 0.5);
+            
+            // Välj en slumpmässig korrekt ruta (inte alltid den högra)
+            correctCaptchaBoxIndex = Math.floor(Math.random() * 9);
+            
             for (let i = 0; i < 9; i++) {
                 const box = document.createElement('div');
                 box.className = 'fake-captcha-image';
                 box.dataset.index = i;
-                box.textContent = emojis[i];
+                box.textContent = shuffledEmojis[i];
                 box.onclick = function() {
                     this.classList.toggle('selected');
                 };
@@ -4954,9 +4963,18 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             const message = document.getElementById('fakeCaptchaMessage');
             captchaAttempts++;
             
-            // Always fail first 2 attempts, then allow to proceed
+            // Kolla om rätt ruta är vald
+            const selectedIndices = Array.from(selected).map(box => parseInt(box.dataset.index));
+            const isCorrect = selectedIndices.length === 1 && selectedIndices[0] === correctCaptchaBoxIndex;
+            
+            // Always fail first 2 attempts, then check if correct box is selected
             if (captchaAttempts < 3) {
-                message.textContent = 'Felaktig verifiering. Försök igen.';
+                if (isCorrect) {
+                    // Rätt ruta vald, men vi låtsas att det är fel första 2 gångerna
+                    message.textContent = 'Felaktig verifiering. Försök igen.';
+                } else {
+                    message.textContent = 'Felaktig verifiering. Försök igen.';
+                }
                 
                 // Reset after 2 seconds
                 setTimeout(() => {
@@ -4966,15 +4984,27 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                     message.textContent = '';
                 }, 2000);
             } else {
-                // After 3 attempts, allow to proceed
-                message.textContent = 'Verifiering lyckades!';
-                message.style.color = '#4caf50';
-                
-                setTimeout(() => {
-                    document.getElementById('fakeCaptcha').style.display = 'none';
-                    message.textContent = '';
-                    message.style.color = '#ff6b6b';
-                }, 1500);
+                // Efter 2 försök, kolla om rätt ruta är vald
+                if (isCorrect) {
+                    // Rätt ruta vald!
+                    message.textContent = 'Verifiering lyckades!';
+                    message.style.color = '#4caf50';
+                    
+                    setTimeout(() => {
+                        document.getElementById('fakeCaptcha').style.display = 'none';
+                        message.textContent = '';
+                        message.style.color = '#ff6b6b';
+                    }, 1500);
+                } else {
+                    // Fel ruta vald
+                    message.textContent = 'Felaktig verifiering. Försök igen.';
+                    setTimeout(() => {
+                        document.querySelectorAll('.fake-captcha-image').forEach(box => {
+                            box.classList.remove('selected');
+                        });
+                        message.textContent = '';
+                    }, 2000);
+                }
             }
         }
         
