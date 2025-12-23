@@ -1853,6 +1853,18 @@
                     </div>
                 </div>
                 
+                <!-- "Vill du börja om?" skärm -->
+                <div class="restart-question-container" id="restartQuestionContainer" style="display: none; text-align: center; padding: 50px 20px;">
+                    <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
+                    <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
+                </div>
+                
+                <!-- "Vill du börja om?" skärm -->
+                <div class="restart-question-container" id="restartQuestionContainer" style="display: none; text-align: center; padding: 50px 20px;">
+                    <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
+                    <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
+                </div>
+                
                 <!-- Presentkort (visas efter öppning) -->
                 <div class="gift-card-container" id="giftCardContainer">
                     <div class="gift-card">
@@ -4092,36 +4104,68 @@
                 // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
                 const finalContainer = document.querySelector('#view6 .final-container');
                 if (finalContainer) {
-                    const title = finalContainer.querySelector('h1');
-                    const subtitle = finalContainer.querySelector('p');
-                    if (title) title.style.display = 'none';
-                    if (subtitle) subtitle.style.display = 'none';
-                    // Dölj hela final-container så att den inte blockerar presentkortet
                     finalContainer.style.display = 'none';
                 }
                 
-                // Visa presentkortet direkt
-                const giftCardContainer = document.getElementById('giftCardContainer');
-                if (giftCardContainer) {
-                    giftCardContainer.classList.add('show');
-                    giftCardContainer.style.display = 'block';
-                    giftCardContainer.style.visibility = 'visible';
-                    giftCardContainer.style.opacity = '1';
-                    giftCardContainer.style.position = 'relative';
-                    giftCardContainer.style.zIndex = '1000';
-                    giftCardContainer.style.margin = '50px auto';
-                    giftCardContainer.style.width = '100%';
-                    giftCardContainer.style.maxWidth = '600px';
-                    console.log('Gift card container shown');
+                // Visa "Vill du börja om?" skärmen
+                const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+                if (restartQuestionContainer) {
+                    restartQuestionContainer.style.display = 'block';
                     
-                    // Scrolla till presentkortet
+                    // Sätt knappen till "Ja" först
+                    const restartButton = document.getElementById('restartQuestionButton');
+                    if (restartButton) {
+                        restartButton.textContent = 'Ja';
+                        restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                        restartButton.onclick = handleRestartQuestionClick;
+                    }
+                    
+                    // Efter 5 sekunder, ändra knappen till "Nej"
                     setTimeout(() => {
-                        giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                } else {
-                    console.error('giftCardContainer not found!');
+                        if (restartButton) {
+                            restartButton.textContent = 'Nej';
+                            restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                        }
+                    }, 5000);
                 }
             }, 200);
+        }
+        
+        function handleRestartQuestionClick() {
+            const restartButton = document.getElementById('restartQuestionButton');
+            if (restartButton) {
+                const buttonText = restartButton.textContent.trim();
+                
+                if (buttonText === 'Nej') {
+                    // Dölj "Vill du börja om?" skärmen
+                    const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+                    if (restartQuestionContainer) {
+                        restartQuestionContainer.style.display = 'none';
+                    }
+                    
+                    // Visa presentkortet direkt
+                    const giftCardContainer = document.getElementById('giftCardContainer');
+                    if (giftCardContainer) {
+                        giftCardContainer.classList.add('show');
+                        giftCardContainer.style.display = 'block';
+                        giftCardContainer.style.visibility = 'visible';
+                        giftCardContainer.style.opacity = '1';
+                        giftCardContainer.style.position = 'relative';
+                        giftCardContainer.style.zIndex = '1000';
+                        giftCardContainer.style.margin = '50px auto';
+                        giftCardContainer.style.width = '100%';
+                        giftCardContainer.style.maxWidth = '600px';
+                        
+                        // Scrolla till presentkortet
+                        setTimeout(() => {
+                            giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                    }
+                } else {
+                    // Om det är "Ja", gör ingenting (eller starta om spelet om du vill)
+                    // För nu gör vi ingenting
+                }
+            }
         }
         
         function openGiftBox() {
