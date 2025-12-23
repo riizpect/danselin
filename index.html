@@ -5255,18 +5255,9 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             const message = document.getElementById('fakeCaptchaMessage');
             captchaAttempts++;
             
-            // Kolla om rätt ruta är vald
-            const selectedIndices = Array.from(selected).map(box => parseInt(box.dataset.index));
-            const isCorrect = selectedIndices.length === 1 && selectedIndices[0] === correctCaptchaBoxIndex;
-            
-            // Always fail first 2 attempts, then check if correct box is selected
+            // Always fail first 2 attempts, then allow to proceed
             if (captchaAttempts < 3) {
-                if (isCorrect) {
-                    // Rätt ruta vald, men vi låtsas att det är fel första 2 gångerna
-                    message.textContent = 'Felaktig verifiering. Försök igen.';
-                } else {
-                    message.textContent = 'Felaktig verifiering. Försök igen.';
-                }
+                message.textContent = 'Felaktig verifiering. Försök igen.';
                 
                 // Reset after 2 seconds
                 setTimeout(() => {
@@ -5276,27 +5267,15 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                     message.textContent = '';
                 }, 2000);
             } else {
-                // Efter 2 försök, kolla om rätt ruta är vald
-                if (isCorrect) {
-                    // Rätt ruta vald!
-                    message.textContent = 'Verifiering lyckades!';
-                    message.style.color = '#4caf50';
-                    
-                    setTimeout(() => {
-                        document.getElementById('fakeCaptcha').style.display = 'none';
-                        message.textContent = '';
-                        message.style.color = '#ff6b6b';
-                    }, 1500);
-                } else {
-                    // Fel ruta vald
-                    message.textContent = 'Felaktig verifiering. Försök igen.';
-                    setTimeout(() => {
-                        document.querySelectorAll('.fake-captcha-image').forEach(box => {
-                            box.classList.remove('selected');
-                        });
-                        message.textContent = '';
-                    }, 2000);
-                }
+                // After 3 attempts, allow to proceed
+                message.textContent = 'Verifiering lyckades!';
+                message.style.color = '#4caf50';
+                
+                setTimeout(() => {
+                    document.getElementById('fakeCaptcha').style.display = 'none';
+                    message.textContent = '';
+                    message.style.color = '#ff6b6b';
+                }, 1500);
             }
         }
         
