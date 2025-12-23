@@ -4116,6 +4116,8 @@
             const restartQuestionContainer = document.getElementById('restartQuestionContainer');
             if (restartQuestionContainer) {
                 restartQuestionContainer.style.display = 'block';
+                restartQuestionContainer.style.visibility = 'visible';
+                restartQuestionContainer.style.opacity = '1';
             }
             
             // Sätt knappen till "Ja" först
@@ -4128,9 +4130,10 @@
             
             // Efter 5 sekunder, ändra knappen till "Nej"
             setTimeout(() => {
-                if (restartButton) {
-                    restartButton.textContent = 'Nej';
-                    restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                const restartButtonAfterDelay = document.getElementById('restartQuestionButton');
+                if (restartButtonAfterDelay) {
+                    restartButtonAfterDelay.textContent = 'Nej';
+                    restartButtonAfterDelay.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
             }, 5000);
         }
@@ -4419,6 +4422,8 @@
             const restartQuestionContainer = document.getElementById('restartQuestionContainer');
             if (restartQuestionContainer) {
                 restartQuestionContainer.style.display = 'block';
+                restartQuestionContainer.style.visibility = 'visible';
+                restartQuestionContainer.style.opacity = '1';
             }
             
             // Sätt knappen till "Ja" först
@@ -4431,9 +4436,10 @@
             
             // Efter 5 sekunder, ändra knappen till "Nej"
             setTimeout(() => {
-                if (restartButton) {
-                    restartButton.textContent = 'Nej';
-                    restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                const restartButtonAfterDelay = document.getElementById('restartQuestionButton');
+                if (restartButtonAfterDelay) {
+                    restartButtonAfterDelay.textContent = 'Nej';
+                    restartButtonAfterDelay.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
             }, 5000);
         }
