@@ -4014,6 +4014,10 @@
         
         function handleContinueAfterSequence() {
             console.log('handleContinueAfterSequence called');
+            
+            // Se till att vi är på view6
+            goToLevel(6);
+            
             const continueBtn = document.getElementById('continueButton');
             if (continueBtn) {
                 continueBtn.style.display = 'none';
@@ -4033,29 +4037,57 @@
             // Stoppa färgrörelser och distraktionsblinkningar
             stopColorEffects();
             
+            // Dölj fiskräkningsspelet
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            // Dölj error overlay
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+                errorOverlay.style.display = 'none';
+            }
+            
             // Dölj paketet direkt
             const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
             const largeBox = document.getElementById('giftBoxLarge');
             if (largeBoxContainer) {
                 largeBoxContainer.classList.remove('show');
+                largeBoxContainer.style.display = 'none';
             }
             if (largeBox) {
                 largeBox.style.display = 'none';
             }
             
-            // Visa presentkortet direkt (hoppa över paket-animationen)
-            const giftCardContainer = document.getElementById('giftCardContainer');
-            if (giftCardContainer) {
-                giftCardContainer.classList.add('show');
-                giftCardContainer.style.display = 'block';
-                
-                // Scrolla till presentkortet
-                setTimeout(() => {
-                    giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            } else {
-                console.error('giftCardContainer not found!');
+            // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
+            const finalContainer = document.querySelector('#view6 .final-container');
+            if (finalContainer) {
+                const title = finalContainer.querySelector('h1');
+                const subtitle = finalContainer.querySelector('p');
+                if (title) title.style.display = 'none';
+                if (subtitle) subtitle.style.display = 'none';
             }
+            
+            // Visa presentkortet direkt (hoppa över paket-animationen)
+            setTimeout(() => {
+                const giftCardContainer = document.getElementById('giftCardContainer');
+                if (giftCardContainer) {
+                    giftCardContainer.classList.add('show');
+                    giftCardContainer.style.display = 'block';
+                    giftCardContainer.style.visibility = 'visible';
+                    giftCardContainer.style.opacity = '1';
+                    console.log('Gift card container shown');
+                    
+                    // Scrolla till presentkortet
+                    setTimeout(() => {
+                        giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                } else {
+                    console.error('giftCardContainer not found!');
+                }
+            }, 100);
         }
         
         function openGiftBox() {
