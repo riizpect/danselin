@@ -4298,17 +4298,47 @@
             goToLevel(6);
             // Dölj fiskräkningsspelet och paketet, visa presentkortet direkt
             setTimeout(() => {
+                // Dölj fiskräkningsspelet
                 const fishContainer = document.getElementById('fishCountContainer');
                 if (fishContainer) {
                     fishContainer.style.display = 'none';
                 }
+                
+                // Dölj error overlay
+                const errorOverlay = document.getElementById('errorOverlay');
+                if (errorOverlay) {
+                    errorOverlay.classList.remove('show');
+                    errorOverlay.style.display = 'none';
+                }
+                
+                // Dölj paketet
                 const giftBoxContainer = document.getElementById('giftBoxLargeContainer');
                 if (giftBoxContainer) {
                     giftBoxContainer.classList.remove('show');
+                    giftBoxContainer.style.display = 'none';
                 }
+                
+                // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
+                const finalContainer = document.querySelector('#view6 .final-container');
+                if (finalContainer) {
+                    const title = finalContainer.querySelector('h1');
+                    const subtitle = finalContainer.querySelector('p');
+                    if (title) title.style.display = 'none';
+                    if (subtitle) subtitle.style.display = 'none';
+                }
+                
+                // Visa presentkortet direkt
                 const giftCardContainer = document.getElementById('giftCardContainer');
                 if (giftCardContainer) {
                     giftCardContainer.classList.add('show');
+                    giftCardContainer.style.display = 'block';
+                    giftCardContainer.style.visibility = 'visible';
+                    giftCardContainer.style.opacity = '1';
+                    
+                    // Scrolla till presentkortet
+                    setTimeout(() => {
+                        giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
                 }
             }, 500);
         }
