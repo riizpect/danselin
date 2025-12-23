@@ -1924,9 +1924,9 @@
         </div>
 
         <!-- View 7: "Vill du börja om?" -->
-        <div class="view" id="view7">
-            <div class="puzzle-container" style="text-align: center; padding: 50px 20px;">
-                <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
+        <div class="view" id="view7" style="background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+            <div class="puzzle-container" style="text-align: center; padding: 50px 20px; width: 100%; max-width: 800px;">
+                <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Vill du börja om?</h1>
                 <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
             </div>
         </div>
@@ -3718,8 +3718,10 @@
                     }
                     stopColorEffects();
                     
-                    // Visa "Fortsätt"-knapp
-                    showContinueButton();
+                    // Gå direkt till view7 efter en kort fördröjning
+                    setTimeout(() => {
+                        handleContinueAfterSequence();
+                    }, 1500);
                 } else {
                     // Nästa nivå
                     sequenceLevel++;
@@ -4056,6 +4058,8 @@
             if (colorContainer) {
                 colorContainer.classList.remove('active');
                 colorContainer.style.display = 'none';
+                colorContainer.style.visibility = 'hidden';
+                colorContainer.style.opacity = '0';
             }
             
             // Stoppa troll-effekter
@@ -4064,24 +4068,36 @@
             // Stoppa färgrörelser och distraktionsblinkningar
             stopColorEffects();
             
+            // Stoppa popups först
+            stopAnnoyingPopups();
+            
+            // Dölj view6 explicit (där colorSequenceContainer ligger)
+            const view6 = document.getElementById('view6');
+            if (view6) {
+                view6.classList.remove('active');
+                view6.style.display = 'none';
+            }
+            
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+                view.style.display = 'none';
+            });
+            
             // Gå direkt till view7 ("Vill du börja om?")
             currentLevel = 7;
             localStorage.setItem('escapeRoomLevel', 7);
             updateProgress();
             
-            // Hide all views
-            document.querySelectorAll('.view').forEach(view => {
-                view.classList.remove('active');
-            });
-            
             // Show view7
             const view7 = document.getElementById('view7');
             if (view7) {
                 view7.classList.add('active');
+                view7.style.display = 'block';
+                console.log('View7 should now be visible');
+            } else {
+                console.error('View7 not found!');
             }
-            
-            // Stoppa popups
-            stopAnnoyingPopups();
             
             // Sätt knappen till "Ja" först
             const restartButton = document.getElementById('restartQuestionButton');
@@ -4089,6 +4105,8 @@
                 restartButton.textContent = 'Ja';
                 restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
                 restartButton.onclick = handleRestartQuestionClick;
+            } else {
+                console.error('restartQuestionButton not found!');
             }
             
             // Efter 5 sekunder, ändra knappen till "Nej"
