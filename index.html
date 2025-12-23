@@ -1863,18 +1863,6 @@
                     </div>
                 </div>
                 
-                <!-- "Vill du börja om?" skärm -->
-                <div class="restart-question-container" id="restartQuestionContainer" style="display: none; text-align: center; padding: 50px 20px;">
-                    <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
-                    <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
-                </div>
-                
-                <!-- "Vill du börja om?" skärm -->
-                <div class="restart-question-container" id="restartQuestionContainer" style="display: none; text-align: center; padding: 50px 20px;">
-                    <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
-                    <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
-                </div>
-                
                 <!-- Presentkort (visas efter öppning) -->
                 <div class="gift-card-container" id="giftCardContainer">
                     <div class="gift-card">
@@ -1931,11 +1919,19 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Admin Panel -->
+        <!-- View 7: "Vill du börja om?" -->
+        <div class="view" id="view7">
+            <div class="puzzle-container" style="text-align: center; padding: 50px 20px;">
+                <h1 style="color: #ffd700; font-size: 2.5em; margin-bottom: 30px;">Vill du börja om?</h1>
+                <button id="restartQuestionButton" onclick="handleRestartQuestionClick()" style="padding: 20px 50px; font-size: 1.5em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 15px; cursor: pointer; box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); transition: all 0.3s ease;">Ja</button>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
     <div class="admin-panel" id="adminPanel">
         <h3>🔧 Admin Panel</h3>
         <button onclick="goToLevel(0)">Start</button>
@@ -4068,13 +4064,9 @@
             // Stoppa färgrörelser och distraktionsblinkningar
             stopColorEffects();
             
-            // Sätt flagga för att inte initiera fiskräkningsspelet
-            window.skipFishCountInit = true;
-            
-            // Se till att vi är på view6 (men utan att visa paketet)
-            // Använd showView direkt istället för goToLevel för att undvika showFinalGiftBox
-            currentLevel = 6;
-            localStorage.setItem('escapeRoomLevel', 6);
+            // Gå direkt till view7 ("Vill du börja om?")
+            currentLevel = 7;
+            localStorage.setItem('escapeRoomLevel', 7);
             updateProgress();
             
             // Hide all views
@@ -4082,85 +4074,30 @@
                 view.classList.remove('active');
             });
             
-            // Show view6
-            const view6 = document.getElementById('view6');
-            if (view6) {
-                view6.classList.add('active');
+            // Show view7
+            const view7 = document.getElementById('view7');
+            if (view7) {
+                view7.classList.add('active');
             }
             
             // Stoppa popups
             stopAnnoyingPopups();
             
-            // Dölj fiskräkningsspelet
-            const fishContainer = document.getElementById('fishCountContainer');
-            if (fishContainer) {
-                fishContainer.style.display = 'none';
+            // Sätt knappen till "Ja" först
+            const restartButton = document.getElementById('restartQuestionButton');
+            if (restartButton) {
+                restartButton.textContent = 'Ja';
+                restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                restartButton.onclick = handleRestartQuestionClick;
             }
             
-            // Dölj error overlay
-            const errorOverlay = document.getElementById('errorOverlay');
-            if (errorOverlay) {
-                errorOverlay.classList.remove('show');
-                errorOverlay.style.display = 'none';
-            }
-            
-            // Dölj paketet
-            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
-            const largeBox = document.getElementById('giftBoxLarge');
-            const openBtn = document.getElementById('openPackageBtn');
-            const openInstruction = document.getElementById('openInstruction');
-            
-            if (largeBoxContainer) {
-                largeBoxContainer.classList.remove('show');
-                largeBoxContainer.style.display = 'none';
-            }
-            if (largeBox) {
-                largeBox.style.display = 'none';
-            }
-            if (openBtn) {
-                openBtn.style.display = 'none';
-            }
-            if (openInstruction) {
-                openInstruction.style.display = 'none';
-            }
-            
-            // Visa "Vill du börja om?" skärmen direkt (INNAN vi döljer final-container)
-            const restartQuestionContainer = document.getElementById('restartQuestionContainer');
-            if (restartQuestionContainer) {
-                restartQuestionContainer.style.display = 'block';
-                restartQuestionContainer.style.visibility = 'visible';
-                restartQuestionContainer.style.opacity = '1';
-                restartQuestionContainer.style.zIndex = '1000';
-                restartQuestionContainer.style.position = 'relative';
-                console.log('Restart question container shown');
-                
-                // Sätt knappen till "Ja" först
-                const restartButton = document.getElementById('restartQuestionButton');
+            // Efter 5 sekunder, ändra knappen till "Nej"
+            setTimeout(() => {
                 if (restartButton) {
-                    restartButton.textContent = 'Ja';
-                    restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
-                    restartButton.onclick = handleRestartQuestionClick;
+                    restartButton.textContent = 'Nej';
+                    restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
-                
-                // Efter 5 sekunder, ändra knappen till "Nej"
-                setTimeout(() => {
-                    if (restartButton) {
-                        restartButton.textContent = 'Nej';
-                        restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
-                    }
-                }, 5000);
-            } else {
-                console.error('restartQuestionContainer not found!');
-            }
-            
-            // Dölj final-container EFTER att vi har visat restartQuestionContainer
-            // (men bara texten är redan dold via CSS, så detta är bara för säkerhets skull)
-            const finalContainer = document.querySelector('#view6 .final-container');
-            if (finalContainer) {
-                // Sätt display: flex så att restartQuestionContainer kan visas
-                finalContainer.style.display = 'flex';
-                // Text-elementen är redan dolda via CSS
-            }
+            }, 5000);
         }
         
         function handleRestartQuestionClick() {
@@ -4169,30 +4106,60 @@
                 const buttonText = restartButton.textContent.trim();
                 
                 if (buttonText === 'Nej') {
-                    // Dölj "Vill du börja om?" skärmen
-                    const restartQuestionContainer = document.getElementById('restartQuestionContainer');
-                    if (restartQuestionContainer) {
-                        restartQuestionContainer.style.display = 'none';
+                    // Gå tillbaka till view6 och visa presentkortet
+                    currentLevel = 6;
+                    localStorage.setItem('escapeRoomLevel', 6);
+                    updateProgress();
+                    
+                    // Hide all views
+                    document.querySelectorAll('.view').forEach(view => {
+                        view.classList.remove('active');
+                    });
+                    
+                    // Show view6
+                    const view6 = document.getElementById('view6');
+                    if (view6) {
+                        view6.classList.add('active');
+                    }
+                    
+                    // Dölj allt annat
+                    const fishContainer = document.getElementById('fishCountContainer');
+                    if (fishContainer) {
+                        fishContainer.style.display = 'none';
+                    }
+                    
+                    const errorOverlay = document.getElementById('errorOverlay');
+                    if (errorOverlay) {
+                        errorOverlay.classList.remove('show');
+                        errorOverlay.style.display = 'none';
+                    }
+                    
+                    const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+                    if (largeBoxContainer) {
+                        largeBoxContainer.classList.remove('show');
+                        largeBoxContainer.style.display = 'none';
                     }
                     
                     // Visa presentkortet direkt
-                    const giftCardContainer = document.getElementById('giftCardContainer');
-                    if (giftCardContainer) {
-                        giftCardContainer.classList.add('show');
-                        giftCardContainer.style.display = 'block';
-                        giftCardContainer.style.visibility = 'visible';
-                        giftCardContainer.style.opacity = '1';
-                        giftCardContainer.style.position = 'relative';
-                        giftCardContainer.style.zIndex = '1000';
-                        giftCardContainer.style.margin = '50px auto';
-                        giftCardContainer.style.width = '100%';
-                        giftCardContainer.style.maxWidth = '600px';
-                        
-                        // Scrolla till presentkortet
-                        setTimeout(() => {
-                            giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 100);
-                    }
+                    setTimeout(() => {
+                        const giftCardContainer = document.getElementById('giftCardContainer');
+                        if (giftCardContainer) {
+                            giftCardContainer.classList.add('show');
+                            giftCardContainer.style.display = 'block';
+                            giftCardContainer.style.visibility = 'visible';
+                            giftCardContainer.style.opacity = '1';
+                            giftCardContainer.style.position = 'relative';
+                            giftCardContainer.style.zIndex = '1000';
+                            giftCardContainer.style.margin = '50px auto';
+                            giftCardContainer.style.width = '100%';
+                            giftCardContainer.style.maxWidth = '600px';
+                            
+                            // Scrolla till presentkortet
+                            setTimeout(() => {
+                                giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    }, 100);
                 } else {
                     // Om det är "Ja", gör ingenting (eller starta om spelet om du vill)
                     // För nu gör vi ingenting
@@ -4415,58 +4382,40 @@
         }
         
         function goToGiftCard() {
-            // Gå till nivå 6 först
-            goToLevel(6);
-            // Dölj fiskräkningsspelet och paketet, visa "Vill du börja om?"-skärmen
+            // Gå direkt till view7 ("Vill du börja om?")
+            currentLevel = 7;
+            localStorage.setItem('escapeRoomLevel', 7);
+            updateProgress();
+            
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show view7
+            const view7 = document.getElementById('view7');
+            if (view7) {
+                view7.classList.add('active');
+            }
+            
+            // Stoppa popups
+            stopAnnoyingPopups();
+            
+            // Sätt knappen till "Ja" först
+            const restartButton = document.getElementById('restartQuestionButton');
+            if (restartButton) {
+                restartButton.textContent = 'Ja';
+                restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                restartButton.onclick = handleRestartQuestionClick;
+            }
+            
+            // Efter 5 sekunder, ändra knappen till "Nej"
             setTimeout(() => {
-                // Dölj fiskräkningsspelet
-                const fishContainer = document.getElementById('fishCountContainer');
-                if (fishContainer) {
-                    fishContainer.style.display = 'none';
+                if (restartButton) {
+                    restartButton.textContent = 'Nej';
+                    restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
-                
-                // Dölj error overlay
-                const errorOverlay = document.getElementById('errorOverlay');
-                if (errorOverlay) {
-                    errorOverlay.classList.remove('show');
-                    errorOverlay.style.display = 'none';
-                }
-                
-                // Dölj paketet
-                const giftBoxContainer = document.getElementById('giftBoxLargeContainer');
-                if (giftBoxContainer) {
-                    giftBoxContainer.classList.remove('show');
-                    giftBoxContainer.style.display = 'none';
-                }
-                
-                // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
-                const finalContainer = document.querySelector('#view6 .final-container');
-                if (finalContainer) {
-                    finalContainer.style.display = 'none';
-                }
-                
-                // Visa "Vill du börja om?" skärmen
-                const restartQuestionContainer = document.getElementById('restartQuestionContainer');
-                if (restartQuestionContainer) {
-                    restartQuestionContainer.style.display = 'block';
-                    
-                    // Sätt knappen till "Ja" först
-                    const restartButton = document.getElementById('restartQuestionButton');
-                    if (restartButton) {
-                        restartButton.textContent = 'Ja';
-                        restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
-                        restartButton.onclick = handleRestartQuestionClick;
-                    }
-                    
-                    // Efter 5 sekunder, ändra knappen till "Nej"
-                    setTimeout(() => {
-                        if (restartButton) {
-                            restartButton.textContent = 'Nej';
-                            restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
-                        }
-                    }, 5000);
-                }
-            }, 500);
+            }, 5000);
         }
 
         function resetProgress() {
