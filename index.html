@@ -1755,10 +1755,10 @@
                     Fyra fiskare fångar fyra olika fisketyper med fyra olika metoder. Matcha rätt fiskare med rätt fisk och metod baserat på ledtrådarna:
                     <br><br>
                     <strong>Ledtrådar:</strong><br>
-                    1. Erik fiskar inte abborre eller gädda.<br>
-                    2. Lisa använder inte flugfiske eller grundfiske.<br>
-                    3. Olle fiskar inte lax eller ruda.<br>
-                    4. Sara använder inte spinnfiske eller flugfiske.<br>
+                    1. Andreas fiskar inte abborre eller gädda.<br>
+                    2. Monica använder inte flugfiske eller grundfiske.<br>
+                    3. Linnea fiskar inte lax eller ruda.<br>
+                    4. Michaela använder inte spinnfiske eller flugfiske.<br>
                     5. Den som fiskar lax använder inte grundfiske.<br>
                     6. Den som fiskar abborre använder inte isfiske.<br>
                     7. Den som fiskar gädda använder inte flugfiske.<br>
@@ -1767,10 +1767,10 @@
                     10. Den som använder spinnfiske fiskar inte lax eller ruda.<br>
                     11. Den som använder grundfiske fiskar inte lax eller abborre.<br>
                     12. Den som använder isfiske fiskar inte gädda eller abborre.<br>
-                    13. Exakt en av (Erik, Olle) fiskar lax eller ruda.<br>
-                    14. Exakt en av (Lisa, Sara) använder grundfiske eller isfiske.<br>
-                    15. Erik använder antingen flugfiske eller spinnfiske.<br>
-                    16. Olle använder antingen grundfiske eller isfiske.<br>
+                    13. Exakt en av (Andreas, Linnea) fiskar lax eller ruda.<br>
+                    14. Exakt en av (Monica, Michaela) använder grundfiske eller isfiske.<br>
+                    15. Andreas använder antingen flugfiske eller spinnfiske.<br>
+                    16. Linnea använder antingen grundfiske eller isfiske.<br>
                     17. Den som använder flugfiske fiskar inte ruda.<br>
                 </p>
                 <div class="logic-grid" id="logicGrid"></div>
@@ -1966,12 +1966,12 @@
             cipherAnswer: "flugfiskaren",
             
             // Level 4: Logic Puzzle - Fishing
-            // Correct mapping: Erik=Lax+Flugfiske, Lisa=Abborre+Spinnfiske, Olle=Gädda+Grundfiske, Sara=Ruda+Isfiske
+            // Correct mapping: Andreas=Lax+Flugfiske, Monica=Abborre+Spinnfiske, Linnea=Gädda+Grundfiske, Michaela=Ruda+Isfiske
             logicAnswer: {
-                erik: { fish: "lax", method: "flugfiske" },
-                lisa: { fish: "abborre", method: "spinnfiske" },
-                olle: { fish: "gädda", method: "grundfiske" },
-                sara: { fish: "ruda", method: "isfiske" }
+                andreas: { fish: "lax", method: "flugfiske" },
+                monica: { fish: "abborre", method: "spinnfiske" },
+                linnea: { fish: "gädda", method: "grundfiske" },
+                michaela: { fish: "ruda", method: "isfiske" }
             },
             logicCode: "2468", // Will be generated from correct answers
             
@@ -2496,7 +2496,7 @@
             const grid = document.getElementById('logicGrid');
             grid.innerHTML = '';
             
-            const fishers = ['Erik', 'Lisa', 'Olle', 'Sara'];
+            const fishers = ['Andreas', 'Monica', 'Linnea', 'Michaela'];
             const fishes = ['Lax', 'Abborre', 'Gädda', 'Ruda'];
             const methods = ['Flugfiske', 'Spinnfiske', 'Grundfiske', 'Isfiske'];
             
@@ -2544,7 +2544,7 @@
         }
 
         function checkLogic() {
-            const fishers = ['erik', 'lisa', 'olle', 'sara'];
+            const fishers = ['andreas', 'monica', 'linnea', 'michaela'];
             let allCorrect = true;
             let allFilled = true;
             
@@ -2656,8 +2656,8 @@
                 step2: "Svenska alfabetet: A(1), B(2), C(3)...S(19)...Y(25), Z(26), Å(27), Ä(28), Ö(29). För att avkoda 'Syetvscxnbrå', gå 16 steg framåt från varje bokstav: S(19)+16=35→F(6), y(25)+16=41→l(12), e(5)+16=21→u(21), t(20)+16=36→g(7), v(22)+16=38→f(6), s(19)+16=35→i(9), c(3)+16=19→s(19), x(24)+16=40→k(11), n(14)+16=30→a(1), b(2)+16=18→r(18), r(18)+16=34→e(5), å(27)+16=43→n(14). Svaret är 'flugfiskaren'!"
             },
             4: {
-                step1: "Börja med ledtråd 1 och 3: Erik fiskar lax eller ruda, Olle fiskar abborre eller gädda. Från ledtråd 13: Exakt en av (Erik, Olle) fiskar lax eller ruda, så Erik fiskar lax/ruda och Olle fiskar abborre/gädda. Från ledtråd 16: Olle använder grundfiske eller isfiske. Från ledtråd 11: Grundfiske fiskar gädda eller ruda. Från ledtråd 3: Olle fiskar inte ruda, så om Olle använder grundfiske fiskar han gädda.",
-                step2: "Från ledtråd 12: Isfiske fiskar lax eller ruda. Från ledtråd 3: Olle fiskar inte lax eller ruda, så Olle kan inte använda isfiske. Därför använder Olle grundfiske och fiskar gädda. Från ledtråd 15: Erik använder flugfiske eller spinnfiske. Från ledtråd 10: Spinnfiske fiskar inte lax/ruda, så Erik använder flugfiske. Från ledtråd 9: Flugfiske fiskar lax eller ruda. Från ledtråd 17: Flugfiske fiskar inte ruda, så Erik fiskar lax med flugfiske. Från ledtråd 10: Spinnfiske fiskar abborre eller gädda. Gädda är taget, så spinnfiske fiskar abborre. Från ledtråd 2: Lisa använder spinnfiske eller isfiske. Från ledtråd 6: Abborre använder inte isfiske, så Lisa använder spinnfiske och fiskar abborre. Från ledtråd 4: Sara använder grundfiske eller isfiske. Grundfiske är taget, så Sara använder isfiske. Från ledtråd 12: Isfiske fiskar lax eller ruda. Lax är taget, så Sara fiskar ruda. Slutsats: Erik=Lax+Flugfiske, Lisa=Abborre+Spinnfiske, Olle=Gädda+Grundfiske, Sara=Ruda+Isfiske. Koden: 2468"
+                step1: "Börja med ledtråd 1 och 3: Andreas fiskar lax eller ruda, Linnea fiskar abborre eller gädda. Från ledtråd 13: Exakt en av (Andreas, Linnea) fiskar lax eller ruda, så Andreas fiskar lax/ruda och Linnea fiskar abborre/gädda. Från ledtråd 16: Linnea använder grundfiske eller isfiske. Från ledtråd 11: Grundfiske fiskar gädda eller ruda. Från ledtråd 3: Linnea fiskar inte ruda, så om Linnea använder grundfiske fiskar hon gädda.",
+                step2: "Från ledtråd 12: Isfiske fiskar lax eller ruda. Från ledtråd 3: Linnea fiskar inte lax eller ruda, så Linnea kan inte använda isfiske. Därför använder Linnea grundfiske och fiskar gädda. Från ledtråd 15: Andreas använder flugfiske eller spinnfiske. Från ledtråd 10: Spinnfiske fiskar inte lax/ruda, så Andreas använder flugfiske. Från ledtråd 9: Flugfiske fiskar lax eller ruda. Från ledtråd 17: Flugfiske fiskar inte ruda, så Andreas fiskar lax med flugfiske. Från ledtråd 10: Spinnfiske fiskar abborre eller gädda. Gädda är taget, så spinnfiske fiskar abborre. Från ledtråd 2: Monica använder spinnfiske eller isfiske. Från ledtråd 6: Abborre använder inte isfiske, så Monica använder spinnfiske och fiskar abborre. Från ledtråd 4: Michaela använder grundfiske eller isfiske. Grundfiske är taget, så Michaela använder isfiske. Från ledtråd 12: Isfiske fiskar lax eller ruda. Lax är taget, så Michaela fiskar ruda. Slutsats: Andreas=Lax+Flugfiske, Monica=Abborre+Spinnfiske, Linnea=Gädda+Grundfiske, Michaela=Ruda+Isfiske. Koden: 2468"
             },
             5: {
                 step1: "Från ekvation 3: Lax × 2 = Gädda, så Gädda är dubbelt så stor som Lax. Från ekvation 5: Lax + Gädda = 18. Om Gädda = 2×Lax, då Lax + 2×Lax = 18, alltså 3×Lax = 18. Vad är Lax?",
@@ -4232,7 +4232,7 @@
                     }
                     
                     // Reset logic puzzle selects
-                    const fishers = ['erik', 'lisa', 'olle', 'sara'];
+                    const fishers = ['andreas', 'monica', 'linnea', 'michaela'];
                     fishers.forEach(fisher => {
                         const fishSelect = document.getElementById(`logic-${fisher}-fish`);
                         const methodSelect = document.getElementById(`logic-${fisher}-method`);
@@ -4658,7 +4658,7 @@
                 }
                 
                 // Reset logic puzzle selects
-                const fishers = ['erik', 'lisa', 'olle', 'sara'];
+                const fishers = ['andreas', 'monica', 'linnea', 'michaela'];
                 fishers.forEach(fisher => {
                     const fishSelect = document.getElementById(`logic-${fisher}-fish`);
                     const methodSelect = document.getElementById(`logic-${fisher}-method`);
@@ -4686,7 +4686,7 @@ FACIT:
 Nivå 1: ${CONFIG.wordAnswer}
 Nivå 2: Hitta alla par i memory-spelet. Koden är: 2468
 Nivå 3: ${CONFIG.cipherAnswer} (ROT16 av "${CONFIG.cipherText}")
-Nivå 4: Erik=Lax+Flugfiske, Lisa=Abborre+Spinnfiske, Olle=Gädda+Grundfiske, Sara=Ruda+Isfiske (Kod: 2468)
+Nivå 4: Andreas=Lax+Flugfiske, Monica=Abborre+Spinnfiske, Linnea=Gädda+Grundfiske, Michaela=Ruda+Isfiske (Kod: 2468)
 Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             `;
             alert(answers);
@@ -5048,7 +5048,7 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             }
             
             // Reset logic puzzle selects
-            const fishers = ['erik', 'lisa', 'olle', 'sara'];
+            const fishers = ['andreas', 'monica', 'linnea', 'michaela'];
             fishers.forEach(fisher => {
                 const fishSelect = document.getElementById(`logic-${fisher}-fish`);
                 const methodSelect = document.getElementById(`logic-${fisher}-method`);
