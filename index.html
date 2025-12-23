@@ -2582,9 +2582,18 @@
                 const code = CONFIG.logicCode;
                 showMessage('message4', `Korrekt! Koden är: ${code}`, 'success');
                 // Show troll popup after completing level 4 (only first time)
-                setTimeout(() => {
-                    showRestartTrollPopup();
-                }, 1500);
+                // Kontrollera om popupen redan har visats
+                const hasBeenShown = localStorage.getItem('restartTrollPopupShown') === 'true';
+                if (!hasBeenShown) {
+                    setTimeout(() => {
+                        showRestartTrollPopup();
+                    }, 1500);
+                } else {
+                    // Om popupen redan har visats, gå direkt till nästa nivå
+                    setTimeout(() => {
+                        showView(5);
+                    }, 1500);
+                }
             } else {
                 showMessage('message4', 'Inte helt rätt. Kontrollera dina val!', 'error');
             }
