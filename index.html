@@ -494,7 +494,7 @@
 
         /* Final Reveal - Räkna fiskar */
         .final-container {
-            display: flex;
+            display: none !important; /* Dölj permanent - ska aldrig visas */
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -1810,7 +1810,7 @@
 
         <!-- View 6: Final -->
         <div class="view" id="view6">
-            <div class="final-container">
+            <div class="final-container" style="display: none !important;">
                 <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
                 <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
@@ -1925,8 +1925,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <button onclick="restartGame()" style="background: #666; margin-top: 30px;">Börja om från början</button>
             </div>
         </div>
     </div>
