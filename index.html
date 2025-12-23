@@ -4024,10 +4024,38 @@
             const colorContainer = document.getElementById('colorSequenceContainer');
             if (colorContainer) {
                 colorContainer.classList.remove('active');
+                colorContainer.style.display = 'none';
             }
             
-            // Anropa openGiftBox direkt
-            openGiftBox();
+            // Stoppa troll-effekter
+            stopGiftBoxTrollEffects();
+            
+            // Stoppa färgrörelser och distraktionsblinkningar
+            stopColorEffects();
+            
+            // Dölj paketet direkt
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+            const largeBox = document.getElementById('giftBoxLarge');
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.remove('show');
+            }
+            if (largeBox) {
+                largeBox.style.display = 'none';
+            }
+            
+            // Visa presentkortet direkt (hoppa över paket-animationen)
+            const giftCardContainer = document.getElementById('giftCardContainer');
+            if (giftCardContainer) {
+                giftCardContainer.classList.add('show');
+                giftCardContainer.style.display = 'block';
+                
+                // Scrolla till presentkortet
+                setTimeout(() => {
+                    giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            } else {
+                console.error('giftCardContainer not found!');
+            }
         }
         
         function openGiftBox() {
