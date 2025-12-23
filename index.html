@@ -4078,6 +4078,45 @@
                 view.classList.remove('active');
             });
             
+            // Dölj final-container INNAN vi visar view6 så att "Grattis!"-texten inte syns
+            const finalContainer = document.querySelector('#view6 .final-container');
+            if (finalContainer) {
+                finalContainer.style.display = 'none';
+            }
+            
+            // Dölj fiskräkningsspelet INNAN vi visar view6
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            // Dölj error overlay INNAN vi visar view6
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+                errorOverlay.style.display = 'none';
+            }
+            
+            // Dölj paketet INNAN vi visar view6
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+            const largeBox = document.getElementById('giftBoxLarge');
+            const openBtn = document.getElementById('openPackageBtn');
+            const openInstruction = document.getElementById('openInstruction');
+            
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.remove('show');
+                largeBoxContainer.style.display = 'none';
+            }
+            if (largeBox) {
+                largeBox.style.display = 'none';
+            }
+            if (openBtn) {
+                openBtn.style.display = 'none';
+            }
+            if (openInstruction) {
+                openInstruction.style.display = 'none';
+            }
+            
             // Show view6
             const view6 = document.getElementById('view6');
             if (view6) {
@@ -4087,46 +4126,8 @@
             // Stoppa popups
             stopAnnoyingPopups();
             
-            // Vänta lite så att view6 är aktiv, sedan dölj allt och visa presentkortet
+            // Visa "Vill du börja om?" skärmen direkt
             setTimeout(() => {
-                // Dölj fiskräkningsspelet
-                const fishContainer = document.getElementById('fishCountContainer');
-                if (fishContainer) {
-                    fishContainer.style.display = 'none';
-                }
-                
-                // Dölj error overlay
-                const errorOverlay = document.getElementById('errorOverlay');
-                if (errorOverlay) {
-                    errorOverlay.classList.remove('show');
-                    errorOverlay.style.display = 'none';
-                }
-                
-                // Dölj paketet direkt
-                const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
-                const largeBox = document.getElementById('giftBoxLarge');
-                const openBtn = document.getElementById('openPackageBtn');
-                const openInstruction = document.getElementById('openInstruction');
-                
-                if (largeBoxContainer) {
-                    largeBoxContainer.classList.remove('show');
-                    largeBoxContainer.style.display = 'none';
-                }
-                if (largeBox) {
-                    largeBox.style.display = 'none';
-                }
-                if (openBtn) {
-                    openBtn.style.display = 'none';
-                }
-                if (openInstruction) {
-                    openInstruction.style.display = 'none';
-                }
-                
-                // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
-                const finalContainer = document.querySelector('#view6 .final-container');
-                if (finalContainer) {
-                    finalContainer.style.display = 'none';
-                }
                 
                 // Visa "Vill du börja om?" skärmen
                 const restartQuestionContainer = document.getElementById('restartQuestionContainer');
