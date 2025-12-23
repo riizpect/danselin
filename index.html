@@ -4282,6 +4282,23 @@
                     }
                     backgroundMusicPlaying = false;
                     
+                    // Dölj alla element som kan täcka skärmen
+                    const errorOverlay = document.getElementById('errorOverlay');
+                    if (errorOverlay) {
+                        errorOverlay.style.display = 'none';
+                        errorOverlay.classList.remove('show');
+                    }
+                    const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+                    if (largeBoxContainer) {
+                        largeBoxContainer.style.display = 'none';
+                        largeBoxContainer.classList.remove('show');
+                    }
+                    const colorContainer = document.getElementById('colorSequenceContainer');
+                    if (colorContainer) {
+                        colorContainer.style.display = 'none';
+                        colorContainer.classList.remove('active');
+                    }
+                    
                     // Gå tillbaka till start (view0) - säkerställ att den visas korrekt
                     showView(0);
                     
