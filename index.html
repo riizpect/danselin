@@ -4770,7 +4770,13 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
                 return;
             }
             
-            // Check how many times popup has been shown
+            // Check if popup has already been shown (bara visa EN gång totalt)
+            const hasBeenShown = localStorage.getItem('restartTrollPopupShown') === 'true';
+            if (hasBeenShown) {
+                return; // Visa inte popupen om den redan har visats
+            }
+            
+            // Check how many times popup has been shown (för att veta om det är första eller andra gången)
             const popupCount = parseInt(localStorage.getItem('restartTrollPopupCount') || '0');
             const isFirstTime = popupCount === 0;
             
@@ -4852,9 +4858,12 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
             
             isPopupOpen = false;
             
+            // Markera att popupen har visats så den inte visas igen
+            localStorage.setItem('restartTrollPopupShown', 'true');
+            
             // Reset everything and restart
             localStorage.removeItem('escapeRoomLevel');
-            localStorage.removeItem('restartTrollPopupCount'); // Reset counter
+            // INTE reset restartTrollPopupCount eller restartTrollPopupShown - popupen ska bara visas EN gång totalt
             currentLevel = 0;
             hintStates = {};
             popupCount = 0;
