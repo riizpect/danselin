@@ -1632,6 +1632,10 @@
                         <strong>Simon Says - Nivå 7 (Sista nivån)</strong><br>
                         <span style="font-size: 0.9em; opacity: 0.8;">Starta direkt på sista nivån</span>
                     </button>
+                    <button onclick="simulateSimonSaysComplete()" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #00ff00; border-radius: 8px; color: #00ff00; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Simulera Simon Says klar</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Gå direkt till "Vill du börja om?"</span>
+                    </button>
                     <button onclick="goToGiftCard()" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
                         <strong>Presentkort</strong><br>
                         <span style="font-size: 0.9em; opacity: 0.8;">Visa presentkortet med information</span>
@@ -4371,6 +4375,13 @@
             startSequenceLevel();
         }
 
+        function simulateSimonSaysComplete() {
+            // Simulera att man har klarat Simon Says - anropa samma funktion som "Fortsätt"-knappen
+            handleContinueAfterSequence();
+            // Stäng cheat-menyn
+            hideSecretInput();
+        }
+        
         function goToGiftCard() {
             // Gå till nivå 6 först
             goToLevel(6);
