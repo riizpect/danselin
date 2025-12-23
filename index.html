@@ -3660,18 +3660,31 @@
             
             // Om spelaren har klickat hela sekvensen korrekt
             if (playerSequence.length === sequence.length) {
+                // Stoppa spelarens tur direkt
+                isPlayerTurn = false;
+                disableAllButtons();
+                
                 if (sequenceLevel >= MAX_SEQUENCE_LEVEL) {
                     // Alla nivåer klara!
+                    const instruction = document.getElementById('sequenceInstruction');
+                    if (instruction) {
+                        instruction.textContent = '🎉 Alla nivåer klara! 🎉';
+                    }
                     stopColorEffects();
-                    openGiftBox();
+                    
+                    // Vänta lite innan vi öppnar paketet
+                    setTimeout(() => {
+                        openGiftBox();
+                    }, 1000);
                 } else {
                     // Nästa nivå
                     sequenceLevel++;
                     playerSequence = [];
-                    disableAllButtons();
                     
                     const instruction = document.getElementById('sequenceInstruction');
-                    instruction.textContent = 'Rätt! Förbereder nästa nivå...';
+                    if (instruction) {
+                        instruction.textContent = 'Rätt! Förbereder nästa nivå...';
+                    }
                     
                     setTimeout(() => {
                         startSequenceLevel();
@@ -4015,11 +4028,16 @@
                 if (largeBoxContainer) {
                     largeBoxContainer.classList.remove('show');
                 }
+                if (largeBox) {
+                    largeBox.style.display = 'none';
+                }
                 const giftCardContainer = document.getElementById('giftCardContainer');
                 if (giftCardContainer) {
                     giftCardContainer.classList.add('show');
+                    // Scrolla till presentkortet om det behövs
+                    giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
-            }, 1000);
+            }, 1500);
         }
 
         // ============================================
