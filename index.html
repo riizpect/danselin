@@ -4007,14 +4007,26 @@
         }
         
         function handleContinueAfterSequence() {
+            console.log('handleContinueAfterSequence called');
             const continueBtn = document.getElementById('continueButton');
             if (continueBtn) {
                 continueBtn.style.display = 'none';
+                continueBtn.disabled = true; // Förhindra dubbelklick
             }
+            
+            // Se till att färgsekvens-spelet är stängt
+            const colorContainer = document.getElementById('colorSequenceContainer');
+            if (colorContainer) {
+                colorContainer.classList.remove('active');
+            }
+            
+            // Anropa openGiftBox direkt
             openGiftBox();
         }
         
         function openGiftBox() {
+            console.log('openGiftBox called');
+            
             // Stoppa troll-effekter
             stopGiftBoxTrollEffects();
             
@@ -4025,9 +4037,16 @@
             const colorContainer = document.getElementById('colorSequenceContainer');
             if (colorContainer) {
                 colorContainer.classList.remove('active');
+                colorContainer.style.display = 'none'; // Se till att det är dolt
             }
             
-            // Se till att paketet är synligt
+            // Dölj "Fortsätt"-knappen om den fortfarande är synlig
+            const continueBtn = document.getElementById('continueButton');
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
+            
+            // Se till att paketet är synligt först (för animation)
             const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
             const largeBox = document.getElementById('giftBoxLarge');
             const openBtn = document.getElementById('openPackageBtn');
@@ -4049,17 +4068,26 @@
             
             // Efter animation, visa presentkortet
             setTimeout(() => {
+                console.log('Showing gift card...');
                 if (largeBoxContainer) {
                     largeBoxContainer.classList.remove('show');
                 }
                 if (largeBox) {
                     largeBox.style.display = 'none';
                 }
+                
                 const giftCardContainer = document.getElementById('giftCardContainer');
                 if (giftCardContainer) {
                     giftCardContainer.classList.add('show');
+                    giftCardContainer.style.display = 'block'; // Se till att det är synligt
+                    console.log('Gift card container shown');
+                    
                     // Scrolla till presentkortet om det behövs
-                    giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        giftCardContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                } else {
+                    console.error('giftCardContainer not found!');
                 }
             }, 1500);
         }
