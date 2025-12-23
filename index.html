@@ -494,12 +494,18 @@
 
         /* Final Reveal - Räkna fiskar */
         .final-container {
-            display: none !important; /* Dölj permanent - ska aldrig visas */
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 80vh;
             padding: 40px 20px;
+        }
+        
+        /* Dölj bara "Grattis!"-texten permanent */
+        .final-container h1,
+        .final-container p.gift-card-subtitle {
+            display: none !important;
         }
 
         .fish-count-container {
@@ -1810,9 +1816,9 @@
 
         <!-- View 6: Final -->
         <div class="view" id="view6">
-            <div class="final-container" style="display: none !important;">
-                <h1 class="gift-card-title" style="margin-bottom: 20px;">🎉 Grattis! 🎉</h1>
-                <p class="gift-card-subtitle" style="margin-bottom: 30px;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
+            <div class="final-container">
+                <h1 class="gift-card-title" style="margin-bottom: 20px; display: none !important;">🎉 Grattis! 🎉</h1>
+                <p class="gift-card-subtitle" style="margin-bottom: 30px; display: none !important;">Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!</p>
                 
                 <!-- Räkna fiskar (buggigt) -->
                 <div class="fish-count-container" id="fishCountContainer"></div>
