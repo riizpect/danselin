@@ -4118,16 +4118,16 @@
                 largeBoxContainer.style.display = 'none';
             }
             
-            // Visa presentkortet - använd både klass och style för säkerhet
+            // DÖLJ presentkortet först - det ska bara visas när man klickar på "Nej"
             const giftCardContainer = document.getElementById('giftCardContainer');
             if (giftCardContainer) {
-                giftCardContainer.classList.add('show');
-                giftCardContainer.style.display = 'block';
-                giftCardContainer.style.visibility = 'visible';
-                giftCardContainer.style.opacity = '1';
+                giftCardContainer.classList.remove('show');
+                giftCardContainer.style.display = 'none';
+                giftCardContainer.style.visibility = 'hidden';
+                giftCardContainer.style.opacity = '0';
             }
             
-            // Visa "Vill du börja om?"-frågan
+            // Visa ENDAST "Vill du börja om?"-frågan
             const restartQuestionContainer = document.getElementById('restartQuestionContainer');
             if (restartQuestionContainer) {
                 restartQuestionContainer.style.display = 'block';
@@ -4160,12 +4160,22 @@
                 const buttonText = restartButton.textContent.trim();
                 
                 if (buttonText === 'Nej') {
-                    // Dölj "Vill du börja om?"-frågan, presentkortet är redan synligt
+                    // Dölj "Vill du börja om?"-frågan
                     const restartQuestionContainer = document.getElementById('restartQuestionContainer');
                     if (restartQuestionContainer) {
                         restartQuestionContainer.style.display = 'none';
+                        restartQuestionContainer.style.visibility = 'hidden';
+                        restartQuestionContainer.style.opacity = '0';
                     }
-                    // Presentkortet är redan synligt, så vi behöver inte göra något mer
+                    
+                    // Visa presentkortet (sista scenen)
+                    const giftCardContainer = document.getElementById('giftCardContainer');
+                    if (giftCardContainer) {
+                        giftCardContainer.classList.add('show');
+                        giftCardContainer.style.display = 'block';
+                        giftCardContainer.style.visibility = 'visible';
+                        giftCardContainer.style.opacity = '1';
+                    }
                 } else {
                     // Om det är "Ja", gör ingenting (eller starta om spelet om du vill)
                     // För nu gör vi ingenting
