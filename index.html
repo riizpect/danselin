@@ -4045,19 +4045,21 @@
         function handleContinueAfterSequence() {
             console.log('handleContinueAfterSequence called');
             
+            // Stoppa ALLT först
             const continueBtn = document.getElementById('continueButton');
             if (continueBtn) {
                 continueBtn.style.display = 'none';
-                continueBtn.disabled = true; // Förhindra dubbelklick
+                continueBtn.disabled = true;
             }
             
-            // Se till att färgsekvens-spelet är stängt
+            // Se till att färgsekvens-spelet är HELT stängt
             const colorContainer = document.getElementById('colorSequenceContainer');
             if (colorContainer) {
                 colorContainer.classList.remove('active');
                 colorContainer.style.display = 'none';
                 colorContainer.style.visibility = 'hidden';
                 colorContainer.style.opacity = '0';
+                colorContainer.style.zIndex = '-1';
             }
             
             // Stoppa troll-effekter
@@ -4069,15 +4071,34 @@
             // Stoppa popups först
             stopAnnoyingPopups();
             
+            // Dölj ALLA andra element först
+            const fishContainer = document.getElementById('fishCountContainer');
+            if (fishContainer) {
+                fishContainer.style.display = 'none';
+            }
+            
+            const errorOverlay = document.getElementById('errorOverlay');
+            if (errorOverlay) {
+                errorOverlay.classList.remove('show');
+                errorOverlay.style.display = 'none';
+                errorOverlay.style.visibility = 'hidden';
+                errorOverlay.style.opacity = '0';
+            }
+            
+            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+            if (largeBoxContainer) {
+                largeBoxContainer.classList.remove('show');
+                largeBoxContainer.style.display = 'none';
+                largeBoxContainer.style.visibility = 'hidden';
+                largeBoxContainer.style.opacity = '0';
+            }
+            
             // Gå till view6 (där presentkortet ligger)
             currentLevel = 6;
             localStorage.setItem('escapeRoomLevel', 6);
             updateProgress();
             
-            // Använd en liten fördröjning för att säkerställa att DOM är redo
-            setTimeout(() => {
-            
-            // Hide all views
+            // Hide all views först
             document.querySelectorAll('.view').forEach(view => {
                 view.classList.remove('active');
                 view.style.display = 'none';
@@ -4090,6 +4111,7 @@
                 view6.style.display = 'block';
                 view6.style.visibility = 'visible';
                 view6.style.opacity = '1';
+                view6.style.zIndex = '10';
             }
             
             // Säkerställ att final-container är synlig
@@ -4098,24 +4120,6 @@
                 finalContainer.style.display = 'flex';
                 finalContainer.style.visibility = 'visible';
                 finalContainer.style.opacity = '1';
-            }
-            
-            // Dölj fiskräkningsspelet och paketet
-            const fishContainer = document.getElementById('fishCountContainer');
-            if (fishContainer) {
-                fishContainer.style.display = 'none';
-            }
-            
-            const errorOverlay = document.getElementById('errorOverlay');
-            if (errorOverlay) {
-                errorOverlay.classList.remove('show');
-                errorOverlay.style.display = 'none';
-            }
-            
-            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
-            if (largeBoxContainer) {
-                largeBoxContainer.classList.remove('show');
-                largeBoxContainer.style.display = 'none';
             }
             
             // DÖLJ presentkortet först - det ska bara visas när man klickar på "Nej"
@@ -4133,6 +4137,7 @@
                 restartQuestionContainer.style.display = 'block';
                 restartQuestionContainer.style.visibility = 'visible';
                 restartQuestionContainer.style.opacity = '1';
+                restartQuestionContainer.style.zIndex = '100';
             }
             
             // Sätt knappen till "Ja" först
@@ -4151,7 +4156,6 @@
                     restartButtonAfterDelay.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
             }, 5000);
-            }, 100); // Liten fördröjning för att säkerställa att DOM är redo
         }
         
         function handleRestartQuestionClick() {
