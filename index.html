@@ -4074,17 +4074,30 @@
             localStorage.setItem('escapeRoomLevel', 6);
             updateProgress();
             
+            // Använd en liten fördröjning för att säkerställa att DOM är redo
+            setTimeout(() => {
+            
             // Hide all views
             document.querySelectorAll('.view').forEach(view => {
                 view.classList.remove('active');
                 view.style.display = 'none';
             });
             
-            // Show view6
+            // Show view6 - säkerställ att den är synlig
             const view6 = document.getElementById('view6');
             if (view6) {
                 view6.classList.add('active');
                 view6.style.display = 'block';
+                view6.style.visibility = 'visible';
+                view6.style.opacity = '1';
+            }
+            
+            // Säkerställ att final-container är synlig
+            const finalContainer = document.querySelector('#view6 .final-container');
+            if (finalContainer) {
+                finalContainer.style.display = 'flex';
+                finalContainer.style.visibility = 'visible';
+                finalContainer.style.opacity = '1';
             }
             
             // Dölj fiskräkningsspelet och paketet
@@ -4105,11 +4118,13 @@
                 largeBoxContainer.style.display = 'none';
             }
             
-            // Visa presentkortet
+            // Visa presentkortet - använd både klass och style för säkerhet
             const giftCardContainer = document.getElementById('giftCardContainer');
             if (giftCardContainer) {
                 giftCardContainer.classList.add('show');
                 giftCardContainer.style.display = 'block';
+                giftCardContainer.style.visibility = 'visible';
+                giftCardContainer.style.opacity = '1';
             }
             
             // Visa "Vill du börja om?"-frågan
@@ -4136,6 +4151,7 @@
                     restartButtonAfterDelay.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                 }
             }, 5000);
+            }, 100); // Liten fördröjning för att säkerställa att DOM är redo
         }
         
         function handleRestartQuestionClick() {
