@@ -4015,9 +4015,6 @@
         function handleContinueAfterSequence() {
             console.log('handleContinueAfterSequence called');
             
-            // Se till att vi är på view6
-            goToLevel(6);
-            
             const continueBtn = document.getElementById('continueButton');
             if (continueBtn) {
                 continueBtn.style.display = 'none';
@@ -4037,43 +4034,73 @@
             // Stoppa färgrörelser och distraktionsblinkningar
             stopColorEffects();
             
-            // Dölj fiskräkningsspelet
-            const fishContainer = document.getElementById('fishCountContainer');
-            if (fishContainer) {
-                fishContainer.style.display = 'none';
+            // Se till att vi är på view6 (men utan att visa paketet)
+            // Använd showView direkt istället för goToLevel för att undvika showFinalGiftBox
+            currentLevel = 6;
+            localStorage.setItem('escapeRoomLevel', 6);
+            updateProgress();
+            
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show view6
+            const view6 = document.getElementById('view6');
+            if (view6) {
+                view6.classList.add('active');
             }
             
-            // Dölj error overlay
-            const errorOverlay = document.getElementById('errorOverlay');
-            if (errorOverlay) {
-                errorOverlay.classList.remove('show');
-                errorOverlay.style.display = 'none';
-            }
+            // Stoppa popups
+            stopAnnoyingPopups();
             
-            // Dölj paketet direkt
-            const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
-            const largeBox = document.getElementById('giftBoxLarge');
-            if (largeBoxContainer) {
-                largeBoxContainer.classList.remove('show');
-                largeBoxContainer.style.display = 'none';
-            }
-            if (largeBox) {
-                largeBox.style.display = 'none';
-            }
-            
-            // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
-            const finalContainer = document.querySelector('#view6 .final-container');
-            if (finalContainer) {
-                const title = finalContainer.querySelector('h1');
-                const subtitle = finalContainer.querySelector('p');
-                if (title) title.style.display = 'none';
-                if (subtitle) subtitle.style.display = 'none';
-                // Dölj hela final-container så att den inte blockerar presentkortet
-                finalContainer.style.display = 'none';
-            }
-            
-            // Visa presentkortet direkt (hoppa över paket-animationen)
+            // Vänta lite så att view6 är aktiv, sedan dölj allt och visa presentkortet
             setTimeout(() => {
+                // Dölj fiskräkningsspelet
+                const fishContainer = document.getElementById('fishCountContainer');
+                if (fishContainer) {
+                    fishContainer.style.display = 'none';
+                }
+                
+                // Dölj error overlay
+                const errorOverlay = document.getElementById('errorOverlay');
+                if (errorOverlay) {
+                    errorOverlay.classList.remove('show');
+                    errorOverlay.style.display = 'none';
+                }
+                
+                // Dölj paketet direkt
+                const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
+                const largeBox = document.getElementById('giftBoxLarge');
+                const openBtn = document.getElementById('openPackageBtn');
+                const openInstruction = document.getElementById('openInstruction');
+                
+                if (largeBoxContainer) {
+                    largeBoxContainer.classList.remove('show');
+                    largeBoxContainer.style.display = 'none';
+                }
+                if (largeBox) {
+                    largeBox.style.display = 'none';
+                }
+                if (openBtn) {
+                    openBtn.style.display = 'none';
+                }
+                if (openInstruction) {
+                    openInstruction.style.display = 'none';
+                }
+                
+                // Dölj texten "Du har löst alla utmaningar! Nu ska du lista ut vad som ligger i paketen!"
+                const finalContainer = document.querySelector('#view6 .final-container');
+                if (finalContainer) {
+                    const title = finalContainer.querySelector('h1');
+                    const subtitle = finalContainer.querySelector('p');
+                    if (title) title.style.display = 'none';
+                    if (subtitle) subtitle.style.display = 'none';
+                    // Dölj hela final-container så att den inte blockerar presentkortet
+                    finalContainer.style.display = 'none';
+                }
+                
+                // Visa presentkortet direkt
                 const giftCardContainer = document.getElementById('giftCardContainer');
                 if (giftCardContainer) {
                     giftCardContainer.classList.add('show');
@@ -4082,7 +4109,9 @@
                     giftCardContainer.style.opacity = '1';
                     giftCardContainer.style.position = 'relative';
                     giftCardContainer.style.zIndex = '1000';
-                    giftCardContainer.style.margin = '0 auto';
+                    giftCardContainer.style.margin = '50px auto';
+                    giftCardContainer.style.width = '100%';
+                    giftCardContainer.style.maxWidth = '600px';
                     console.log('Gift card container shown');
                     
                     // Scrolla till presentkortet
@@ -4092,7 +4121,7 @@
                 } else {
                     console.error('giftCardContainer not found!');
                 }
-            }, 100);
+            }, 200);
         }
         
         function openGiftBox() {
