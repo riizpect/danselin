@@ -1628,6 +1628,10 @@
                         <strong>Simon Says (Färgsekvens)</strong><br>
                         <span style="font-size: 0.9em; opacity: 0.8;">Följ färgsekvensen - 7 nivåer</span>
                     </button>
+                    <button onclick="goToSimonSaysLevel7()" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ff00ff; border-radius: 8px; color: #ff00ff; cursor: pointer; text-align: left; font-size: 1em;">
+                        <strong>Simon Says - Nivå 7 (Sista nivån)</strong><br>
+                        <span style="font-size: 0.9em; opacity: 0.8;">Starta direkt på sista nivån</span>
+                    </button>
                     <button onclick="goToGiftCard()" style="padding: 15px; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid #ffd700; border-radius: 8px; color: #ffd700; cursor: pointer; text-align: left; font-size: 1em;">
                         <strong>Presentkort</strong><br>
                         <span style="font-size: 0.9em; opacity: 0.8;">Visa presentkortet med information</span>
@@ -3570,8 +3574,10 @@
             levelDisplay.textContent = `Nivå ${sequenceLevel} av ${MAX_SEQUENCE_LEVEL}`;
             instruction.textContent = 'Förbereder...';
             
-            // Lägg till en ny färg till sekvensen
-            sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            // Lägg till en ny färg till sekvensen (bara om sekvensen inte redan är byggd)
+            if (sequence.length < sequenceLevel) {
+                sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            }
             
             // GLITCH-EFFEKT INNAN!
             doGlitchEffect();
@@ -4179,6 +4185,52 @@
                     handleOpenPackage();
                 }
             }, 500);
+        }
+        
+        function goToSimonSaysLevel7() {
+            // Gå till nivå 6 först för att visa paketet
+            goToLevel(6);
+            // Vänta lite och starta sedan Simon Says-spelet på nivå 7
+            setTimeout(() => {
+                // Starta spelet men hoppa direkt till nivå 7
+                startSequenceGameAtLevel(7);
+            }, 500);
+        }
+        
+        function startSequenceGameAtLevel(targetLevel) {
+            sequenceGameStarted = true;
+            sequenceLevel = targetLevel;
+            sequence = [];
+            playerSequence = [];
+            
+            document.getElementById('giftBoxLarge').style.display = 'none';
+            document.getElementById('openInstruction').style.display = 'none';
+            const openBtn = document.getElementById('openPackageBtn');
+            if (openBtn) {
+                openBtn.style.display = 'none';
+            }
+            const continueBtn = document.getElementById('continueButton');
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
+            document.getElementById('colorSequenceContainer').classList.add('active');
+            
+            // Sätt upp färgknapp-mappning
+            setupColorButtonMap();
+            
+            // Starta kontinuerlig rörelse
+            startColorMovement();
+            
+            // Starta distraktionsblinkningar
+            startDistractionBlinks();
+            
+            // Bygg upp sekvensen för alla nivåer upp till targetLevel
+            for (let i = 1; i <= targetLevel; i++) {
+                sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            }
+            
+            // Starta nivån (visa sekvensen)
+            startSequenceLevel();
         }
 
         function goToGiftCard() {
