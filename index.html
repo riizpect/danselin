@@ -503,9 +503,14 @@
         }
         
         /* Dölj bara "Grattis!"-texten permanent */
-        .final-container h1,
+        .final-container h1.gift-card-title,
         .final-container p.gift-card-subtitle {
             display: none !important;
+        }
+        
+        /* Se till att restart-question-container h1 är synlig */
+        .restart-question-container h1 {
+            display: block !important;
         }
 
         .fish-count-container {
