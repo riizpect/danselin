@@ -5189,17 +5189,37 @@ Nivå 5: Lax=6, Abborre=6, Gädda=12, Ruda=9. Summa=33
         }
         
         function skipFakeLoading() {
-            document.getElementById('fakeLoadingScreen').classList.remove('show');
+            // Dölj loading-skärmen helt
+            const loadingScreen = document.getElementById('fakeLoadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.remove('show');
+                loadingScreen.style.display = 'none';
+                loadingScreen.style.visibility = 'hidden';
+                loadingScreen.style.opacity = '0';
+            }
             
             // Now do the real init
             const savedLevel = localStorage.getItem('escapeRoomLevel');
             if (savedLevel) {
                 currentLevel = parseInt(savedLevel);
+            } else {
+                currentLevel = 0; // Säkerställ att vi börjar på 0 om inget sparat
             }
             
             document.getElementById('title').addEventListener('click', handleTitleClick);
             showView(currentLevel);
             updateProgress();
+            
+            // Säkerställ att view0 är synlig om det är startskärmen
+            if (currentLevel === 0) {
+                const view0 = document.getElementById('view0');
+                if (view0) {
+                    view0.classList.add('active');
+                    view0.style.display = 'block';
+                    view0.style.visibility = 'visible';
+                    view0.style.opacity = '1';
+                }
+            }
             
             if (currentLevel === 2) initMemoryGame();
             if (currentLevel === 4) initLogicPuzzle();
