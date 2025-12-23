@@ -4282,8 +4282,17 @@
                     }
                     backgroundMusicPlaying = false;
                     
-                    // Gå tillbaka till start (view0)
+                    // Gå tillbaka till start (view0) - säkerställ att den visas korrekt
                     showView(0);
+                    
+                    // Säkerställ att view0 är synlig
+                    const view0 = document.getElementById('view0');
+                    if (view0) {
+                        view0.classList.add('active');
+                        view0.style.display = 'block';
+                        view0.style.visibility = 'visible';
+                        view0.style.opacity = '1';
+                    }
                 }
             }
         }
