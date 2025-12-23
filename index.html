@@ -4376,10 +4376,14 @@
         }
 
         function simulateSimonSaysComplete() {
-            // Simulera att man har klarat Simon Says - anropa samma funktion som "Fortsätt"-knappen
-            handleContinueAfterSequence();
-            // Stäng cheat-menyn
+            console.log('simulateSimonSaysComplete called');
+            // Stäng cheat-menyn först
             hideSecretInput();
+            // Simulera att man har klarat Simon Says - anropa samma funktion som "Fortsätt"-knappen
+            // Vänta lite så att cheat-menyn hinner stängas
+            setTimeout(() => {
+                handleContinueAfterSequence();
+            }, 100);
         }
         
         function goToGiftCard() {
