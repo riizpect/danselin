@@ -1845,6 +1845,7 @@
                             <div class="color-button color-yellow" id="colorYellow" data-color="yellow"></div>
                             <div class="color-button color-green" id="colorGreen" data-color="green"></div>
                         </div>
+                        <button class="continue-button" id="continueButton" onclick="handleContinueAfterSequence()" style="display: none; margin-top: 20px; padding: 15px 30px; font-size: 1.2em; background: linear-gradient(135deg, #4caf50, #45a049); color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); transition: all 0.3s ease;">Fortsätt →</button>
                     </div>
                 </div>
                 
@@ -3422,6 +3423,10 @@
             if (openBtn) {
                 openBtn.style.display = 'none';
             }
+            const continueBtn = document.getElementById('continueButton');
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
             document.getElementById('colorSequenceContainer').classList.add('active');
             
             // Sätt upp färgknapp-mappning
@@ -3556,6 +3561,11 @@
         function startSequenceLevel() {
             const instruction = document.getElementById('sequenceInstruction');
             const levelDisplay = document.getElementById('sequenceLevel');
+            const continueBtn = document.getElementById('continueButton');
+            
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
             
             levelDisplay.textContent = `Nivå ${sequenceLevel} av ${MAX_SEQUENCE_LEVEL}`;
             instruction.textContent = 'Förbereder...';
@@ -3672,10 +3682,8 @@
                     }
                     stopColorEffects();
                     
-                    // Vänta lite innan vi öppnar paketet
-                    setTimeout(() => {
-                        openGiftBox();
-                    }, 1000);
+                    // Visa "Fortsätt"-knapp
+                    showContinueButton();
                 } else {
                     // Nästa nivå
                     sequenceLevel++;
@@ -3988,6 +3996,22 @@
             if (!sequenceGameStarted) {
                 instruction.textContent = 'Dubbelklicka på paketet för att börja!';
             }
+        }
+        
+        function showContinueButton() {
+            const continueBtn = document.getElementById('continueButton');
+            if (continueBtn) {
+                continueBtn.style.display = 'block';
+                continueBtn.style.animation = 'popupPulse 0.5s ease-out';
+            }
+        }
+        
+        function handleContinueAfterSequence() {
+            const continueBtn = document.getElementById('continueButton');
+            if (continueBtn) {
+                continueBtn.style.display = 'none';
+            }
+            openGiftBox();
         }
         
         function openGiftBox() {
