@@ -4186,9 +4186,93 @@
                         giftCardContainer.style.visibility = 'visible';
                         giftCardContainer.style.opacity = '1';
                     }
-                } else {
-                    // Om det är "Ja", gör ingenting (eller starta om spelet om du vill)
-                    // För nu gör vi ingenting
+                } else if (buttonText === 'Ja') {
+                    // Om det är "Ja", starta om spelet från början
+                    // Anropa restartGame() direkt utan confirm-dialog
+                    localStorage.removeItem('escapeRoomLevel');
+                    currentLevel = 0;
+                    hintStates = {};
+                    
+                    // Reset captcha interval flag so it can start again
+                    stopCaptchaInterval();
+                    captchaIntervalStarted = false;
+                    
+                    // Reset all inputs
+                    const wordInput = document.getElementById('wordInput');
+                    if (wordInput) wordInput.value = '';
+                    
+                    const cipherInput = document.getElementById('cipherInput');
+                    if (cipherInput) cipherInput.value = '';
+                    
+                    const fishCodeInput = document.getElementById('fishCodeInput');
+                    if (fishCodeInput) fishCodeInput.value = '';
+                    
+                    // Reset all messages
+                    for (let i = 1; i <= 5; i++) {
+                        showMessage('message' + i, '', '');
+                    }
+                    
+                    // Reset hints
+                    for (let i = 1; i <= 5; i++) {
+                        const hintDiv = document.getElementById('hint' + i);
+                        if (hintDiv) {
+                            hintDiv.classList.remove('show');
+                            hintDiv.textContent = '';
+                        }
+                    }
+                    
+                    // Reset memory game
+                    stopMemoryCardSwapping();
+                    matchedPairs = 0;
+                    flippedCards = [];
+                    canFlip = true;
+                    const memoryGrid = document.getElementById('memoryGrid');
+                    if (memoryGrid) {
+                        memoryGrid.innerHTML = '';
+                    }
+                    
+                    // Reset logic puzzle selects
+                    const fishers = ['erik', 'lisa', 'olle', 'sara'];
+                    fishers.forEach(fisher => {
+                        const fishSelect = document.getElementById(`logic-${fisher}-fish`);
+                        const methodSelect = document.getElementById(`logic-${fisher}-method`);
+                        if (fishSelect) fishSelect.value = '';
+                        if (methodSelect) methodSelect.value = '';
+                    });
+                    
+                    // Reset sequence game
+                    sequenceGameStarted = false;
+                    sequenceLevel = 1;
+                    sequence = [];
+                    playerSequence = [];
+                    colorPositions = [0, 1, 2, 3];
+                    stopColorEffects();
+                    if (movementInterval) {
+                        clearInterval(movementInterval);
+                        movementInterval = null;
+                    }
+                    if (distractionInterval) {
+                        clearInterval(distractionInterval);
+                        distractionInterval = null;
+                    }
+                    if (giftBoxTrollInterval) {
+                        clearInterval(giftBoxTrollInterval);
+                        giftBoxTrollInterval = null;
+                    }
+                    
+                    // Dölj alla element i view6
+                    const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+                    if (restartQuestionContainer) {
+                        restartQuestionContainer.style.display = 'none';
+                    }
+                    const giftCardContainer = document.getElementById('giftCardContainer');
+                    if (giftCardContainer) {
+                        giftCardContainer.style.display = 'none';
+                        giftCardContainer.classList.remove('show');
+                    }
+                    
+                    // Gå tillbaka till start (view0)
+                    showView(0);
                 }
             }
         }
