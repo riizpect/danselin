@@ -2063,7 +2063,12 @@
             // Stop popups on final view
             if (level === 6) {
                 stopAnnoyingPopups();
-                setTimeout(() => initFishCountTest(), 100);
+                // Initiera fiskräkningsspelet bara om vi inte kommer från simulateSimonSaysComplete
+                // (detta hanteras i handleContinueAfterSequence istället)
+                if (!window.skipFishCountInit) {
+                    setTimeout(() => initFishCountTest(), 100);
+                }
+                window.skipFishCountInit = false; // Reset flag
             } else if (level > 0 && !popupInterval) {
                 // Start popups if game is active
                 startAnnoyingPopups();
@@ -4050,6 +4055,9 @@
             // Stoppa färgrörelser och distraktionsblinkningar
             stopColorEffects();
             
+            // Sätt flagga för att inte initiera fiskräkningsspelet
+            window.skipFishCountInit = true;
+            
             // Se till att vi är på view6 (men utan att visa paketet)
             // Använd showView direkt istället för goToLevel för att undvika showFinalGiftBox
             currentLevel = 6;
@@ -4115,6 +4123,10 @@
                 const restartQuestionContainer = document.getElementById('restartQuestionContainer');
                 if (restartQuestionContainer) {
                     restartQuestionContainer.style.display = 'block';
+                    restartQuestionContainer.style.visibility = 'visible';
+                    restartQuestionContainer.style.opacity = '1';
+                    restartQuestionContainer.style.zIndex = '1000';
+                    console.log('Restart question container shown');
                     
                     // Sätt knappen till "Ja" först
                     const restartButton = document.getElementById('restartQuestionButton');
@@ -4131,6 +4143,8 @@
                             restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
                         }
                     }, 5000);
+                } else {
+                    console.error('restartQuestionContainer not found!');
                 }
             }, 200);
         }
