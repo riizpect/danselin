@@ -4068,6 +4068,8 @@
                 const subtitle = finalContainer.querySelector('p');
                 if (title) title.style.display = 'none';
                 if (subtitle) subtitle.style.display = 'none';
+                // Dölj hela final-container så att den inte blockerar presentkortet
+                finalContainer.style.display = 'none';
             }
             
             // Visa presentkortet direkt (hoppa över paket-animationen)
@@ -4078,6 +4080,9 @@
                     giftCardContainer.style.display = 'block';
                     giftCardContainer.style.visibility = 'visible';
                     giftCardContainer.style.opacity = '1';
+                    giftCardContainer.style.position = 'relative';
+                    giftCardContainer.style.zIndex = '1000';
+                    giftCardContainer.style.margin = '0 auto';
                     console.log('Gift card container shown');
                     
                     // Scrolla till presentkortet
