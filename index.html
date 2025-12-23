@@ -4082,26 +4082,29 @@
                 view.classList.remove('active');
             });
             
-            // Dölj final-container INNAN vi visar view6 så att "Grattis!"-texten inte syns
-            const finalContainer = document.querySelector('#view6 .final-container');
-            if (finalContainer) {
-                finalContainer.style.display = 'none';
+            // Show view6
+            const view6 = document.getElementById('view6');
+            if (view6) {
+                view6.classList.add('active');
             }
             
-            // Dölj fiskräkningsspelet INNAN vi visar view6
+            // Stoppa popups
+            stopAnnoyingPopups();
+            
+            // Dölj fiskräkningsspelet
             const fishContainer = document.getElementById('fishCountContainer');
             if (fishContainer) {
                 fishContainer.style.display = 'none';
             }
             
-            // Dölj error overlay INNAN vi visar view6
+            // Dölj error overlay
             const errorOverlay = document.getElementById('errorOverlay');
             if (errorOverlay) {
                 errorOverlay.classList.remove('show');
                 errorOverlay.style.display = 'none';
             }
             
-            // Dölj paketet INNAN vi visar view6
+            // Dölj paketet
             const largeBoxContainer = document.getElementById('giftBoxLargeContainer');
             const largeBox = document.getElementById('giftBoxLarge');
             const openBtn = document.getElementById('openPackageBtn');
@@ -4121,46 +4124,43 @@
                 openInstruction.style.display = 'none';
             }
             
-            // Show view6
-            const view6 = document.getElementById('view6');
-            if (view6) {
-                view6.classList.add('active');
+            // Visa "Vill du börja om?" skärmen direkt (INNAN vi döljer final-container)
+            const restartQuestionContainer = document.getElementById('restartQuestionContainer');
+            if (restartQuestionContainer) {
+                restartQuestionContainer.style.display = 'block';
+                restartQuestionContainer.style.visibility = 'visible';
+                restartQuestionContainer.style.opacity = '1';
+                restartQuestionContainer.style.zIndex = '1000';
+                restartQuestionContainer.style.position = 'relative';
+                console.log('Restart question container shown');
+                
+                // Sätt knappen till "Ja" först
+                const restartButton = document.getElementById('restartQuestionButton');
+                if (restartButton) {
+                    restartButton.textContent = 'Ja';
+                    restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                    restartButton.onclick = handleRestartQuestionClick;
+                }
+                
+                // Efter 5 sekunder, ändra knappen till "Nej"
+                setTimeout(() => {
+                    if (restartButton) {
+                        restartButton.textContent = 'Nej';
+                        restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                    }
+                }, 5000);
+            } else {
+                console.error('restartQuestionContainer not found!');
             }
             
-            // Stoppa popups
-            stopAnnoyingPopups();
-            
-            // Visa "Vill du börja om?" skärmen direkt
-            setTimeout(() => {
-                
-                // Visa "Vill du börja om?" skärmen
-                const restartQuestionContainer = document.getElementById('restartQuestionContainer');
-                if (restartQuestionContainer) {
-                    restartQuestionContainer.style.display = 'block';
-                    restartQuestionContainer.style.visibility = 'visible';
-                    restartQuestionContainer.style.opacity = '1';
-                    restartQuestionContainer.style.zIndex = '1000';
-                    console.log('Restart question container shown');
-                    
-                    // Sätt knappen till "Ja" först
-                    const restartButton = document.getElementById('restartQuestionButton');
-                    if (restartButton) {
-                        restartButton.textContent = 'Ja';
-                        restartButton.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
-                        restartButton.onclick = handleRestartQuestionClick;
-                    }
-                    
-                    // Efter 5 sekunder, ändra knappen till "Nej"
-                    setTimeout(() => {
-                        if (restartButton) {
-                            restartButton.textContent = 'Nej';
-                            restartButton.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
-                        }
-                    }, 5000);
-                } else {
-                    console.error('restartQuestionContainer not found!');
-                }
-            }, 200);
+            // Dölj final-container EFTER att vi har visat restartQuestionContainer
+            // (men bara texten är redan dold via CSS, så detta är bara för säkerhets skull)
+            const finalContainer = document.querySelector('#view6 .final-container');
+            if (finalContainer) {
+                // Sätt display: flex så att restartQuestionContainer kan visas
+                finalContainer.style.display = 'flex';
+                // Text-elementen är redan dolda via CSS
+            }
         }
         
         function handleRestartQuestionClick() {
